@@ -38,28 +38,30 @@ Tools:
 - 💡 VS Code + GitHub Copilot
 
 ------------------------------------------------
-📂 Project Structure
-------------------------------------------------
+## 📂 Project Structure
+```
 OnTime/
 │
-├── backend/                # Laravel API REST (PHP)
+├── backend/                     # Laravel API REST (PHP)
 │   ├── app/
 │   ├── routes/
 │   ├── database/
 │   ├── .env
 │   └── docker-compose.yml
 │
-├── frontend/               # React + Vite (JavaScript)
+├── frontend/                    # React + Vite (JavaScript)
 │   ├── src/
 │   ├── public/
 │   └── package.json
 │
-├── docs/                   # Project documentation and diagrams
+├── docs/                        # Project documentation and diagrams
 │   ├── Documentacion_Proyecto_PI_RamonMoreno_v2.docx
 │   ├── Diagramas/
 │   └── Capturas/
 │
 └── README.md
+```
+
 
 ------------------------------------------------
 ⚙️ Installation & Setup
