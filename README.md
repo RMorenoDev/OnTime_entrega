@@ -55,9 +55,9 @@ OnTime/
 │   └── package.json
 │
 ├── docs/                        # Project documentation and diagrams
-│   ├── Documentacion_Proyecto_PI_RamonMoreno_v2.docx
-│   ├── Diagramas/
-│   └── Capturas/
+│   ├── Documentacion_Proyecto_PI_RamonMoreno.pdf
+│   ├── Diagrams/
+│   └── Screenshots/
 │
 └── README.md
 ```
@@ -73,16 +73,20 @@ Prerequisites:
 - 🌿 Git
 
 🐘 Backend setup:
+```bash
     cd backend
     composer install
     cp .env.example .env
     ./vendor/bin/sail up -d
     ./vendor/bin/sail artisan migrate --seed
+```
 
 ⚛️ Frontend setup:
+```bash
     cd ../frontend
     npm install
     npm run dev
+```
 
 🌐 Access the app:
 - Frontend: http://localhost:5173
