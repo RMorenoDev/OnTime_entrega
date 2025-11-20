@@ -1,25 +1,30 @@
-import { useEffect, useState } from "react";
-import { api } from "./lib/api";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-  const [status, setStatus] = useState("Loading...");
-
-  useEffect(() => {
-    api
-      .get("/health")
-      .then((response) => {
-        setStatus(JSON.stringify(response.data));
-      })
-      .catch((error) => {
-        setStatus("Error: " + (error?.message ?? "unknown"));
-      });
-  }, []);
+  const { isAuthenticated } = useAuth();
 
   return (
-    <main style={{ padding: "24px", fontFamily: "system-ui, sans-serif" }}>
-      <h1>OnTime – Frontend</h1>
-      <p>Backend health: {status}</p>
-    </main>
+    <Routes>
+      <Route
+        path="/"
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
+      />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 
