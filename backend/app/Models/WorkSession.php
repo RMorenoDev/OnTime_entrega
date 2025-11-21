@@ -8,16 +8,15 @@ class WorkSession extends Model
 {
     protected $fillable = [
         'user_id',
-        'clock_in',
-        'clock_out',
-        'total_minutes',
-        'status',
-        'notes'
+        'started_at',
+        'ended_at',
+        'source',
+        'note',
     ];
 
     protected $casts = [
-        'clock_in' => 'datetime',
-        'clock_out' => 'datetime',
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
     ];
 
     /**

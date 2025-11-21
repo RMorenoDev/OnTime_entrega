@@ -10,15 +10,17 @@ class WorkBreak extends Model
     
     protected $fillable = [
         'work_session_id',
-        'type',
-        'start_time',
-        'end_time',
-        'duration_minutes'
+        'break_type',
+        'is_paid',
+        'started_at',
+        'ended_at',
+        'note',
     ];
 
     protected $casts = [
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
+        'is_paid' => 'boolean',
     ];
 
     /**
