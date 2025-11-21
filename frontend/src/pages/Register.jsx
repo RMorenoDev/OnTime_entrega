@@ -8,7 +8,7 @@ export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
-    const [role, setRole] = useState('employee');
+    const [role, setRole] = useState('');
     const [teamName, setTeamName] = useState('');
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
@@ -69,13 +69,14 @@ export default function Register() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="role">Role</label>
+                        <label htmlFor="role">Role *</label>
                         <select
                             id="role"
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
                             required
                         >
+                            <option value="">Select your role...</option>
                             <option value="employee">Employee</option>
                             <option value="supervisor">Supervisor</option>
                         </select>
@@ -90,6 +91,7 @@ export default function Register() {
                             value={teamName}
                             onChange={(e) => setTeamName(e.target.value)}
                             placeholder="e.g., Development Team"
+                            disabled={!role}
                         />
                         {errors.team_name && <span className="error-text">{errors.team_name[0]}</span>}
                     </div>

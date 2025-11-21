@@ -33,14 +33,32 @@ class AuthController extends Controller
 
         // Handle team if provided
         if ($request->team_name) {
-            $team = \App\Models\Team::firstOrCreate(
-                ['name' => $request->team_name],
-                ['active' => true]
-            );
+            $team = \App\Models\Team::where('name', $request->team_name)->first();
 
-            // If user is supervisor and team doesn't have one, assign them
-            if ($user->role === 'supervisor' && !$team->supervisor_user_id) {
-                $team->update(['supervisor_user_id' => $user->id]);
+            // If team doesn't exist
+            if (!$team) {
+                // Supervisors can create new teams
+                if ($user->role === 'supervisor') {
+                    $team = \App\Models\Team::create([
+                        'name' => $request->team_name,
+                        'supervisor_user_id' => $user->id,
+                        'active' => true,
+                    ]);
+                } else {
+                    // Employees cannot create teams
+                    $user->delete(); // Remove the created user
+                    return response()->json([
+                        'message' => 'Team validation failed',
+                        'errors' => [
+                            'team_name' => ['This team doesn\'t exist. Please contact your supervisor or try another team name.']
+                        ]
+                    ], 422);
+                }
+            } else {
+                // Team exists - assign supervisor if needed
+                if ($user->role === 'supervisor' && !$team->supervisor_user_id) {
+                    $team->update(['supervisor_user_id' => $user->id]);
+                }
             }
 
             $user->update(['team_id' => $team->id]);
