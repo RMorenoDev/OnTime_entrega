@@ -21,7 +21,10 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
+        'password_hash',
+        'role',
+        'team_id',
+        'active',
     ];
 
     /**
@@ -30,9 +33,17 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $hidden = [
-        'password',
+        'password_hash',
         'remember_token',
     ];
+
+    /**
+     * Get the password for authentication.
+     */
+    public function getAuthPassword()
+    {
+        return $this->password_hash;
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -43,7 +54,55 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'active' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the team that the user belongs to
+     */
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
+
+    /**
+     * Get all work sessions for the user
+     */
+    public function workSessions()
+    {
+        return $this->hasMany(WorkSession::class);
+    }
+
+    /**
+     * Get all leave requests made by the user
+     */
+    public function leaveRequests()
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    /**
+     * Check if user is employee
+     */
+    public function isEmployee()
+    {
+        return $this->role === 'employee';
+    }
+
+    /**
+     * Check if user is supervisor
+     */
+    public function isSupervisor()
+    {
+        return $this->role === 'supervisor';
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
     }
 }

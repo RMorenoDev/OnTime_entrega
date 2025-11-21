@@ -19,19 +19,38 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'nullable|in:employee,supervisor',
+            'team_name' => 'nullable|string|max:80',
         ]);
 
+        // Create user
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password_hash' => Hash::make($request->password),
+            'role' => $request->role ?? 'employee',
         ]);
+
+        // Handle team if provided
+        if ($request->team_name) {
+            $team = \App\Models\Team::firstOrCreate(
+                ['name' => $request->team_name],
+                ['active' => true]
+            );
+
+            // If user is supervisor and team doesn't have one, assign them
+            if ($user->role === 'supervisor' && !$team->supervisor_user_id) {
+                $team->update(['supervisor_user_id' => $user->id]);
+            }
+
+            $user->update(['team_id' => $team->id]);
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'User registered successfully',
-            'user' => $user,
+            'user' => $user->load('team'),
             'token' => $token,
         ], 201);
     }
@@ -48,7 +67,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password_hash)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);

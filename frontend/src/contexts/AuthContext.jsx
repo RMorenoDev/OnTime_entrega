@@ -39,13 +39,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password, passwordConfirmation) => {
+  const register = async (name, email, password, passwordConfirmation, role = 'employee', teamName = '') => {
     try {
       const response = await api.post('/register', {
         name,
         email,
         password,
         password_confirmation: passwordConfirmation,
+        role,
+        team_name: teamName,
       });
       const { user, token } = response.data;
       setUser(user);

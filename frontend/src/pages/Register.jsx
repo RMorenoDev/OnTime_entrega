@@ -8,6 +8,8 @@ export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [role, setRole] = useState('employee');
+    const [teamName, setTeamName] = useState('');
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const { register } = useAuth();
@@ -18,7 +20,7 @@ export default function Register() {
         setErrors({});
         setLoading(true);
 
-        const result = await register(name, email, password, passwordConfirmation);
+        const result = await register(name, email, password, passwordConfirmation, role, teamName);
 
         if (result.success) {
             navigate('/dashboard');
@@ -64,6 +66,32 @@ export default function Register() {
                             placeholder="you@example.com"
                         />
                         {errors.email && <span className="error-text">{errors.email[0]}</span>}
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="role">Role</label>
+                        <select
+                            id="role"
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                            required
+                        >
+                            <option value="employee">Employee</option>
+                            <option value="supervisor">Supervisor</option>
+                        </select>
+                        {errors.role && <span className="error-text">{errors.role[0]}</span>}
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="teamName">Team Name</label>
+                        <input
+                            id="teamName"
+                            type="text"
+                            value={teamName}
+                            onChange={(e) => setTeamName(e.target.value)}
+                            placeholder="e.g., Development Team"
+                        />
+                        {errors.team_name && <span className="error-text">{errors.team_name[0]}</span>}
                     </div>
 
                     <div className="form-group">
