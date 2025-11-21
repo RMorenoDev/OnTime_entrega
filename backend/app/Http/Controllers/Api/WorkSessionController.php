@@ -88,7 +88,7 @@ class WorkSessionController extends Controller
         $session = WorkSession::where('user_id', $user->id)
             ->whereNull('ended_at')
             ->with(['breaks' => function ($query) {
-                $query->orderBy('started_at', 'desc');
+                $query->orderBy('started_at', 'asc');
             }])
             ->first();
 

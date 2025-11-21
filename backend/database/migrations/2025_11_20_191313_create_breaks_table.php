@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('breaks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('work_session_id')->constrained()->onDelete('cascade');
-            $table->enum('break_type', ['coffee', 'lunch', 'personal', 'medical']);
-            $table->boolean('is_paid');
-            $table->dateTime('started_at');
-            $table->dateTime('ended_at')->nullable();
-            $table->string('note', 255)->nullable();
+            $table->foreignId('work_session_id')->constrained('work_sessions')->onDelete('cascade');
+            $table->string('break_type', 50);
+            $table->boolean('is_paid')->default(true);
+            $table->timestamp('started_at');
+            $table->timestamp('ended_at')->nullable();
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

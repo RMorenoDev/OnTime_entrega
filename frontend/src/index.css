@@ -539,3 +539,151 @@ body {
   cursor: not-allowed;
 }
 
+
+/* Session Info */
+.session-info {
+  text-align: center;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.session-info .status-badge {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.session-info .session-start {
+  font-size: 1.1rem;
+  color: var(--white);
+  margin: 0;
+}
+
+
+/* Breaks History */
+.breaks-history {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.breaks-history h5 {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--gray-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.break-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.break-item:last-child {
+  border-bottom: none;
+}
+
+.break-item span:first-child {
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.break-time {
+  color: var(--gray-light);
+  font-size: 0.9rem;
+}
+
+/* Softer Clock Out Button */
+.btn-clockout {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  color: var(--white);
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(248, 113, 113, 0.3);
+  width: 100%;
+}
+
+.btn-clockout:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(248, 113, 113, 0.4);
+}
+
+.btn-clockout:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+/* Break Duration Display */
+.break-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.break-item span:first-child {
+  flex: 0 0 auto;
+}
+
+.break-item .break-duration,
+.break-item .break-time {
+  text-align: right;
+}
+
+.break-duration {
+  color: var(--white);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+
+
+/* Large Split Shift Break Button */
+.btn-break-large {
+  width: 100%;
+  margin-top: 1rem;
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--white);
+  padding: 1.125rem 1.5rem;
+  border: 2px solid rgba(139, 92, 246, 0.4);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-break-large:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.6);
+  transform: translateY(-2px);
+}
+
+.btn-break-large:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Long Break Badge */
+.status-badge.long-break {
+  background: rgba(251, 146, 60, 0.3);
+  border: 1px solid rgba(251, 146, 60, 0.5);
+  color: #fdba74;
+}
+
+

@@ -30,25 +30,4 @@ class WorkBreak extends Model
     {
         return $this->belongsTo(WorkSession::class);
     }
-
-    /**
-     * Calculate duration
-     */
-    public function calculateDuration()
-    {
-        if ($this->end_time) {
-            $this->duration_minutes = $this->start_time->diffInMinutes($this->end_time);
-            $this->save();
-        }
-    }
-
-    /**
-     * End the break
-     */
-    public function end()
-    {
-        $this->end_time = now();
-        $this->calculateDuration();
-        $this->save();
-    }
 }
