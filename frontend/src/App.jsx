@@ -7,6 +7,7 @@ import LeaveRequests from './pages/LeaveRequests';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminTeams from './pages/AdminTeams';
+import Reports from './pages/Reports';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -33,6 +34,14 @@ function App() {
         element={
           <ProtectedRoute>
             <LeaveRequests />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <Reports />
           </ProtectedRoute>
         }
       />

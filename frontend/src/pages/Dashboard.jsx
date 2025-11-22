@@ -135,6 +135,9 @@ export default function Dashboard() {
                                 Admin Panel
                             </button>
                         )}
+                        <button onClick={() => navigate('/reports')} className="btn-secondary">
+                            Reports
+                        </button>
                         <button onClick={() => navigate('/leave-requests')} className="btn-secondary">
                             Leave Requests
                         </button>

@@ -43,6 +43,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}/reject', [\App\Http\Controllers\Api\LeaveRequestController::class, 'reject'])->middleware('supervisor');
     });
 
+    // Reports routes
+    Route::prefix('reports')->group(function () {
+        Route::get('/my-hours', [\App\Http\Controllers\Api\ReportController::class, 'myHours']);
+        Route::get('/team-hours', [\App\Http\Controllers\Api\ReportController::class, 'teamHours'])->middleware('supervisor');
+    });
+
     // Admin-only routes
     Route::middleware('admin')->prefix('admin')->group(function () {
         // User management
