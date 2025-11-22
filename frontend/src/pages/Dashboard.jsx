@@ -130,6 +130,11 @@ export default function Dashboard() {
                         </p>
                     </div>
                     <div style={{ textAlign: 'right', display: 'flex', gap: '0.5rem' }}>
+                        {user?.role === 'admin' && (
+                            <button onClick={() => navigate('/admin')} className="btn-secondary">
+                                Admin Panel
+                            </button>
+                        )}
                         <button onClick={() => navigate('/leave-requests')} className="btn-secondary">
                             Leave Requests
                         </button>

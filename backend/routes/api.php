@@ -42,6 +42,29 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}/approve', [\App\Http\Controllers\Api\LeaveRequestController::class, 'approve'])->middleware('supervisor');
         Route::put('/{id}/reject', [\App\Http\Controllers\Api\LeaveRequestController::class, 'reject'])->middleware('supervisor');
     });
+
+    // Admin-only routes
+    Route::middleware('admin')->prefix('admin')->group(function () {
+        // User management
+        Route::get('/users', [\App\Http\Controllers\Api\UserManagementController::class, 'index']);
+        Route::get('/users/{id}', [\App\Http\Controllers\Api\UserManagementController::class, 'show']);
+        Route::put('/users/{id}', [\App\Http\Controllers\Api\UserManagementController::class, 'update']);
+        Route::put('/users/{id}/assign-team', [\App\Http\Controllers\Api\UserManagementController::class, 'assignTeam']);
+        Route::put('/users/{id}/change-role', [\App\Http\Controllers\Api\UserManagementController::class, 'changeRole']);
+        Route::delete('/users/{id}', [\App\Http\Controllers\Api\UserManagementController::class, 'destroy']);
+
+        // Team management
+        Route::get('/teams', [\App\Http\Controllers\Api\TeamManagementController::class, 'index']);
+        Route::post('/teams', [\App\Http\Controllers\Api\TeamManagementController::class, 'store']);
+        Route::put('/teams/{id}', [\App\Http\Controllers\Api\TeamManagementController::class, 'update']);
+        Route::delete('/teams/{id}', [\App\Http\Controllers\Api\TeamManagementController::class, 'destroy']);
+        Route::get('/teams/{id}/members', [\App\Http\Controllers\Api\TeamManagementController::class, 'members']);
+
+        // Statistics
+        Route::get('/stats/overview', [\App\Http\Controllers\Api\AdminReportsController::class, 'overview']);
+        Route::get('/stats/work-hours', [\App\Http\Controllers\Api\AdminReportsController::class, 'workHours']);
+        Route::get('/stats/leave-requests', [\App\Http\Controllers\Api\AdminReportsController::class, 'leaveRequests']);
+    });
 });
 
 // Health check routes

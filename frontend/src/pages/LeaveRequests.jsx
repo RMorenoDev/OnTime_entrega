@@ -91,6 +91,11 @@ export default function LeaveRequests() {
                         </p>
                     </div>
                     <div style={{ textAlign: 'right', display: 'flex', gap: '0.5rem' }}>
+                        {user?.role === 'admin' && (
+                            <button onClick={() => navigate('/admin')} className="btn-secondary">
+                                Admin Panel
+                            </button>
+                        )}
                         <button onClick={() => navigate('/')} className="btn-secondary">
                             Dashboard
                         </button>
@@ -100,50 +105,51 @@ export default function LeaveRequests() {
                     </div>
                 </div>
 
-                {/* View Toggle - Different for Admin vs Supervisor */}
-                {user?.role === 'admin' ? (
-                    <div className="view-toggle">
-                        <button
-                            className={`toggle-btn ${activeView === 'supervisor' ? 'active' : ''}`}
-                            onClick={() => setActiveView('supervisor')}
-                        >
-                            Supervisor Requests
-                        </button>
-                        <button
-                            className={`toggle-btn ${activeView === 'employees' ? 'active' : ''}`}
-                            onClick={() => setActiveView('employees')}
-                        >
-                            Employee Requests
-                        </button>
-                    </div>
-                ) : user?.role === 'supervisor' ? (
-                    <div className="view-toggle">
-                        <button
-                            className={`toggle-btn ${activeView === 'my-requests' ? 'active' : ''}`}
-                            onClick={() => setActiveView('my-requests')}
-                        >
-                            My Requests
-                        </button>
-                        <button
-                            className={`toggle-btn ${activeView === 'supervisor' ? 'active' : ''}`}
-                            onClick={() => setActiveView('supervisor')}
-                        >
-                            Team Requests
-                        </button>
-                    </div>
-                ) : null}
+                {/* Main Content Card */}
+                <div className="work-session-card">
+                    {/* View Toggle - Different for Admin vs Supervisor */}
+                    {user?.role === 'admin' ? (
+                        <div className="view-toggle">
+                            <button
+                                className={`toggle-btn ${activeView === 'supervisor' ? 'active' : ''}`}
+                                onClick={() => setActiveView('supervisor')}
+                            >
+                                Supervisor Requests
+                            </button>
+                            <button
+                                className={`toggle-btn ${activeView === 'employees' ? 'active' : ''}`}
+                                onClick={() => setActiveView('employees')}
+                            >
+                                Employee Requests
+                            </button>
+                        </div>
+                    ) : user?.role === 'supervisor' ? (
+                        <div className="view-toggle">
+                            <button
+                                className={`toggle-btn ${activeView === 'my-requests' ? 'active' : ''}`}
+                                onClick={() => setActiveView('my-requests')}
+                            >
+                                My Requests
+                            </button>
+                            <button
+                                className={`toggle-btn ${activeView === 'supervisor' ? 'active' : ''}`}
+                                onClick={() => setActiveView('supervisor')}
+                            >
+                                Team Requests
+                            </button>
+                        </div>
+                    ) : null}
 
-                {/* Admin views */}
-                {user?.role === 'admin' && activeView === 'supervisor' ? (
-                    <SupervisorPanel />
-                ) : user?.role === 'admin' && activeView === 'employees' ? (
-                    <SupervisorPanel isEmployeeView={true} />
-                ) : (user?.role === 'supervisor' && activeView === 'supervisor') ? (
-                    <SupervisorPanel />
-                ) : (
-                    <>
-                        {showForm ? (
-                            <div className="work-session-card">
+                    {/* Admin views */}
+                    {user?.role === 'admin' && activeView === 'supervisor' ? (
+                        <SupervisorPanel />
+                    ) : user?.role === 'admin' && activeView === 'employees' ? (
+                        <SupervisorPanel isEmployeeView={true} />
+                    ) : (user?.role === 'supervisor' && activeView === 'supervisor') ? (
+                        <SupervisorPanel />
+                    ) : (
+                        <>
+                            {showForm ? (
                                 <LeaveRequestForm
                                     onSuccess={() => {
                                         setShowForm(false);
@@ -151,100 +157,98 @@ export default function LeaveRequests() {
                                     }}
                                     onCancel={() => setShowForm(false)}
                                 />
-                            </div>
-                        ) : (
-                            <>
-                                <div className="leave-actions">
-                                    <button onClick={() => setShowForm(true)} className="btn-primary">
-                                        + New Leave Request
-                                    </button>
-                                </div>
-
-                                <div className="leave-filters">
-                                    <button
-                                        className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-                                        onClick={() => setFilter('all')}
-                                    >
-                                        All
-                                    </button>
-                                    <button
-                                        className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
-                                        onClick={() => setFilter('pending')}
-                                    >
-                                        Pending
-                                    </button>
-                                    <button
-                                        className={`filter-btn ${filter === 'approved' ? 'active' : ''}`}
-                                        onClick={() => setFilter('approved')}
-                                    >
-                                        Approved
-                                    </button>
-                                    <button
-                                        className={`filter-btn ${filter === 'rejected' ? 'active' : ''}`}
-                                        onClick={() => setFilter('rejected')}
-                                    >
-                                        Rejected
-                                    </button>
-                                </div>
-
-                                {error && <div className="error-message">{error}</div>}
-
-                                {loading ? (
-                                    <div className="loading">Loading...</div>
-                                ) : filteredRequests.length === 0 ? (
-                                    <div className="work-session-card">
-                                        <p style={{ textAlign: 'center', color: 'var(--gray-light)' }}>
-                                            No leave requests found
-                                        </p>
+                            ) : (
+                                <>
+                                    <div className="leave-actions">
+                                        <button onClick={() => setShowForm(true)} className="btn-primary">
+                                            + New Leave Request
+                                        </button>
                                     </div>
-                                ) : (
-                                    <div className="leave-requests-list">
-                                        {filteredRequests.map(request => (
-                                            <div key={request.id} className="leave-request-card">
-                                                <div className="card-header">
-                                                    <span className="leave-type">{getLeaveTypeBadge(request.leave_type)}</span>
-                                                    {getStatusBadge(request.status)}
-                                                </div>
 
-                                                <div className="card-body">
-                                                    <div className="request-info">
-                                                        <p><strong>Period:</strong> {new Date(request.start_at).toLocaleDateString()}
-                                                            {request.end_at && ` - ${new Date(request.end_at).toLocaleDateString()}`}</p>
-                                                        <p><strong>Duration:</strong> {formatDuration(request)}</p>
-                                                        <p><strong>Type:</strong> {request.is_paid ? 'Paid' : 'Unpaid'}</p>
+                                    <div className="leave-filters">
+                                        <button
+                                            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+                                            onClick={() => setFilter('all')}
+                                        >
+                                            All
+                                        </button>
+                                        <button
+                                            className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
+                                            onClick={() => setFilter('pending')}
+                                        >
+                                            Pending
+                                        </button>
+                                        <button
+                                            className={`filter-btn ${filter === 'approved' ? 'active' : ''}`}
+                                            onClick={() => setFilter('approved')}
+                                        >
+                                            Approved
+                                        </button>
+                                        <button
+                                            className={`filter-btn ${filter === 'rejected' ? 'active' : ''}`}
+                                            onClick={() => setFilter('rejected')}
+                                        >
+                                            Rejected
+                                        </button>
+                                    </div>
+
+                                    {error && <div className="error-message">{error}</div>}
+
+                                    {loading ? (
+                                        <div className="loading">Loading...</div>
+                                    ) : filteredRequests.length === 0 ? (
+                                        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--gray-light)' }}>
+                                            <p>No leave requests found</p>
+                                        </div>
+                                    ) : (
+                                        <div className="leave-requests-list">
+                                            {filteredRequests.map(request => (
+                                                <div key={request.id} className="leave-request-card">
+                                                    <div className="card-header">
+                                                        <span className="leave-type">{getLeaveTypeBadge(request.leave_type)}</span>
+                                                        {getStatusBadge(request.status)}
                                                     </div>
 
-                                                    <div className="request-note">
-                                                        <strong>Reason:</strong>
-                                                        <p>{request.note}</p>
+                                                    <div className="card-body">
+                                                        <div className="request-info">
+                                                            <p><strong>Period:</strong> {new Date(request.start_at).toLocaleDateString()}
+                                                                {request.end_at && ` - ${new Date(request.end_at).toLocaleDateString()}`}</p>
+                                                            <p><strong>Duration:</strong> {formatDuration(request)}</p>
+                                                            <p><strong>Type:</strong> {request.is_paid ? 'Paid' : 'Unpaid'}</p>
+                                                        </div>
+
+                                                        <div className="request-note">
+                                                            <strong>Reason:</strong>
+                                                            <p>{request.note}</p>
+                                                        </div>
+
+                                                        {request.rejection_reason && (
+                                                            <div className="rejection-reason">
+                                                                <strong>Rejection Reason:</strong>
+                                                                <p>{request.rejection_reason}</p>
+                                                            </div>
+                                                        )}
                                                     </div>
 
-                                                    {request.rejection_reason && (
-                                                        <div className="rejection-reason">
-                                                            <strong>Rejection Reason:</strong>
-                                                            <p>{request.rejection_reason}</p>
+                                                    {(request.status === 'pending' || request.status === 'approved') && (
+                                                        <div className="card-actions">
+                                                            <button
+                                                                onClick={() => handleCancel(request.id)}
+                                                                className="btn-cancel"
+                                                            >
+                                                                Cancel Request
+                                                            </button>
                                                         </div>
                                                     )}
                                                 </div>
-
-                                                {(request.status === 'pending' || request.status === 'approved') && (
-                                                    <div className="card-actions">
-                                                        <button
-                                                            onClick={() => handleCancel(request.id)}
-                                                            className="btn-cancel"
-                                                        >
-                                                            Cancel Request
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </>
-                        )}
-                    </>
-                )}
+                                            ))}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     );
