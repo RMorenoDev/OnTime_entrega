@@ -15,14 +15,16 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('supervisor_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->enum('leave_type', ['coffee', 'lunch', 'personal', 'medical', 'vacation']);
+            $table->enum('leave_type', ['vacation', 'medical', 'personal']);
             $table->boolean('is_paid');
-            $table->boolean('is_fully_day');
+            $table->boolean('is_full_day')->default(true);
+            $table->decimal('duration_hours', 5, 1)->nullable(); // For partial days, in 0.5 hour blocks
             $table->dateTime('start_at');
-            $table->dateTime('end_at');
-            $table->enum('status', ['requested', 'approved', 'rejected', 'cancelled'])->default('requested');
-            $table->dateTime('approved_at')->nullable();
-            $table->string('note', 255)->nullable();
+            $table->dateTime('end_at')->nullable(); // Nullable for full day requests
+            $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
+            $table->dateTime('reviewed_at')->nullable();
+            $table->text('note'); // Mandatory field
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
         });
     }

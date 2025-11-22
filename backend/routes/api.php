@@ -29,6 +29,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/start', [\App\Http\Controllers\Api\BreakController::class, 'start']);
         Route::post('/end', [\App\Http\Controllers\Api\BreakController::class, 'end']);
     });
+
+    // Leave request routes (Employee)
+    Route::prefix('leave-requests')->group(function () {
+        Route::post('/', [\App\Http\Controllers\Api\LeaveRequestController::class, 'store']);
+        Route::get('/', [\App\Http\Controllers\Api\LeaveRequestController::class, 'index']);
+        Route::put('/{id}/cancel', [\App\Http\Controllers\Api\LeaveRequestController::class, 'cancel']);
+        
+        // Supervisor and Admin routes
+        Route::get('/pending', [\App\Http\Controllers\Api\LeaveRequestController::class, 'pending'])->middleware('supervisor');
+        Route::get('/all-employees', [\App\Http\Controllers\Api\LeaveRequestController::class, 'allEmployees'])->middleware('supervisor');
+        Route::put('/{id}/approve', [\App\Http\Controllers\Api\LeaveRequestController::class, 'approve'])->middleware('supervisor');
+        Route::put('/{id}/reject', [\App\Http\Controllers\Api\LeaveRequestController::class, 'reject'])->middleware('supervisor');
+    });
 });
 
 // Health check routes

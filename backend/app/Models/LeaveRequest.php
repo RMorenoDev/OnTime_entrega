@@ -9,33 +9,37 @@ class LeaveRequest extends Model
     protected $fillable = [
         'user_id',
         'supervisor_id',
-        'type',
-        'start_date',
-        'end_date',
-        'reason',
+        'leave_type',
+        'is_paid',
+        'is_full_day',
+        'duration_hours',
+        'start_at',
+        'end_at',
         'status',
-        'approved_at',
-        'rejected_at',
-        'notes'
+        'reviewed_at',
+        'note',
+        'rejection_reason',
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-        'approved_at' => 'datetime',
-        'rejected_at' => 'datetime',
+        'start_at' => 'datetime',
+        'end_at' => 'datetime',
+        'reviewed_at' => 'datetime',
+        'is_paid' => 'boolean',
+        'is_full_day' => 'boolean',
+        'duration_hours' => 'decimal:1',
     ];
 
     /**
-     * Get the user that made the request
+     * Get the employee who requested leave
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
-     * Get the supervisor
+     * Get the supervisor who reviewed the request
      */
     public function supervisor()
     {
@@ -43,31 +47,59 @@ class LeaveRequest extends Model
     }
 
     /**
-     * Approve the request
+     * Check if request is pending
      */
-    public function approve()
+    public function isPending()
     {
-        $this->status = 'approved';
-        $this->approved_at = now();
-        $this->save();
+        return $this->status === 'pending';
     }
 
     /**
-     * Reject the request
+     * Check if request is approved
      */
-    public function reject()
+    public function isApproved()
     {
-        $this->status = 'rejected';
-        $this->rejected_at = now();
-        $this->save();
+        return $this->status === 'approved';
     }
 
     /**
-     * Cancel the request
+     * Check if request is rejected
      */
-    public function cancel()
+    public function isRejected()
     {
-        $this->status = 'cancelled';
-        $this->save();
+        return $this->status === 'rejected';
+    }
+
+    /**
+     * Check if request is cancelled
+     */
+    public function isCancelled()
+    {
+        return $this->status === 'cancelled';
+    }
+
+    /**
+     * Get duration in days (for full day requests)
+     */
+    public function getDurationInDays()
+    {
+        if (!$this->is_full_day || !$this->end_at) {
+            return 0;
+        }
+        
+        return $this->start_at->diffInDays($this->end_at) + 1; // +1 to include both start and end day
+    }
+
+    /**
+     * Get formatted duration string
+     */
+    public function getFormattedDuration()
+    {
+        if ($this->is_full_day) {
+            $days = $this->getDurationInDays();
+            return $days . ' ' . ($days === 1 ? 'day' : 'days');
+        }
+        
+        return $this->duration_hours . ' hours';
     }
 }

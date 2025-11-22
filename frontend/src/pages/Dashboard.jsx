@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
 
 export default function Dashboard() {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [activeSession, setActiveSession] = useState(null);
     const [activeBreak, setActiveBreak] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -127,7 +129,10 @@ export default function Dashboard() {
                             {user?.role} {user?.team && `• ${user.team.name}`}
                         </p>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
+                    <div style={{ textAlign: 'right', display: 'flex', gap: '0.5rem' }}>
+                        <button onClick={() => navigate('/leave-requests')} className="btn-secondary">
+                            Leave Requests
+                        </button>
                         <button onClick={logout} className="btn-secondary">
                             Logout
                         </button>
