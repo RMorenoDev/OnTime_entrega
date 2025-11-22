@@ -1818,3 +1818,20 @@ textarea:focus {
     gap: 0.5rem;
   }
 }
+
+/* Fix leave-actions spacing in work-session-card */
+.work-session-card > .leave-actions:first-child,
+.work-session-card .view-toggle + .leave-actions {
+  margin-top: 0 !important;
+  padding-top: 0.5rem;
+}
+
+/* Fix loading message positioning */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  color: var(--white);
+  font-size: 1.1rem;
+}

@@ -115,6 +115,9 @@ export default function AdminTeams() {
                         </p>
                     </div>
                     <div style={{ textAlign: 'right', display: 'flex', gap: '0.5rem' }}>
+                        <button onClick={() => navigate('/reports')} className="btn-secondary">
+                            Reports
+                        </button>
                         <button onClick={() => navigate('/leave-requests')} className="btn-secondary">
                             Leave Requests
                         </button>

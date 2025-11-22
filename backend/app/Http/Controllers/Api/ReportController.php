@@ -19,6 +19,7 @@ class ReportController extends Controller
         $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         $startDate = Carbon::parse($request->start_date)->startOfDay();
@@ -31,11 +32,19 @@ class ReportController extends Controller
             ], 400);
         }
 
-        $sessions = WorkSession::where('user_id', $request->user()->id)
-            ->whereBetween('clock_in', [$startDate, $endDate])
-            ->whereNotNull('clock_out')
+        // Determine which user's hours to fetch
+        $userId = $request->user()->id;
+        
+        // Allow admin to query any user's hours
+        if ($request->user()->role === 'admin' && $request->user_id) {
+            $userId = $request->user_id;
+        }
+
+        $sessions = WorkSession::where('user_id', $userId)
+            ->whereBetween('started_at', [$startDate, $endDate])
+            ->whereNotNull('ended_at')
             ->with('breaks')
-            ->orderBy('clock_in', 'desc')
+            ->orderBy('started_at', 'desc')
             ->get();
 
         return response()->json([
@@ -45,25 +54,41 @@ class ReportController extends Controller
         ]);
     }
 
-    /**
-     * Get team work hours report (supervisor only)
-     */
     public function teamHours(Request $request)
     {
         $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'user_id' => 'nullable|exists:users,id'
+            'user_id' => 'nullable|exists:users,id',
+            'team_id' => 'nullable|exists:teams,id'
         ]);
 
         $user = $request->user();
-        
-        // Get supervisor's team
-        $team = $user->supervisedTeam;
+        $team = null;
+
+        // Admin can choose any team or see all teams
+        if ($user->role === 'admin') {
+            if ($request->team_id) {
+                $team = \App\Models\Team::find($request->team_id);
+            } else {
+                // If no team specified, get the first team or supervised team
+                $team = $user->supervisedTeam ?? \App\Models\Team::first();
+            }
+        } else {
+            // For supervisors, check if they are IN a team (regardless of being supervisor)
+            $team = $user->team;
+            
+            if (!$team) {
+                return response()->json([
+                    'message' => 'You are not assigned to any team'
+                ], 403);
+            }
+        }
+
         if (!$team) {
             return response()->json([
-                'message' => 'You are not assigned to supervise any team'
-            ], 403);
+                'message' => 'No team found'
+            ], 404);
         }
 
         $startDate = Carbon::parse($request->start_date)->startOfDay();
@@ -79,11 +104,11 @@ class ReportController extends Controller
         // Get team members
         $teamMemberIds = $team->members()->pluck('users.id');
 
-        // Filter by specific user if requested
-        if ($request->user_id) {
+        // Filter by specific user if requested (admin only)
+        if ($request->user_id && $user->role === 'admin') {
             if (!$teamMemberIds->contains($request->user_id)) {
                 return response()->json([
-                    'message' => 'User is not in your team'
+                    'message' => 'User is not in the selected team'
                 ], 403);
             }
             $teamMemberIds = collect([$request->user_id]);
@@ -94,8 +119,8 @@ class ReportController extends Controller
         foreach ($teamMemberIds as $memberId) {
             $memberUser = User::find($memberId);
             $sessions = WorkSession::where('user_id', $memberId)
-                ->whereBetween('clock_in', [$startDate, $endDate])
-                ->whereNotNull('clock_out')
+                ->whereBetween('started_at', [$startDate, $endDate])
+                ->whereNotNull('ended_at')
                 ->with('breaks')
                 ->get();
 
@@ -126,6 +151,10 @@ class ReportController extends Controller
         $avgHoursPerMember = count($teamMembers) > 0 ? $totalHours / count($teamMembers) : 0;
 
         return response()->json([
+            'team' => [
+                'id' => $team->id,
+                'name' => $team->name
+            ],
             'team_members' => $teamMembers,
             'team_summary' => [
                 'total_hours' => round($totalHours, 2),
@@ -141,8 +170,8 @@ class ReportController extends Controller
     private function formatSessions($sessions)
     {
         return $sessions->map(function ($session) {
-            $clockIn = Carbon::parse($session->clock_in);
-            $clockOut = Carbon::parse($session->clock_out);
+            $clockIn = Carbon::parse($session->started_at);
+            $clockOut = Carbon::parse($session->ended_at);
             
             // Calculate total hours
             $totalMinutes = $clockIn->diffInMinutes($clockOut);
@@ -196,8 +225,8 @@ class ReportController extends Controller
         $daysWorked = $sessions->count();
 
         foreach ($sessions as $session) {
-            $clockIn = Carbon::parse($session->clock_in);
-            $clockOut = Carbon::parse($session->clock_out);
+            $clockIn = Carbon::parse($session->started_at);
+            $clockOut = Carbon::parse($session->ended_at);
             $totalHours += $clockIn->diffInMinutes($clockOut) / 60;
 
             // Calculate break time

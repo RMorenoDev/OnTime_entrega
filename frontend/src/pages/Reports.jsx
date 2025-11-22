@@ -8,7 +8,7 @@ export default function Reports() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [activeView, setActiveView] = useState('my-hours');
+    const [activeView, setActiveView] = useState(user?.role === 'admin' ? 'employees' : 'my-hours');
 
     // Date range - default to current month
     const today = new Date();
@@ -20,32 +20,87 @@ export default function Reports() {
     const [reportData, setReportData] = useState(null);
     const [teamData, setTeamData] = useState(null);
 
+    // Admin selectors
+    const [teams, setTeams] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [selectedTeam, setSelectedTeam] = useState('');
+    const [selectedUser, setSelectedUser] = useState('');
+
+    useEffect(() => {
+        if (user?.role === 'admin') {
+            fetchTeamsAndUsers();
+        }
+    }, [user]);
+
     useEffect(() => {
         fetchReport();
-    }, [activeView, startDate, endDate]);
+    }, [activeView, startDate, endDate, selectedTeam, selectedUser]);
+
+    const fetchTeamsAndUsers = async () => {
+        try {
+            const [teamsRes, usersRes] = await Promise.all([
+                api.get('/admin/teams'),
+                api.get('/admin/users')
+            ]);
+            setTeams(Array.isArray(teamsRes.data) ? teamsRes.data : []);
+            const usersData = usersRes.data?.data || usersRes.data;
+            setUsers(Array.isArray(usersData) ? usersData : []);
+        } catch (err) {
+            console.error('Failed to fetch teams/users:', err);
+            setTeams([]);
+            setUsers([]);
+        }
+    };
 
     const fetchReport = async () => {
         if (!startDate || !endDate) return;
+
+        // For employees view, require user selection
+        if (activeView === 'employees' && !selectedUser) {
+            setReportData(null);
+            return;
+        }
+
+        // For team hours, require team selection for admins
+        if (activeView === 'team-hours' && user?.role === 'admin' && !selectedTeam) {
+            setTeamData(null);
+            return;
+        }
 
         setLoading(true);
         setError('');
 
         try {
-            const endpoint = activeView === 'my-hours' ? '/reports/my-hours' : '/reports/team-hours';
-            const response = await api.get(endpoint, {
-                params: { start_date: startDate, end_date: endDate }
-            });
-
-            if (activeView === 'my-hours') {
+            if (activeView === 'my-hours' || activeView === 'employees') {
+                const params = { start_date: startDate, end_date: endDate };
+                if (selectedUser) {
+                    params.user_id = selectedUser;
+                }
+                console.log('Fetching my-hours with params:', params);
+                const response = await api.get('/reports/my-hours', { params });
                 setReportData(response.data);
             } else {
+                const params = { start_date: startDate, end_date: endDate };
+                if (selectedTeam) {
+                    params.team_id = selectedTeam;
+                }
+                const response = await api.get('/reports/team-hours', { params });
                 setTeamData(response.data);
             }
         } catch (err) {
+            console.error('Report fetch error:', err);
             setError(err.response?.data?.message || 'Failed to fetch report');
         } finally {
             setLoading(false);
         }
+    };
+
+    // Convert decimal hours to HH:MM format
+    const formatHoursMinutes = (decimalHours) => {
+        if (!decimalHours && decimalHours !== 0) return '0:00';
+        const hours = Math.floor(decimalHours);
+        const minutes = Math.round((decimalHours - hours) * 60);
+        return `${hours}:${minutes.toString().padStart(2, '0')}`;
     };
 
     const formatTime = (time) => {
@@ -97,18 +152,37 @@ export default function Reports() {
                     {/* View Toggle for Supervisors */}
                     {(user?.role === 'supervisor' || user?.role === 'admin') && (
                         <div className="view-toggle">
-                            <button
-                                className={`toggle-btn ${activeView === 'my-hours' ? 'active' : ''}`}
-                                onClick={() => setActiveView('my-hours')}
-                            >
-                                My Hours
-                            </button>
-                            <button
-                                className={`toggle-btn ${activeView === 'team-hours' ? 'active' : ''}`}
-                                onClick={() => setActiveView('team-hours')}
-                            >
-                                Team Hours
-                            </button>
+                            {user?.role === 'admin' ? (
+                                <>
+                                    <button
+                                        className={`toggle-btn ${activeView === 'employees' ? 'active' : ''}`}
+                                        onClick={() => setActiveView('employees')}
+                                    >
+                                        Employees
+                                    </button>
+                                    <button
+                                        className={`toggle-btn ${activeView === 'team-hours' ? 'active' : ''}`}
+                                        onClick={() => setActiveView('team-hours')}
+                                    >
+                                        Team Hours
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button
+                                        className={`toggle-btn ${activeView === 'my-hours' ? 'active' : ''}`}
+                                        onClick={() => setActiveView('my-hours')}
+                                    >
+                                        My Hours
+                                    </button>
+                                    <button
+                                        className={`toggle-btn ${activeView === 'team-hours' ? 'active' : ''}`}
+                                        onClick={() => setActiveView('team-hours')}
+                                    >
+                                        Team Hours
+                                    </button>
+                                </>
+                            )}
                         </div>
                     )}
 
@@ -133,6 +207,40 @@ export default function Reports() {
                                 max={today.toISOString().split('T')[0]}
                             />
                         </div>
+
+                        {/* Admin Selectors */}
+                        {user?.role === 'admin' && activeView === 'employees' && (
+                            <div className="date-input-group">
+                                <label>Select Employee</label>
+                                <select
+                                    value={selectedUser}
+                                    onChange={(e) => setSelectedUser(e.target.value)}
+                                    className="filter-select"
+                                >
+                                    <option value="">-- Select an Employee --</option>
+                                    {Array.isArray(users) && users.map(u => (
+                                        <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        {user?.role === 'admin' && activeView === 'team-hours' && (
+                            <div className="date-input-group">
+                                <label>Select Team</label>
+                                <select
+                                    value={selectedTeam}
+                                    onChange={(e) => setSelectedTeam(e.target.value)}
+                                    className="filter-select"
+                                >
+                                    <option value="">-- Select a Team --</option>
+                                    {Array.isArray(teams) && teams.map(t => (
+                                        <option key={t.id} value={t.id}>{t.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
                         <button onClick={fetchReport} className="btn-primary" style={{ marginTop: '1.5rem' }}>
                             Generate Report
                         </button>
@@ -142,24 +250,24 @@ export default function Reports() {
 
                     {loading ? (
                         <div className="loading">Loading report...</div>
-                    ) : activeView === 'my-hours' && reportData ? (
+                    ) : (activeView === 'my-hours' || activeView === 'employees') && reportData ? (
                         <>
                             {/* Summary Cards */}
                             <div className="report-summary">
                                 <div className="summary-card">
-                                    <div className="summary-value">{reportData.summary.total_hours}h</div>
+                                    <div className="summary-value">{formatHoursMinutes(reportData.summary.total_hours)}</div>
                                     <div className="summary-label">Total Hours</div>
                                 </div>
                                 <div className="summary-card">
-                                    <div className="summary-value">{reportData.summary.net_hours}h</div>
-                                    <div className="summary-label">Net Hours</div>
+                                    <div className="summary-value">{formatHoursMinutes(reportData.summary.net_hours)}</div>
+                                    <div className="summary-label">Net Hours (Total - Breaks)</div>
                                 </div>
                                 <div className="summary-card">
                                     <div className="summary-value">{reportData.summary.days_worked}</div>
                                     <div className="summary-label">Days Worked</div>
                                 </div>
                                 <div className="summary-card">
-                                    <div className="summary-value">{reportData.summary.avg_hours_per_day}h</div>
+                                    <div className="summary-value">{formatHoursMinutes(reportData.summary.avg_hours_per_day)}</div>
                                     <div className="summary-label">Avg Hours/Day</div>
                                 </div>
                             </div>
@@ -172,7 +280,7 @@ export default function Reports() {
                                         {Object.entries(reportData.break_summary).map(([type, hours]) => (
                                             <div key={type} className="break-summary-item">
                                                 <span className="break-type">{type}</span>
-                                                <span className="break-hours">{hours}h</span>
+                                                <span className="break-hours">{formatHoursMinutes(hours)}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -204,9 +312,9 @@ export default function Reports() {
                                                     <td>{formatDate(session.date)}</td>
                                                     <td>{formatTime(session.clock_in)}</td>
                                                     <td>{formatTime(session.clock_out)}</td>
-                                                    <td>{session.total_hours}h</td>
-                                                    <td>{session.break_time}h</td>
-                                                    <td><strong>{session.net_hours}h</strong></td>
+                                                    <td>{formatHoursMinutes(session.total_hours)}</td>
+                                                    <td>{formatHoursMinutes(session.break_time)}</td>
+                                                    <td><strong>{formatHoursMinutes(session.net_hours)}</strong></td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -216,14 +324,21 @@ export default function Reports() {
                         </>
                     ) : activeView === 'team-hours' && teamData ? (
                         <>
+                            {/* Team Name Display */}
+                            {teamData.team && (
+                                <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                                    <h3 style={{ color: 'var(--white)', margin: 0 }}>🏢 {teamData.team.name}</h3>
+                                </div>
+                            )}
+
                             {/* Team Summary */}
                             <div className="report-summary">
                                 <div className="summary-card">
-                                    <div className="summary-value">{teamData.team_summary.total_hours}h</div>
+                                    <div className="summary-value">{formatHoursMinutes(teamData.team_summary.total_hours)}</div>
                                     <div className="summary-label">Team Total Hours</div>
                                 </div>
                                 <div className="summary-card">
-                                    <div className="summary-value">{teamData.team_summary.avg_hours_per_member}h</div>
+                                    <div className="summary-value">{formatHoursMinutes(teamData.team_summary.avg_hours_per_member)}</div>
                                     <div className="summary-label">Avg per Member</div>
                                 </div>
                                 <div className="summary-card">
@@ -248,9 +363,9 @@ export default function Reports() {
                                                     <p className="member-email">{member.user.email}</p>
                                                 </div>
                                                 <div className="member-stats">
-                                                    <span><strong>{member.total_hours}h</strong> total</span>
+                                                    <span><strong>{formatHoursMinutes(member.total_hours)}</strong> total</span>
                                                     <span>{member.days_worked} days</span>
-                                                    <span>{member.avg_hours}h avg</span>
+                                                    <span>{formatHoursMinutes(member.avg_hours)} avg</span>
                                                 </div>
                                             </div>
                                             <details className="session-details">
@@ -271,8 +386,8 @@ export default function Reports() {
                                                                 <td>{formatDate(session.date)}</td>
                                                                 <td>{formatTime(session.clock_in)}</td>
                                                                 <td>{formatTime(session.clock_out)}</td>
-                                                                <td>{session.total_hours}h</td>
-                                                                <td><strong>{session.net_hours}h</strong></td>
+                                                                <td>{formatHoursMinutes(session.total_hours)}</td>
+                                                                <td><strong>{formatHoursMinutes(session.net_hours)}</strong></td>
                                                             </tr>
                                                         ))}
                                                     </tbody>
@@ -285,7 +400,7 @@ export default function Reports() {
                         </>
                     ) : !loading && (
                         <p style={{ textAlign: 'center', color: 'var(--gray-light)', padding: '2rem' }}>
-                            Select a date range and click "Generate Report"
+                            {activeView === 'employees' ? 'Select an employee and click "Generate Report"' : activeView === 'team-hours' ? 'Select a team and click "Generate Report"' : 'Select a date range and click "Generate Report"'}
                         </p>
                     )}
                 </div>

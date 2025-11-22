@@ -96,6 +96,9 @@ export default function LeaveRequests() {
                                 Admin Panel
                             </button>
                         )}
+                        <button onClick={() => navigate('/reports')} className="btn-secondary">
+                            Reports
+                        </button>
                         <button onClick={() => navigate('/')} className="btn-secondary">
                             Dashboard
                         </button>
