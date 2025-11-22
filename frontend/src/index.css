@@ -1502,3 +1502,40 @@ textarea:focus {
   margin-top: 0 !important;
   padding-top: 0.5rem;
 }
+
+/* Update admin-nav to match view-toggle style */
+.admin-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 !important;
+  padding: 0.5rem 0 1.5rem 0;
+  justify-content: center;
+  border-bottom: none;
+}
+
+.admin-nav-btn {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: var(--gray-light);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 8px;
+}
+
+.admin-nav-btn.active {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: var(--primary);
+  color: var(--white);
+}
+
+.admin-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--white);
+  transform: translateY(-1px);
+}
+
+.admin-nav-btn.active:hover {
+  background: rgba(99, 102, 241, 0.4);
+}
