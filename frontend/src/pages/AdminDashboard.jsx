@@ -16,20 +16,15 @@ export default function AdminDashboard() {
 
     const fetchStats = async () => {
         try {
-            console.log('Fetching admin stats...');
             const response = await api.get('/admin/stats/overview');
-            console.log('Admin stats response:', response.data);
             setStats(response.data);
         } catch (err) {
             console.error('Admin stats error:', err);
-            console.error('Error response:', err.response);
             setError(err.response?.data?.message || 'Failed to fetch statistics');
         } finally {
             setLoading(false);
         }
     };
-
-    console.log('AdminDashboard render - loading:', loading, 'stats:', stats, 'error:', error);
 
     return (
         <div className="dashboard-container">

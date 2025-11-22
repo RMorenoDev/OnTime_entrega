@@ -42,7 +42,7 @@ export default function Reports() {
                 api.get('/admin/teams'),
                 api.get('/admin/users')
             ]);
-            setTeams(Array.isArray(teamsRes.data) ? teamsRes.data : []);
+            setTeams(Array.isArray(teamsRes.data?.teams) ? teamsRes.data.teams : (Array.isArray(teamsRes.data) ? teamsRes.data : []));
             const usersData = usersRes.data?.data || usersRes.data;
             setUsers(Array.isArray(usersData) ? usersData : []);
         } catch (err) {

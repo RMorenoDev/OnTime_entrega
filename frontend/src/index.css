@@ -1835,3 +1835,21 @@ textarea:focus {
   color: var(--white);
   font-size: 1.1rem;
 }
+
+/* Reports page date range picker spacing */
+.date-range-picker {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+}
+
+.date-range-picker .date-input-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.date-range-picker .btn-primary {
+  margin-top: 0 !important;
+}
