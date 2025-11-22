@@ -19,7 +19,7 @@ class BreakController extends Controller
 
         // Validate request
         $request->validate([
-            'break_type' => 'required|in:coffee,lunch,personal,medical',
+            'break_type' => 'required|string|max:50',
             'is_paid' => 'required|boolean',
             'note' => 'nullable|string|max:255',
         ]);

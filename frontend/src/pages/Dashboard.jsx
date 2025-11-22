@@ -177,11 +177,11 @@ export default function Dashboard() {
                                                 ☕ Coffee
                                             </button>
                                             <button
-                                                onClick={() => handleStartBreak('lunch', true)}
+                                                onClick={() => handleStartBreak('snack', true)}
                                                 className="btn-break"
                                                 disabled={loading}
                                             >
-                                                🍽️ Lunch
+                                                🥐 Snack
                                             </button>
                                             <button
                                                 onClick={() => handleStartBreak('personal', false)}
@@ -190,24 +190,41 @@ export default function Dashboard() {
                                             >
                                                 🚶 Personal
                                             </button>
-                                            <button
-                                                onClick={() => handleStartBreak('medical', true)}
-                                                className="btn-break"
-                                                disabled={loading}
-                                            >
-                                                🏥 Medical
-                                            </button>
                                         </div>
+                                        <button
+                                            onClick={() => handleStartBreak('split_shift', true)}
+                                            className="btn-break-large"
+                                            disabled={loading}
+                                        >
+                                            🍽️ Split Shift
+                                        </button>
                                     </div>
                                 </>
                             ) : (
                                 <div className="active-break">
-                                    <div className="status-badge break">On Break</div>
-                                    <div className="timer-display">
-                                        <div className="timer">{timer}</div>
+                                    <div className={`status-badge ${activeBreak.break_type === 'split_shift' ? 'long-break' : 'break'}`}>
+                                        {activeBreak.break_type === 'split_shift' ? 'On long break' : 'On Break'}
                                     </div>
-                                    <p>Break Type: <strong>{activeBreak.break_type}</strong></p>
-                                    <p className="session-start">Clock in at: {new Date(activeBreak.started_at).toLocaleTimeString()}</p>
+
+                                    {activeBreak.break_type === 'split_shift' ? (
+                                        <div className="split-shift-info">
+                                            <p className="session-start">
+                                                Clock in at: {new Date(activeSession.started_at).toLocaleTimeString()}
+                                            </p>
+                                            <p className="session-start">
+                                                Break started at: {new Date(activeBreak.started_at).toLocaleTimeString()}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="timer-display">
+                                                <div className="timer">{timer}</div>
+                                            </div>
+                                            <p>Break Type: <strong>{activeBreak.break_type}</strong></p>
+                                            <p className="session-start">Clock in at: {new Date(activeBreak.started_at).toLocaleTimeString()}</p>
+                                        </>
+                                    )}
+
                                     <button
                                         onClick={handleEndBreak}
                                         className="btn-primary"

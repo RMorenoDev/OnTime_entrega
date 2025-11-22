@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('breaks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('work_session_id')->constrained()->onDelete('cascade');
-            $table->enum('break_type', ['coffee', 'lunch', 'personal', 'medical']);
+            $table->string('break_type', 50);
             $table->boolean('is_paid');
             $table->dateTime('started_at');
             $table->dateTime('ended_at')->nullable();
