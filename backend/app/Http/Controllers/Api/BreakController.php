@@ -19,7 +19,7 @@ class BreakController extends Controller
 
         // Validate request
         $request->validate([
-            'break_type' => 'required|string|max:50',
+            'break_type' => 'required|in:coffee,lunch,personal,medical',
             'is_paid' => 'required|boolean',
             'note' => 'nullable|string|max:255',
         ]);
@@ -91,16 +91,15 @@ class BreakController extends Controller
             ], 404);
         }
 
-        // End break - only update ended_at
-        $break->ended_at = now();
-        if ($request->note) {
-            $break->note = $request->note;
-        }
-        $break->save();
+        // End break
+        $break->update([
+            'ended_at' => now(),
+            'note' => $request->note ?? $break->note,
+        ]);
 
         return response()->json([
             'message' => 'Break ended successfully',
-            'break' => $break->fresh()
+            'break' => $break
         ]);
     }
 }
