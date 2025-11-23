@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
+import CustomSelect from '../components/CustomSelect';
 
 export default function AdminUsers() {
     const { user, logout } = useAuth();
@@ -150,18 +151,26 @@ export default function AdminUsers() {
                             onChange={(e) => setSearch(e.target.value)}
                             className="search-input"
                         />
-                        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="filter-select">
-                            <option value="">All Roles</option>
-                            <option value="admin">Admin</option>
-                            <option value="supervisor">Supervisor</option>
-                            <option value="employee">Employee</option>
-                        </select>
-                        <select value={teamFilter} onChange={(e) => setTeamFilter(e.target.value)} className="filter-select">
-                            <option value="">All Teams</option>
-                            {teams.map(team => (
-                                <option key={team.id} value={team.id}>{team.name}</option>
-                            ))}
-                        </select>
+                        <CustomSelect
+                            options={[
+                                { value: '', label: 'All Roles' },
+                                { value: 'admin', label: 'Admin' },
+                                { value: 'supervisor', label: 'Supervisor' },
+                                { value: 'employee', label: 'Employee' }
+                            ]}
+                            value={roleFilter}
+                            onChange={(value) => setRoleFilter(value)}
+                            placeholder="All Roles"
+                        />
+                        <CustomSelect
+                            options={[
+                                { value: '', label: 'All Teams' },
+                                ...teams.map(team => ({ value: team.id, label: team.name }))
+                            ]}
+                            value={teamFilter}
+                            onChange={(value) => setTeamFilter(value)}
+                            placeholder="All Teams"
+                        />
                     </div>
 
                     {/* Users Table */}
@@ -225,26 +234,27 @@ export default function AdminUsers() {
                                 </div>
                                 <div className="form-group">
                                     <label>Role</label>
-                                    <select
+                                    <CustomSelect
+                                        options={[
+                                            { value: 'employee', label: 'Employee' },
+                                            { value: 'supervisor', label: 'Supervisor' },
+                                            { value: 'admin', label: 'Admin' }
+                                        ]}
                                         value={formData.role}
-                                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                    >
-                                        <option value="employee">Employee</option>
-                                        <option value="supervisor">Supervisor</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
+                                        onChange={(value) => setFormData({ ...formData, role: value })}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label>Team</label>
-                                    <select
+                                    <CustomSelect
+                                        options={[
+                                            { value: '', label: 'No Team' },
+                                            ...teams.map(team => ({ value: team.id, label: team.name }))
+                                        ]}
                                         value={formData.team_id}
-                                        onChange={(e) => setFormData({ ...formData, team_id: e.target.value })}
-                                    >
-                                        <option value="">No Team</option>
-                                        {teams.map(team => (
-                                            <option key={team.id} value={team.id}>{team.name}</option>
-                                        ))}
-                                    </select>
+                                        onChange={(value) => setFormData({ ...formData, team_id: value })}
+                                        placeholder="No Team"
+                                    />
                                 </div>
                             </div>
                             <div className="modal-actions">

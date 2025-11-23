@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
+import CustomSelect from '../components/CustomSelect';
 
 export default function AdminTeams() {
     const { user, logout } = useAuth();
@@ -206,15 +207,15 @@ export default function AdminTeams() {
                                 </div>
                                 <div className="form-group">
                                     <label>Assign Supervisor</label>
-                                    <select
+                                    <CustomSelect
+                                        options={[
+                                            { value: '', label: 'No Supervisor' },
+                                            ...supervisors.map(u => ({ value: u.id, label: `${u.name} (${u.role})` }))
+                                        ]}
                                         value={formData.supervisor_user_id}
-                                        onChange={(e) => setFormData({ ...formData, supervisor_user_id: e.target.value })}
-                                    >
-                                        <option value="">No Supervisor</option>
-                                        {supervisors.map(u => (
-                                            <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
-                                        ))}
-                                    </select>
+                                        onChange={(value) => setFormData({ ...formData, supervisor_user_id: value })}
+                                        placeholder="No Supervisor"
+                                    />
                                 </div>
                             </div>
                             <div className="modal-actions">
@@ -248,15 +249,15 @@ export default function AdminTeams() {
                                 </div>
                                 <div className="form-group">
                                     <label>Assign Supervisor</label>
-                                    <select
+                                    <CustomSelect
+                                        options={[
+                                            { value: '', label: 'No Supervisor' },
+                                            ...supervisors.map(u => ({ value: u.id, label: `${u.name} (${u.role})` }))
+                                        ]}
                                         value={formData.supervisor_user_id}
-                                        onChange={(e) => setFormData({ ...formData, supervisor_user_id: e.target.value })}
-                                    >
-                                        <option value="">No Supervisor</option>
-                                        {supervisors.map(u => (
-                                            <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
-                                        ))}
-                                    </select>
+                                        onChange={(value) => setFormData({ ...formData, supervisor_user_id: value })}
+                                        placeholder="No Supervisor"
+                                    />
                                 </div>
                             </div>
                             <div className="modal-actions">

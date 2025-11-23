@@ -360,9 +360,10 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
 /* Select dropdown styles */
 .form-group select {
-  padding: 0.875rem 1rem;
+  padding: 0.875rem 2.5rem 0.875rem 1rem;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   font-size: 1rem;
@@ -371,6 +372,20 @@ body {
   color: var(--white);
   transition: var(--transition);
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* Custom dropdown arrow */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px;
+}
+
+.form-group select:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .form-group select:focus {
@@ -381,8 +396,9 @@ body {
 }
 
 .form-group select option {
-  background: var(--dark);
+  background: #1a1a2e;
   color: var(--white);
+  padding: 0.75rem;
 }
 
 /* Work Session Card */
@@ -805,20 +821,23 @@ body {
   color: var(--gray-light);
 }
 
-.request-note, .rejection-reason {
+.request-note,
+.rejection-reason {
   margin-top: 1rem;
   padding: 1rem;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
 }
 
-.request-note strong, .rejection-reason strong {
+.request-note strong,
+.rejection-reason strong {
   display: block;
   margin-bottom: 0.5rem;
   color: var(--white);
 }
 
-.request-note p, .rejection-reason p {
+.request-note p,
+.rejection-reason p {
   margin: 0;
   color: var(--gray-light);
 }
@@ -834,7 +853,8 @@ body {
   justify-content: flex-end;
 }
 
-.btn-cancel, .btn-reject {
+.btn-cancel,
+.btn-reject {
   padding: 0.5rem 1rem;
   background: rgba(239, 68, 68, 0.2);
   border: 1px solid rgba(239, 68, 68, 0.4);
@@ -845,7 +865,8 @@ body {
   font-size: 0.9rem;
 }
 
-.btn-cancel:hover, .btn-reject:hover {
+.btn-cancel:hover,
+.btn-reject:hover {
   background: rgba(239, 68, 68, 0.3);
 }
 
@@ -1484,12 +1505,12 @@ textarea:focus {
 }
 
 /* Fix spacing for admin-nav and view-toggle at top of cards */
-.work-session-card > .admin-nav:first-child {
+.work-session-card>.admin-nav:first-child {
   margin-top: 0;
   padding-top: 0;
 }
 
-.work-session-card > .view-toggle:first-child {
+.work-session-card>.view-toggle:first-child {
   margin-top: 0;
 }
 
@@ -1802,17 +1823,17 @@ textarea:focus {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .report-summary {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
-  
+
   .member-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .member-stats {
     flex-direction: column;
     gap: 0.5rem;
@@ -1820,8 +1841,8 @@ textarea:focus {
 }
 
 /* Fix leave-actions spacing in work-session-card */
-.work-session-card > .leave-actions:first-child,
-.work-session-card .view-toggle + .leave-actions {
+.work-session-card>.leave-actions:first-child,
+.work-session-card .view-toggle+.leave-actions {
   margin-top: 0 !important;
   padding-top: 0.5rem;
 }
@@ -2075,4 +2096,3 @@ textarea:focus {
     size: letter;
   }
 }
-

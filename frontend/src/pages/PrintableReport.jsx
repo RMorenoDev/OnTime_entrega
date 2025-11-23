@@ -92,8 +92,9 @@ export default function PrintableReport() {
             {/* Report Header */}
             <div className="print-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2rem' }}>
                 {/* Logo on the left */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <img src={logo} alt="OnTime Logo" style={{ width: '48px', height: '48px' }} />
+                    <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: 'bold' }}>OnTime</h1>
                 </div>
 
                 {/* Report info on the right */}

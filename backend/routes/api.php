@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// Public teams list for registration
+Route::get('/teams', [\App\Http\Controllers\Api\TeamManagementController::class, 'index']);
+
 // Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);

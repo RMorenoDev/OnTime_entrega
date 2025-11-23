@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
 import logo from '../assets/ontime_logo.png';
+import CustomSelect from '../components/CustomSelect';
 
 export default function Reports() {
     const { user, logout } = useAuth();
@@ -248,32 +249,30 @@ export default function Reports() {
                         {user?.role === 'admin' && activeView === 'employees' && (
                             <div className="date-input-group">
                                 <label>Select Employee</label>
-                                <select
+                                <CustomSelect
+                                    options={[
+                                        { value: '', label: '-- Select an Employee --' },
+                                        ...users.map(u => ({ value: u.id, label: u.name }))
+                                    ]}
                                     value={selectedUser}
-                                    onChange={(e) => setSelectedUser(e.target.value)}
-                                    className="filter-select"
-                                >
-                                    <option value="">-- Select an Employee --</option>
-                                    {Array.isArray(users) && users.map(u => (
-                                        <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
-                                    ))}
-                                </select>
+                                    onChange={(value) => setSelectedUser(value)}
+                                    placeholder="-- Select an Employee --"
+                                />
                             </div>
                         )}
 
                         {user?.role === 'admin' && activeView === 'team-hours' && (
                             <div className="date-input-group">
                                 <label>Select Team</label>
-                                <select
+                                <CustomSelect
+                                    options={[
+                                        { value: '', label: '-- Select a Team --' },
+                                        ...teams.map(t => ({ value: t.id, label: t.name }))
+                                    ]}
                                     value={selectedTeam}
-                                    onChange={(e) => setSelectedTeam(e.target.value)}
-                                    className="filter-select"
-                                >
-                                    <option value="">-- Select a Team --</option>
-                                    {Array.isArray(teams) && teams.map(t => (
-                                        <option key={t.id} value={t.id}>{t.name}</option>
-                                    ))}
-                                </select>
+                                    onChange={(value) => setSelectedTeam(value)}
+                                    placeholder="-- Select a Team --"
+                                />
                             </div>
                         )}
 

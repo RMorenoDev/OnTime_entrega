@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import api from '../api/axios';
 import logo from '../assets/ontime_logo.png';
+import CustomSelect from '../components/CustomSelect';
 import '../index.css';
 
 export default function Register() {
@@ -11,10 +13,41 @@ export default function Register() {
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [role, setRole] = useState('');
     const [teamName, setTeamName] = useState('');
+    const [teams, setTeams] = useState([]);
+    const [filteredTeams, setFilteredTeams] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const { register } = useAuth();
     const navigate = useNavigate();
+
+    // Fetch teams on mount
+    useEffect(() => {
+        const fetchTeams = async () => {
+            try {
+                const response = await api.get('/teams');
+                // API returns {teams: [...]}
+                const teamsData = response.data.teams || [];
+                setTeams(teamsData);
+                setFilteredTeams(teamsData);
+            } catch (err) {
+                console.error('Failed to fetch teams:', err);
+            }
+        };
+        fetchTeams();
+    }, []);
+
+    // Filter teams for supervisor autocomplete
+    useEffect(() => {
+        if (role === 'supervisor' && teamName) {
+            const filtered = teams.filter(team =>
+                team.name.toLowerCase().includes(teamName.toLowerCase())
+            );
+            setFilteredTeams(filtered);
+        } else {
+            setFilteredTeams(teams);
+        }
+    }, [teamName, teams, role]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -74,29 +107,90 @@ export default function Register() {
 
                     <div className="form-group">
                         <label htmlFor="role">Role *</label>
-                        <select
-                            id="role"
+                        <CustomSelect
+                            options={[
+                                { value: 'employee', label: 'Employee' },
+                                { value: 'supervisor', label: 'Supervisor' }
+                            ]}
                             value={role}
-                            onChange={(e) => setRole(e.target.value)}
+                            onChange={(value) => setRole(value)}
+                            placeholder="Select your role..."
                             required
-                        >
-                            <option value="">Select your role...</option>
-                            <option value="employee">Employee</option>
-                            <option value="supervisor">Supervisor</option>
-                        </select>
+                        />
                         {errors.role && <span className="error-text">{errors.role[0]}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="teamName">Team Name</label>
-                        <input
-                            id="teamName"
-                            type="text"
-                            value={teamName}
-                            onChange={(e) => setTeamName(e.target.value)}
-                            placeholder="e.g., Development Team"
-                            disabled={!role}
-                        />
+                        <label htmlFor="teamName">Team {role === 'employee' ? '*' : ''}</label>
+                        {role === 'employee' ? (
+                            // Custom dropdown for employees
+                            <CustomSelect
+                                options={teams.map(team => ({
+                                    value: team.name,
+                                    label: team.name
+                                }))}
+                                value={teamName}
+                                onChange={(value) => setTeamName(value)}
+                                placeholder="Select a team..."
+                                disabled={!role}
+                                required={role === 'employee'}
+                            />
+                        ) : (
+                            // Text input with visible suggestions for supervisors
+                            <div style={{ position: 'relative', width: '100%' }}>
+                                <input
+                                    id="teamName"
+                                    type="text"
+                                    value={teamName}
+                                    onChange={(e) => {
+                                        setTeamName(e.target.value);
+                                        setShowSuggestions(true);
+                                    }}
+                                    onFocus={() => setShowSuggestions(true)}
+                                    placeholder="Start typing to filter teams..."
+                                    disabled={!role}
+                                    autoComplete="off"
+                                    style={{ width: '100%' }}
+                                />
+                                {role === 'supervisor' && showSuggestions && filteredTeams.length > 0 && teamName && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '100%',
+                                        left: 0,
+                                        right: 0,
+                                        maxHeight: '200px',
+                                        overflowY: 'auto',
+                                        backgroundColor: '#1a1a2e',
+                                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                                        borderRadius: '8px',
+                                        marginTop: '4px',
+                                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                                        zIndex: 1000
+                                    }}>
+                                        {filteredTeams.map(team => (
+                                            <div
+                                                key={team.id}
+                                                onClick={() => {
+                                                    setTeamName(team.name);
+                                                    setShowSuggestions(false);
+                                                }}
+                                                style={{
+                                                    padding: '0.75rem',
+                                                    cursor: 'pointer',
+                                                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                                                    transition: 'background-color 0.2s',
+                                                    color: '#fff'
+                                                }}
+                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+                                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                            >
+                                                {team.name}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         {errors.team_name && <span className="error-text">{errors.team_name[0]}</span>}
                     </div>
 
