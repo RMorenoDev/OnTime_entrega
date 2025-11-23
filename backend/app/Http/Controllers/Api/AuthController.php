@@ -8,10 +8,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * AuthController - Controlador de Autenticación
+ * 
+ * Gestiona el registro, inicio de sesión y cierre de sesión de usuarios.
+ * Utiliza Laravel Sanctum para la autenticación basada en tokens.
+ */
 class AuthController extends Controller
 {
     /**
-     * Register a new user
+     * Registrar un nuevo usuario
+     * 
+     * Proceso:
+     * 1. Valida los datos del formulario de registro
+     * 2. Crea el usuario con contraseña hasheada
+     * 3. Maneja la asignación de equipos:
+     *    - Supervisores pueden crear nuevos equipos
+     *    - Empleados solo pueden unirse a equipos existentes
+     * 4. Genera un token de autenticación
+     * 
+     * @param Request $request Datos del registro (name, email, password, role, team_name)
+     * @return \Illuminate\Http\JsonResponse Usuario creado y token
      */
     public function register(Request $request)
     {
