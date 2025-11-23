@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ejecuta la migracion: crea tabla leave_requests.
      */
     public function up(): void
     {
@@ -18,19 +18,19 @@ return new class extends Migration
             $table->enum('leave_type', ['vacation', 'medical', 'personal']);
             $table->boolean('is_paid');
             $table->boolean('is_full_day')->default(true);
-            $table->decimal('duration_hours', 5, 1)->nullable(); // For partial days, in 0.5 hour blocks
+            $table->decimal('duration_hours', 5, 1)->nullable(); // Para medias jornadas, en bloques de 0.5h
             $table->dateTime('start_at');
-            $table->dateTime('end_at')->nullable(); // Nullable for full day requests
+            $table->dateTime('end_at')->nullable(); // Nulo si es un solo dia
             $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
             $table->dateTime('reviewed_at')->nullable();
-            $table->text('note'); // Mandatory field
+            $table->text('note'); // Campo obligatorio
             $table->text('rejection_reason')->nullable();
             $table->timestamps();
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Revierte la migracion.
      */
     public function down(): void
     {

@@ -18,7 +18,7 @@ class WorkSessionSeeder extends Seeder
 
         $logisticaTeam = Team::where('name', 'Equipo Logística')->first();
 
-        // Generar 2 meses de sesiones (60 días hacia atrás desde hoy)
+        // Generar 2 meses de sesiones (60 dias hacia atras desde hoy)
         $endDate = Carbon::now();
         $startDate = Carbon::now()->subDays(60);
 
@@ -26,26 +26,20 @@ class WorkSessionSeeder extends Seeder
             $currentDate = $startDate->copy();
             
             while ($currentDate->lte($endDate)) {
-                // Skip weekends
+                // Saltar fines de semana
                 if ($currentDate->isWeekend()) {
                     $currentDate->addDay();
                     continue;
                 }
 
-                // 90% attendance rate
+                // 90% de asistencia
                 if (rand(1, 100) <= 90) {
                     $isSplitShift = ($user->team_id === $logisticaTeam->id);
                     
                     if ($isSplitShift) {
-                        // Turno partido: 08:00-14:00, break 14:00-15:00, luego 15:00-17:00
-                        // Sesión de la mañana
-                        $clockInMorning = $currentDate->copy()
-                            ->setHour(8)
-                            ->setMinute(rand(0, 15));
-                        
-                        $clockOutMorning = $currentDate->copy()
-                            ->setHour(14)
-                            ->setMinute(rand(0, 10));
+                        // Turno partido: 08:00-14:00 y 15:00-17:00
+                        $clockInMorning = $currentDate->copy()->setHour(8)->setMinute(rand(0, 15));
+                        $clockOutMorning = $currentDate->copy()->setHour(14)->setMinute(rand(0, 10));
                         
                         WorkSession::create([
                             'user_id' => $user->id,
@@ -53,14 +47,8 @@ class WorkSessionSeeder extends Seeder
                             'ended_at' => $clockOutMorning
                         ]);
 
-                        // Sesión de la tarde
-                        $clockInAfternoon = $currentDate->copy()
-                            ->setHour(15)
-                            ->setMinute(rand(0, 5));
-                        
-                        $clockOutAfternoon = $currentDate->copy()
-                            ->setHour(17)
-                            ->setMinute(rand(0, 15));
+                        $clockInAfternoon = $currentDate->copy()->setHour(15)->setMinute(rand(0, 5));
+                        $clockOutAfternoon = $currentDate->copy()->setHour(17)->setMinute(rand(0, 15));
                         
                         WorkSession::create([
                             'user_id' => $user->id,
@@ -68,14 +56,9 @@ class WorkSessionSeeder extends Seeder
                             'ended_at' => $clockOutAfternoon
                         ]);
                     } else {
-                        // Horario normal: 09:00-18:00 con variación
-                        $clockIn = $currentDate->copy()
-                            ->setHour(9)
-                            ->setMinute(rand(0, 20));
-                        
-                        $clockOut = $currentDate->copy()
-                            ->setHour(18)
-                            ->setMinute(rand(0, 30));
+                        // Horario normal: 09:00-18:00 con variacion
+                        $clockIn = $currentDate->copy()->setHour(9)->setMinute(rand(0, 20));
+                        $clockOut = $currentDate->copy()->setHour(18)->setMinute(rand(0, 30));
                         
                         WorkSession::create([
                             'user_id' => $user->id,

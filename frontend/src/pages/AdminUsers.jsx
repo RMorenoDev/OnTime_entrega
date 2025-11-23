@@ -2,26 +2,28 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
+import CustomSelect from '../components/CustomSelect';
 
 export default function AdminUsers() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [users, setUsers] = useState([]);
-    const [teams, setTeams] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [search, setSearch] = useState('');
-    const [roleFilter, setRoleFilter] = useState('');
-    const [teamFilter, setTeamFilter] = useState('');
-    const [editingUser, setEditingUser] = useState(null);
-    const [formData, setFormData] = useState({ name: '', email: '', role: '', team_id: '' });
-    const [actionLoading, setActionLoading] = useState(false);
+    const [users, setUsers] = useState([]); // Lista de usuarios
+    const [teams, setTeams] = useState([]); // Equipos para filtros y asignaciones
+    const [loading, setLoading] = useState(true); // Cargando tabla
+    const [error, setError] = useState(''); // Mensaje de error
+    const [search, setSearch] = useState(''); // Filtro texto
+    const [roleFilter, setRoleFilter] = useState(''); // Filtro por rol
+    const [teamFilter, setTeamFilter] = useState(''); // Filtro por equipo
+    const [editingUser, setEditingUser] = useState(null); // Usuario en edicion
+    const [formData, setFormData] = useState({ name: '', email: '', role: '', team_id: '' }); // Datos del modal
+    const [actionLoading, setActionLoading] = useState(false); // Estado de acciones CRUD
 
     useEffect(() => {
-        fetchUsers();
-        fetchTeams();
+        fetchUsers(); // Cargar usuarios con filtros
+        fetchTeams(); // Cargar equipos para selects
     }, [search, roleFilter, teamFilter]);
 
+    // Obtener usuarios con filtros aplicados
     const fetchUsers = async () => {
         try {
             const params = {};
@@ -32,12 +34,13 @@ export default function AdminUsers() {
             const response = await api.get('/admin/users', { params });
             setUsers(response.data.data || []);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to fetch users');
+            setError(err.response?.data?.message || 'Error al obtener usuarios');
         } finally {
             setLoading(false);
         }
     };
 
+    // Obtener equipos para filtros y asignaciones
     const fetchTeams = async () => {
         try {
             const response = await api.get('/admin/teams');
@@ -47,6 +50,7 @@ export default function AdminUsers() {
         }
     };
 
+    // Prepara el modal de edicion
     const handleEdit = (user) => {
         setEditingUser(user);
         setFormData({
@@ -57,6 +61,7 @@ export default function AdminUsers() {
         });
     };
 
+    // Guardar cambios del usuario
     const handleUpdate = async () => {
         setActionLoading(true);
         setError('');
@@ -64,24 +69,25 @@ export default function AdminUsers() {
             await api.put(`/admin/users/${editingUser.id}`, formData);
             setEditingUser(null);
             fetchUsers();
-            alert('User updated successfully!');
+            alert('Usuario actualizado con éxito');
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to update user');
+            setError(err.response?.data?.message || 'Error al actualizar usuario');
         } finally {
             setActionLoading(false);
         }
     };
 
+    // Eliminar usuario
     const handleDelete = async (userId) => {
-        if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+        if (!confirm('¿Seguro que deseas eliminar este usuario? Esta acción no se puede deshacer.')) return;
 
         setActionLoading(true);
         try {
             await api.delete(`/admin/users/${userId}`);
             fetchUsers();
-            alert('User deleted successfully');
+            alert('Usuario eliminado con éxito');
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to delete user');
+            setError(err.response?.data?.message || 'Error al eliminar usuario');
         } finally {
             setActionLoading(false);
         }
@@ -91,7 +97,7 @@ export default function AdminUsers() {
         const badges = {
             admin: <span className="role-badge admin">Admin</span>,
             supervisor: <span className="role-badge supervisor">Supervisor</span>,
-            employee: <span className="role-badge employee">Employee</span>
+            employee: <span className="role-badge employee">Empleado</span>
         };
         return badges[role] || role;
     };
@@ -101,26 +107,26 @@ export default function AdminUsers() {
             <div className="dashboard-content">
                 <div className="dashboard-header">
                     <div>
-                        <h1>⚙️ Admin Panel</h1>
+                        <h1>⚙️ Panel de Admin</h1>
                     </div>
                     <div style={{ textAlign: 'center', flex: 1 }}>
-                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>User Management</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Gestión de usuarios</h2>
                         <p style={{ margin: '0.5rem 0 0', color: 'var(--gray-light)', fontSize: '0.9rem' }}>
                             {user?.name} • Admin
                         </p>
                     </div>
                     <div style={{ textAlign: 'right', display: 'flex', gap: '0.5rem' }}>
                         <button onClick={() => navigate('/reports')} className="btn-secondary">
-                            Reports
+                            Reportes
                         </button>
                         <button onClick={() => navigate('/leave-requests')} className="btn-secondary">
-                            Leave Requests
+                            Permisos
                         </button>
                         <button onClick={() => navigate('/')} className="btn-secondary">
                             Dashboard
                         </button>
                         <button onClick={logout} className="btn-secondary">
-                            Logout
+                            Cerrar sesión
                         </button>
                     </div>
                 </div>
@@ -128,55 +134,63 @@ export default function AdminUsers() {
                 {error && <div className="error-message">{error}</div>}
 
                 <div className="work-session-card">
-                    {/* Navigation Tabs */}
+                    {/* Pestañas de navegacion */}
                     <div className="admin-nav">
                         <button className="admin-nav-btn" onClick={() => navigate('/admin')}>
                             📊 Dashboard
                         </button>
                         <button className="admin-nav-btn active" onClick={() => navigate('/admin/users')}>
-                            👥 Users
+                            👤 Usuarios
                         </button>
                         <button className="admin-nav-btn" onClick={() => navigate('/admin/teams')}>
-                            🏢 Teams
+                            🧑‍🤝‍🧑 Equipos
                         </button>
                     </div>
 
-                    {/* Filters */}
+                    {/* Filtros */}
                     <div className="admin-filters">
                         <input
                             type="text"
-                            placeholder="Search by name or email..."
+                            placeholder="Buscar por nombre o email..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="search-input"
                         />
-                        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="filter-select">
-                            <option value="">All Roles</option>
-                            <option value="admin">Admin</option>
-                            <option value="supervisor">Supervisor</option>
-                            <option value="employee">Employee</option>
-                        </select>
-                        <select value={teamFilter} onChange={(e) => setTeamFilter(e.target.value)} className="filter-select">
-                            <option value="">All Teams</option>
-                            {teams.map(team => (
-                                <option key={team.id} value={team.id}>{team.name}</option>
-                            ))}
-                        </select>
+                        <CustomSelect
+                            options={[
+                                { value: '', label: 'Todos los roles' },
+                                { value: 'admin', label: 'Admin' },
+                                { value: 'supervisor', label: 'Supervisor' },
+                                { value: 'employee', label: 'Empleado' }
+                            ]}
+                            value={roleFilter}
+                            onChange={(value) => setRoleFilter(value)}
+                            placeholder="Todos los roles"
+                        />
+                        <CustomSelect
+                            options={[
+                                { value: '', label: 'Todos los equipos' },
+                                ...teams.map(team => ({ value: team.id, label: team.name }))
+                            ]}
+                            value={teamFilter}
+                            onChange={(value) => setTeamFilter(value)}
+                            placeholder="Todos los equipos"
+                        />
                     </div>
 
-                    {/* Users Table */}
+                    {/* Tabla de usuarios */}
                     {loading ? (
-                        <div className="loading">Loading users...</div>
+                        <div className="loading">Cargando usuarios...</div>
                     ) : (
                         <div className="admin-table-container">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
+                                        <th>Nombre</th>
                                         <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Team</th>
-                                        <th>Actions</th>
+                                        <th>Rol</th>
+                                        <th>Equipo</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -187,8 +201,8 @@ export default function AdminUsers() {
                                             <td>{getRoleBadge(u.role)}</td>
                                             <td>{u.team?.name || '—'}</td>
                                             <td>
-                                                <button onClick={() => handleEdit(u)} className="table-btn edit">Edit</button>
-                                                <button onClick={() => handleDelete(u.id)} className="table-btn delete">Delete</button>
+                                                <button onClick={() => handleEdit(u)} className="table-btn edit">Editar</button>
+                                                <button onClick={() => handleDelete(u.id)} className="table-btn delete">Eliminar</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -198,17 +212,17 @@ export default function AdminUsers() {
                     )}
                 </div>
 
-                {/* Edit User Modal */}
+                {/* Modal editar usuario */}
                 {editingUser && (
                     <div className="modal-overlay" onClick={() => setEditingUser(null)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                             <div className="modal-header">
-                                <h3>Edit User</h3>
-                                <button onClick={() => setEditingUser(null)} className="btn-close">✕</button>
+                                <h3>Editar usuario</h3>
+                                <button onClick={() => setEditingUser(null)} className="btn-close">×</button>
                             </div>
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <label>Name</label>
+                                    <label>Nombre</label>
                                     <input
                                         type="text"
                                         value={formData.name}
@@ -224,35 +238,36 @@ export default function AdminUsers() {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Role</label>
-                                    <select
+                                    <label>Rol</label>
+                                    <CustomSelect
+                                        options={[
+                                            { value: 'employee', label: 'Empleado' },
+                                            { value: 'supervisor', label: 'Supervisor' },
+                                            { value: 'admin', label: 'Admin' }
+                                        ]}
                                         value={formData.role}
-                                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                    >
-                                        <option value="employee">Employee</option>
-                                        <option value="supervisor">Supervisor</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
+                                        onChange={(value) => setFormData({ ...formData, role: value })}
+                                    />
                                 </div>
                                 <div className="form-group">
-                                    <label>Team</label>
-                                    <select
+                                    <label>Equipo</label>
+                                    <CustomSelect
+                                        options={[
+                                            { value: '', label: 'Sin equipo' },
+                                            ...teams.map(team => ({ value: team.id, label: team.name }))
+                                        ]}
                                         value={formData.team_id}
-                                        onChange={(e) => setFormData({ ...formData, team_id: e.target.value })}
-                                    >
-                                        <option value="">No Team</option>
-                                        {teams.map(team => (
-                                            <option key={team.id} value={team.id}>{team.name}</option>
-                                        ))}
-                                    </select>
+                                        onChange={(value) => setFormData({ ...formData, team_id: value })}
+                                        placeholder="Sin equipo"
+                                    />
                                 </div>
                             </div>
                             <div className="modal-actions">
                                 <button onClick={() => setEditingUser(null)} className="btn-secondary">
-                                    Cancel
+                                    Cancelar
                                 </button>
                                 <button onClick={handleUpdate} className="btn-primary" disabled={actionLoading}>
-                                    {actionLoading ? 'Saving...' : 'Save Changes'}
+                                    {actionLoading ? 'Guardando...' : 'Guardar cambios'}
                                 </button>
                             </div>
                         </div>

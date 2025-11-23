@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1 Admin
+        // Crea admin, supervisores y empleados de ejemplo con equipos asignados
         User::create([
             'name' => 'Carlos Martínez',
             'email' => 'admin@ontimeapp.es',
@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
         $tecnicoTeam = Team::where('name', 'Equipo Técnico')->first();
         $logisticaTeam = Team::where('name', 'Equipo Logística')->first();
 
-        // 4 Supervisores
+        // Supervisores
         $supervisor1 = User::create([
             'name' => 'Ana García',
             'email' => 'ana.garcia@ontimeapp.es',
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
             'team_id' => $comercialTeam->id
         ]);
 
-        // Equipo Técnico tiene 2 supervisores
+        // Equipo Tecnico tiene 2 supervisores
         $supervisor2 = User::create([
             'name' => 'Luis Fernández',
             'email' => 'luis.fernandez@ontimeapp.es',
@@ -68,7 +68,7 @@ class UserSeeder extends Seeder
         $logisticaTeam->supervisor_user_id = $supervisor4->id;
         $logisticaTeam->save();
 
-        // 15 Empleados - distribuidos en los 3 equipos
+        // Empleados distribuidos en los 3 equipos
         $employees = [
             // Equipo Comercial (5 empleados)
             ['name' => 'Pedro Ruiz', 'email' => 'pedro.ruiz@ontimeapp.es', 'team_id' => $comercialTeam->id],
@@ -77,14 +77,14 @@ class UserSeeder extends Seeder
             ['name' => 'Carmen Ramírez', 'email' => 'carmen.ramirez@ontimeapp.es', 'team_id' => $comercialTeam->id],
             ['name' => 'Miguel Moreno', 'email' => 'miguel.moreno@ontimeapp.es', 'team_id' => $comercialTeam->id],
             
-            // Equipo Técnico (5 empleados)
+            // Equipo Tecnico (5 empleados)
             ['name' => 'Elena Navarro', 'email' => 'elena.navarro@ontimeapp.es', 'team_id' => $tecnicoTeam->id],
             ['name' => 'Roberto Díaz', 'email' => 'roberto.diaz@ontimeapp.es', 'team_id' => $tecnicoTeam->id],
             ['name' => 'Isabel Romero', 'email' => 'isabel.romero@ontimeapp.es', 'team_id' => $tecnicoTeam->id],
             ['name' => 'Francisco Gil', 'email' => 'francisco.gil@ontimeapp.es', 'team_id' => $tecnicoTeam->id],
             ['name' => 'Beatriz Muñoz', 'email' => 'beatriz.munoz@ontimeapp.es', 'team_id' => $tecnicoTeam->id],
             
-            // Equipo Logística (5 empleados) - Turno partido
+            // Equipo Logistica (5 empleados) - Turno partido
             ['name' => 'Antonio Álvarez', 'email' => 'antonio.alvarez@ontimeapp.es', 'team_id' => $logisticaTeam->id],
             ['name' => 'Rosa Serrano', 'email' => 'rosa.serrano@ontimeapp.es', 'team_id' => $logisticaTeam->id],
             ['name' => 'José Blanco', 'email' => 'jose.blanco@ontimeapp.es', 'team_id' => $logisticaTeam->id],

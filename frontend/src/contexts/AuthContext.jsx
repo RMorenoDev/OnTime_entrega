@@ -1,8 +1,10 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios';
 
+// Contexto de autenticación - gestiona el estado del usuario autenticado
 const AuthContext = createContext(null);
 
+// Hook personalizado para usar el contexto de autenticación
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -11,20 +13,26 @@ export const useAuth = () => {
   return context;
 };
 
+/**
+ * AuthProvider - Proveedor de Contexto de Autenticación
+ * Gestiona el estado global de autenticación del usuario
+ * Proporciona: user, login, logout, register
+ */
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [user, setUser] = useState(null); // Usuario autenticado
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [token, setToken] = useState(localStorage.getItem('token')); // Token de sesión
 
-  // Check if user is already logged in on mount
+  // Verificar si el usuario ya está loggeado al montar el componente
   useEffect(() => {
     if (token) {
-      fetchUser();
+      fetchUser(); // Obtener datos del usuario
     } else {
       setLoading(false);
     }
   }, [token]);
 
+  // Obtener datos del usuario autenticado usando el token
   const fetchUser = async () => {
     try {
       const response = await api.get('/me', {
@@ -39,6 +47,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Registro con creación de token + usuario
   const register = async (name, email, password, passwordConfirmation, role = 'employee', teamName = '') => {
     try {
       const response = await api.post('/register', {
@@ -62,6 +71,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Login con almacenamiento de token
   const login = async (email, password) => {
     try {
       const response = await api.post('/login', { email, password });
@@ -78,6 +88,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Logout con revocación de token en backend y limpieza local
   const logout = async () => {
     try {
       if (token) {
@@ -94,7 +105,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Add token to all requests if available
+  // Añadir/quitar token por defecto en axios cuando cambie
   useEffect(() => {
     if (token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;

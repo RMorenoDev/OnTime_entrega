@@ -2,37 +2,40 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
+import CustomSelect from '../components/CustomSelect';
 
 export default function AdminTeams() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [teams, setTeams] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [editingTeam, setEditingTeam] = useState(null);
-    const [creatingTeam, setCreatingTeam] = useState(false);
-    const [formData, setFormData] = useState({ name: '', supervisor_user_id: '' });
-    const [actionLoading, setActionLoading] = useState(false);
-    const [viewingMembers, setViewingMembers] = useState(null);
-    const [members, setMembers] = useState([]);
+    const [teams, setTeams] = useState([]); // Listado de equipos
+    const [users, setUsers] = useState([]); // Usuarios para asignar supervisor
+    const [loading, setLoading] = useState(true); // Carga inicial
+    const [error, setError] = useState(''); // Errores de UI
+    const [editingTeam, setEditingTeam] = useState(null); // Equipo en edicion
+    const [creatingTeam, setCreatingTeam] = useState(false); // Modal de creacion
+    const [formData, setFormData] = useState({ name: '', supervisor_user_id: '' }); // Formulario basico
+    const [actionLoading, setActionLoading] = useState(false); // Estado de acciones CRUD
+    const [viewingMembers, setViewingMembers] = useState(null); // Equipo seleccionado para ver miembros
+    const [members, setMembers] = useState([]); // Miembros cargados
 
     useEffect(() => {
-        fetchTeams();
-        fetchUsers();
+        fetchTeams(); // Cargar equipos
+        fetchUsers(); // Cargar usuarios para dropdowns
     }, []);
 
+    // Obtener equipos desde la API
     const fetchTeams = async () => {
         try {
             const response = await api.get('/admin/teams');
             setTeams(response.data.teams || []);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to fetch teams');
+            setError(err.response?.data?.message || 'Error al obtener equipos');
         } finally {
             setLoading(false);
         }
     };
 
+    // Obtener usuarios para dropdown de supervisor
     const fetchUsers = async () => {
         try {
             const response = await api.get('/admin/users');
@@ -42,6 +45,7 @@ export default function AdminTeams() {
         }
     };
 
+    // Crear nuevo equipo
     const handleCreate = async () => {
         setActionLoading(true);
         setError('');
@@ -50,14 +54,15 @@ export default function AdminTeams() {
             setCreatingTeam(false);
             setFormData({ name: '', supervisor_user_id: '' });
             fetchTeams();
-            alert('Team created successfully!');
+            alert('Equipo creado con éxito');
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to create team');
+            setError(err.response?.data?.message || 'Error al crear equipo');
         } finally {
             setActionLoading(false);
         }
     };
 
+    // Actualizar equipo existente
     const handleUpdate = async () => {
         setActionLoading(true);
         setError('');
@@ -66,66 +71,68 @@ export default function AdminTeams() {
             setEditingTeam(null);
             setFormData({ name: '', supervisor_user_id: '' });
             fetchTeams();
-            alert('Team updated successfully!');
+            alert('Equipo actualizado con éxito');
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to update team');
+            setError(err.response?.data?.message || 'Error al actualizar equipo');
         } finally {
             setActionLoading(false);
         }
     };
 
+    // Eliminar equipo (sin miembros)
     const handleDelete = async (teamId) => {
-        if (!confirm('Are you sure you want to delete this team? The team must have no members.')) return;
+        if (!confirm('¿Seguro que deseas eliminar este equipo? Debe estar sin miembros.')) return;
 
         setActionLoading(true);
         try {
             await api.delete(`/admin/teams/${teamId}`);
             fetchTeams();
-            alert('Team deleted successfully');
+            alert('Equipo eliminado con éxito');
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to delete team');
+            setError(err.response?.data?.message || 'Error al eliminar equipo');
         } finally {
             setActionLoading(false);
         }
     };
 
+    // Ver miembros del equipo seleccionado
     const handleViewMembers = async (team) => {
         try {
             const response = await api.get(`/admin/teams/${team.id}/members`);
             setMembers(response.data.members || []);
             setViewingMembers(team);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to fetch members');
+            setError(err.response?.data?.message || 'Error al obtener miembros');
         }
     };
 
-    const supervisors = users.filter(u => u.role === 'supervisor' || u.role === 'admin');
+    const supervisors = users.filter(u => u.role === 'supervisor' || u.role === 'admin'); // Opciones validas para supervisor
 
     return (
         <div className="dashboard-container">
             <div className="dashboard-content">
                 <div className="dashboard-header">
                     <div>
-                        <h1>⚙️ Admin Panel</h1>
+                        <h1>⚙️ Panel de Admin</h1>
                     </div>
                     <div style={{ textAlign: 'center', flex: 1 }}>
-                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Team Management</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Gestión de equipos</h2>
                         <p style={{ margin: '0.5rem 0 0', color: 'var(--gray-light)', fontSize: '0.9rem' }}>
                             {user?.name} • Admin
                         </p>
                     </div>
                     <div style={{ textAlign: 'right', display: 'flex', gap: '0.5rem' }}>
                         <button onClick={() => navigate('/reports')} className="btn-secondary">
-                            Reports
+                            Reportes
                         </button>
                         <button onClick={() => navigate('/leave-requests')} className="btn-secondary">
-                            Leave Requests
+                            Permisos
                         </button>
                         <button onClick={() => navigate('/')} className="btn-secondary">
                             Dashboard
                         </button>
                         <button onClick={logout} className="btn-secondary">
-                            Logout
+                            Cerrar sesión
                         </button>
                     </div>
                 </div>
@@ -133,51 +140,51 @@ export default function AdminTeams() {
                 {error && <div className="error-message">{error}</div>}
 
                 <div className="work-session-card">
-                    {/* Navigation Tabs */}
+                    {/* Pestañas de navegacion */}
                     <div className="admin-nav">
                         <button className="admin-nav-btn" onClick={() => navigate('/admin')}>
                             📊 Dashboard
                         </button>
                         <button className="admin-nav-btn" onClick={() => navigate('/admin/users')}>
-                            👥 Users
+                            👤 Usuarios
                         </button>
                         <button className="admin-nav-btn active" onClick={() => navigate('/admin/teams')}>
-                            🏢 Teams
+                            🧑‍🤝‍🧑 Equipos
                         </button>
                     </div>
 
                     <div className="leave-actions">
                         <button onClick={() => setCreatingTeam(true)} className="btn-primary">
-                            + Create Team
+                            + Crear equipo
                         </button>
                     </div>
 
-                    {/* Teams Grid */}
+                    {/* Grid de equipos */}
                     {loading ? (
-                        <div className="loading">Loading teams...</div>
+                        <div className="loading">Cargando equipos...</div>
                     ) : (
                         <div className="teams-grid">
                             {teams.map(team => (
                                 <div key={team.id} className="team-card">
                                     <div className="team-header">
                                         <h3>{team.name}</h3>
-                                        <span className="member-count">{team.members_count} members</span>
+                                        <span className="member-count">{team.members_count} miembros</span>
                                     </div>
                                     <div className="team-body">
-                                        <p><strong>Supervisor:</strong> {team.supervisor?.name || 'Not assigned'}</p>
+                                        <p><strong>Supervisor:</strong> {team.supervisor?.name || 'Sin asignar'}</p>
                                     </div>
                                     <div className="team-actions">
                                         <button onClick={() => handleViewMembers(team)} className="table-btn view">
-                                            View Members
+                                            Ver miembros
                                         </button>
                                         <button onClick={() => {
                                             setEditingTeam(team);
                                             setFormData({ name: team.name, supervisor_user_id: team.supervisor_user_id || '' });
                                         }} className="table-btn edit">
-                                            Edit
+                                            Editar
                                         </button>
                                         <button onClick={() => handleDelete(team.id)} className="table-btn delete">
-                                            Delete
+                                            Eliminar
                                         </button>
                                     </div>
                                 </div>
@@ -186,60 +193,60 @@ export default function AdminTeams() {
                     )}
                 </div>
 
-                {/* Create Team Modal */}
+                {/* Modal crear equipo */}
                 {creatingTeam && (
                     <div className="modal-overlay" onClick={() => setCreatingTeam(false)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                             <div className="modal-header">
-                                <h3>Create Team</h3>
-                                <button onClick={() => setCreatingTeam(false)} className="btn-close">✕</button>
+                                <h3>Crear equipo</h3>
+                                <button onClick={() => setCreatingTeam(false)} className="btn-close">×</button>
                             </div>
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <label>Team Name *</label>
+                                    <label>Nombre del equipo *</label>
                                     <input
                                         type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        placeholder="Enter team name"
+                                        placeholder="Ingresa el nombre"
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Assign Supervisor</label>
-                                    <select
+                                    <label>Asignar supervisor</label>
+                                    <CustomSelect
+                                        options={[
+                                            { value: '', label: 'Sin supervisor' },
+                                            ...supervisors.map(u => ({ value: u.id, label: `${u.name} (${u.role})` }))
+                                        ]}
                                         value={formData.supervisor_user_id}
-                                        onChange={(e) => setFormData({ ...formData, supervisor_user_id: e.target.value })}
-                                    >
-                                        <option value="">No Supervisor</option>
-                                        {supervisors.map(u => (
-                                            <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
-                                        ))}
-                                    </select>
+                                        onChange={(value) => setFormData({ ...formData, supervisor_user_id: value })}
+                                        placeholder="Sin supervisor"
+                                    />
                                 </div>
                             </div>
                             <div className="modal-actions">
                                 <button onClick={() => setCreatingTeam(false)} className="btn-secondary">
-                                    Cancel
+                                    Cancelar
                                 </button>
                                 <button onClick={handleCreate} className="btn-primary" disabled={actionLoading}>
-                                    {actionLoading ? 'Creating...' : 'Create Team'}
+                                    {actionLoading ? 'Creando...' : 'Crear equipo'}
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Edit Team Modal */}
+                {/* Modal editar equipo */}
                 {editingTeam && (
                     <div className="modal-overlay" onClick={() => setEditingTeam(null)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                             <div className="modal-header">
-                                <h3>Edit Team</h3>
-                                <button onClick={() => setEditingTeam(null)} className="btn-close">✕</button>
+                                <h3>Editar equipo</h3>
+                                <button onClick={() => setEditingTeam(null)} className="btn-close">×</button>
                             </div>
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <label>Team Name *</label>
+                                    <label>Nombre del equipo *</label>
                                     <input
                                         type="text"
                                         value={formData.name}
@@ -247,41 +254,41 @@ export default function AdminTeams() {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Assign Supervisor</label>
-                                    <select
+                                    <label>Asignar supervisor</label>
+                                    <CustomSelect
+                                        options={[
+                                            { value: '', label: 'Sin supervisor' },
+                                            ...supervisors.map(u => ({ value: u.id, label: `${u.name} (${u.role})` }))
+                                        ]}
                                         value={formData.supervisor_user_id}
-                                        onChange={(e) => setFormData({ ...formData, supervisor_user_id: e.target.value })}
-                                    >
-                                        <option value="">No Supervisor</option>
-                                        {supervisors.map(u => (
-                                            <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
-                                        ))}
-                                    </select>
+                                        onChange={(value) => setFormData({ ...formData, supervisor_user_id: value })}
+                                        placeholder="Sin supervisor"
+                                    />
                                 </div>
                             </div>
                             <div className="modal-actions">
                                 <button onClick={() => setEditingTeam(null)} className="btn-secondary">
-                                    Cancel
+                                    Cancelar
                                 </button>
                                 <button onClick={handleUpdate} className="btn-primary" disabled={actionLoading}>
-                                    {actionLoading ? 'Saving...' : 'Save Changes'}
+                                    {actionLoading ? 'Guardando...' : 'Guardar cambios'}
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* View Members Modal */}
+                {/* Modal ver miembros */}
                 {viewingMembers && (
                     <div className="modal-overlay" onClick={() => setViewingMembers(null)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                             <div className="modal-header">
-                                <h3>Team Members: {viewingMembers.name}</h3>
-                                <button onClick={() => setViewingMembers(null)} className="btn-close">✕</button>
+                                <h3>Miembros del equipo: {viewingMembers.name}</h3>
+                                <button onClick={() => setViewingMembers(null)} className="btn-close">×</button>
                             </div>
                             <div className="modal-body">
                                 {members.length === 0 ? (
-                                    <p style={{ textAlign: 'center', color: 'var(--gray-light)' }}>No members in this team</p>
+                                    <p style={{ textAlign: 'center', color: 'var(--gray-light)' }}>No hay miembros en este equipo</p>
                                 ) : (
                                     <ul className="members-list">
                                         {members.map(member => (
@@ -294,7 +301,7 @@ export default function AdminTeams() {
                             </div>
                             <div className="modal-actions">
                                 <button onClick={() => setViewingMembers(null)} className="btn-secondary">
-                                    Close
+                                    Cerrar
                                 </button>
                             </div>
                         </div>

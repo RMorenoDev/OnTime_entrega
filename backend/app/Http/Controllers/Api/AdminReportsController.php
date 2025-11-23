@@ -10,10 +10,14 @@ use App\Models\LeaveRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * AdminReportsController - Controlador de Reportes del Admin
+ * Proporciona estadísticas y reportes para el panel de administración
+ */
 class AdminReportsController extends Controller
 {
     /**
-     * Dashboard overview statistics (Admin only)
+     * Estadísticas generales del dashboard (solo admin)
      */
     public function overview()
     {
@@ -44,7 +48,7 @@ class AdminReportsController extends Controller
     }
 
     /**
-     * Work hours statistics (Admin only)
+     * Estadísticas de horas trabajadas (solo admin)
      */
     public function workHours(Request $request)
     {
@@ -56,7 +60,7 @@ class AdminReportsController extends Controller
         $startDate = $request->start_date ?? now()->startOfMonth()->toDateString();
         $endDate = $request->end_date ?? now()->endOfMonth()->toDateString();
 
-        // Total hours by team
+        // Total de horas por equipo
         $hoursByTeam = Team::select('teams.id', 'teams.name')
             ->leftJoin('users', 'teams.id', '=', 'users.team_id')
             ->leftJoin('work_sessions', 'users.id', '=', 'work_sessions.user_id')
@@ -71,7 +75,7 @@ class AdminReportsController extends Controller
                 return $team;
             });
 
-        // Total hours by user (top 10)
+        // Total de horas por usuario (top 10)
         $hoursByUser = User::select('users.id', 'users.name', 'users.email')
             ->leftJoin('work_sessions', 'users.id', '=', 'work_sessions.user_id')
             ->whereBetween('work_sessions.started_at', [$startDate, $endDate])
@@ -98,7 +102,7 @@ class AdminReportsController extends Controller
     }
 
     /**
-     * Leave request statistics (Admin only)
+     * Estadísticas de solicitudes de permisos (solo admin)
      */
     public function leaveRequests()
     {

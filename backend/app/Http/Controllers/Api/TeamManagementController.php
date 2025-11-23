@@ -8,10 +8,14 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
+/**
+ * TeamManagementController - Controlador de Gestión de Equipos
+ * Permite a los admins gestionar equipos del sistema (CRUD)
+ */
 class TeamManagementController extends Controller
 {
     /**
-     * List all teams (Admin only)
+     * Listar todos los equipos (solo admin)
      */
     public function index()
     {
@@ -26,7 +30,7 @@ class TeamManagementController extends Controller
     }
 
     /**
-     * Create team (Admin only)
+     * Crear equipo (solo admin)
      */
     public function store(Request $request)
     {
@@ -35,7 +39,7 @@ class TeamManagementController extends Controller
             'supervisor_user_id' => 'nullable|exists:users,id',
         ]);
 
-        // Validate supervisor role if provided
+        // Validar rol de supervisor si se proporciona
         if (isset($validated['supervisor_user_id'])) {
             $supervisor = User::find($validated['supervisor_user_id']);
             if ($supervisor && !in_array($supervisor->role, ['supervisor', 'admin'])) {
@@ -54,7 +58,7 @@ class TeamManagementController extends Controller
     }
 
     /**
-     * Update team (Admin only)
+     * Actualizar equipo (solo admin)
      */
     public function update(Request $request, $id)
     {
@@ -65,7 +69,7 @@ class TeamManagementController extends Controller
             'supervisor_user_id' => 'nullable|exists:users,id',
         ]);
 
-        // Validate supervisor role if provided
+        // Validar rol de supervisor si se proporciona
         if (isset($validated['supervisor_user_id'])) {
             $supervisor = User::find($validated['supervisor_user_id']);
             if ($supervisor && !in_array($supervisor->role, ['supervisor', 'admin'])) {
@@ -84,13 +88,13 @@ class TeamManagementController extends Controller
     }
 
     /**
-     * Delete team (Admin only)
+     * Eliminar equipo (solo admin)
      */
     public function destroy($id)
     {
         $team = Team::withCount('members')->findOrFail($id);
 
-        // Cannot delete team with members
+        // No se puede eliminar un equipo con miembros activos
         if ($team->members_count > 0) {
             return response()->json([
                 'message' => 'Cannot delete team with members. Please reassign members first.'
@@ -105,7 +109,7 @@ class TeamManagementController extends Controller
     }
 
     /**
-     * Get team members (Admin only)
+     * Obtener miembros del equipo (solo admin)
      */
     public function members($id)
     {

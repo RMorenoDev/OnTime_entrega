@@ -8,38 +8,44 @@ use App\Models\WorkSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * BreakController - Controlador de Pausas
+ * Gestiona el inicio y fin de pausas durante la jornada laboral
+ */
 class BreakController extends Controller
 {
     /**
-     * Start a break
+     * Iniciar pausa - Comienza un descanso durante la jornada
      */
     public function start(Request $request)
     {
         $user = Auth::user();
 
-        // Validate request
+        // Validar datos de la pausa (tipo y si es pagada)
         $request->validate([
-            'break_type' => 'required|string|max:50',
-            'is_paid' => 'required|boolean',
+            'break_type' => 'required|string|max:50', // Ej: lunch, coffee, personal
+            'is_paid' => 'required|boolean', // Pausa pagada o no
             'note' => 'nullable|string|max:255',
         ]);
 
-        // Check if user has an active work session
+        // Verificar que el usuario tenga una sesión activa
         $activeSession = WorkSession::where('user_id', $user->id)
             ->whereNull('ended_at')
             ->first();
 
+        // No se puede pausar si no está fichado
         if (!$activeSession) {
             return response()->json([
                 'message' => 'No active work session found. Please clock in first.'
             ], 422);
         }
 
-        // Check if user already has an active break
+        // Verificar que no haya ya una pausa activa
         $activeBreak = WorkBreak::where('work_session_id', $activeSession->id)
             ->whereNull('ended_at')
             ->first();
 
+        // No se pueden tener dos pausas simultáneas
         if ($activeBreak) {
             return response()->json([
                 'message' => 'You already have an active break',
@@ -47,12 +53,12 @@ class BreakController extends Controller
             ], 422);
         }
 
-        // Create new break
+        // Crear nueva pausa
         $break = WorkBreak::create([
             'work_session_id' => $activeSession->id,
             'break_type' => $request->break_type,
-            'is_paid' => $request->is_paid,
-            'started_at' => now(),
+            'is_paid' => $request->is_paid, // Si la pausa cuenta como tiempo trabajado
+            'started_at' => now(), // Hora de inicio de la pausa
             'note' => $request->note,
         ]);
 
@@ -63,43 +69,45 @@ class BreakController extends Controller
     }
 
     /**
-     * End current break
+     * Finalizar pausa - Termina el descanso actual
      */
     public function end(Request $request)
     {
         $user = Auth::user();
 
-        // Find user's active work session
+        // Buscar la sesión activa del usuario
         $activeSession = WorkSession::where('user_id', $user->id)
             ->whereNull('ended_at')
             ->first();
 
+        // Si no hay sesión activa, error
         if (!$activeSession) {
             return response()->json([
                 'message' => 'No active work session found'
             ], 404);
         }
 
-        // Find active break
+        // Buscar la pausa activa de la sesión
         $break = WorkBreak::where('work_session_id', $activeSession->id)
             ->whereNull('ended_at')
             ->first();
 
+        // Si no hay pausa activa, error
         if (!$break) {
             return response()->json([
                 'message' => 'No active break found'
             ], 404);
         }
 
-        // End break
+        // Finalizar la pausa con la hora actual
         $break->update([
-            'ended_at' => now(),
-            'note' => $request->note ?? $break->note,
+            'ended_at' => now(), // Hora de fin de la pausa
+            'note' => $request->note ?? $break->note, // Actualizar nota si se proporciona
         ]);
 
         return response()->json([
             'message' => 'Break ended successfully',
-            'break' => $break
+            'break' => $break // Pausa ahora tiene started_at y ended_at
         ]);
     }
 }

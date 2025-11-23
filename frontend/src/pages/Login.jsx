@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import logo from '../assets/ontime_logo.png';
 import '../index.css';
 
 export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState(''); // Input email
+    const [password, setPassword] = useState(''); // Input password
+    const [errors, setErrors] = useState({}); // Errores de validacion/API
+    const [loading, setLoading] = useState(false); // Estado de envio
     const { login } = useAuth();
     const navigate = useNavigate();
 
+    // Enviar formulario de login
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
@@ -30,14 +32,17 @@ export default function Login() {
         <div className="auth-container">
             <div className="auth-card">
                 <div className="auth-header">
-                    <h1>🕒 OnTime</h1>
-                    <h2>Welcome Back</h2>
-                    <p>Sign in to continue to your account</p>
+                    <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                        <img src={logo} alt="OnTime Logo" style={{ width: '32px', height: '32px' }} />
+                        OnTime
+                    </h1>
+                    <h2>Bienvenido de nuevo</h2>
+                    <p>Inicia sesión para continuar en tu cuenta</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
-                        <label htmlFor="email">Email Address</label>
+                        <label htmlFor="email">Correo electrónico</label>
                         <input
                             id="email"
                             type="email"
@@ -45,13 +50,13 @@ export default function Login() {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                             autoComplete="email"
-                            placeholder="you@example.com"
+                            placeholder="tu@ejemplo.com"
                         />
                         {errors.email && <span className="error-text">{errors.email[0]}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">Contraseña</label>
                         <input
                             id="password"
                             type="password"
@@ -59,7 +64,7 @@ export default function Login() {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             autoComplete="current-password"
-                            placeholder="Enter your password"
+                            placeholder="Ingresa tu contraseña"
                         />
                         {errors.password && <span className="error-text">{errors.password[0]}</span>}
                     </div>
@@ -69,15 +74,15 @@ export default function Login() {
                     )}
 
                     <button type="submit" className="btn-primary" disabled={loading}>
-                        {loading ? 'Signing in...' : 'Sign In'}
+                        {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
                     </button>
                 </form>
 
                 <div className="auth-footer">
                     <p>
-                        Don't have an account?{' '}
+                        ¿No tienes cuenta?{' '}
                         <Link to="/register" className="link">
-                            Sign up
+                            Crear cuenta
                         </Link>
                     </p>
                 </div>

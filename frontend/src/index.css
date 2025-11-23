@@ -30,7 +30,7 @@ body {
   line-height: 1.6;
 }
 
-/* Auth Pages Layout */
+/* Layout de paginas de autenticacion */
 .auth-container {
   min-height: 100vh;
   display: flex;
@@ -91,7 +91,7 @@ body {
   font-size: 0.95rem;
 }
 
-/* Form Styles */
+/* Estilos de formularios */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -147,7 +147,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* Buttons */
+/* Botones */
 .btn-primary {
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   color: var(--white);
@@ -216,7 +216,7 @@ body {
   text-decoration: underline;
 }
 
-/* Dashboard Styles */
+/* Estilos del dashboard */
 .dashboard-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -283,7 +283,7 @@ body {
   margin-bottom: 0;
 }
 
-/* Features Grid */
+/* Grid de features */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -360,9 +360,10 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
 /* Select dropdown styles */
 .form-group select {
-  padding: 0.875rem 1rem;
+  padding: 0.875rem 2.5rem 0.875rem 1rem;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   font-size: 1rem;
@@ -371,6 +372,20 @@ body {
   color: var(--white);
   transition: var(--transition);
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* Flecha personalizada del dropdown */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px;
+}
+
+.form-group select:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .form-group select:focus {
@@ -381,11 +396,12 @@ body {
 }
 
 .form-group select option {
-  background: var(--dark);
+  background: #1a1a2e;
   color: var(--white);
+  padding: 0.75rem;
 }
 
-/* Work Session Card */
+/* Tarjeta de sesion de trabajo */
 .work-session-card {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -540,7 +556,7 @@ body {
 }
 
 
-/* Session Info */
+/* Informacion de sesion */
 .session-info {
   text-align: center;
   padding: 1.5rem;
@@ -561,7 +577,7 @@ body {
 }
 
 
-/* Breaks History */
+/* Historial de pausas */
 .breaks-history {
   margin-top: 1.5rem;
   padding: 1rem;
@@ -599,7 +615,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* Softer Clock Out Button */
+/* Boton suave de clock out */
 .btn-clockout {
   background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
   color: var(--white);
@@ -625,7 +641,7 @@ body {
 }
 
 
-/* Break Duration Display */
+/* Visualizacion de duracion de pausas */
 .break-item {
   display: flex;
   justify-content: space-between;
@@ -653,7 +669,7 @@ body {
 
 
 
-/* Large Split Shift Break Button */
+/* Boton grande para split shift */
 .btn-break-large {
   width: 100%;
   margin-top: 1rem;
@@ -679,7 +695,7 @@ body {
   cursor: not-allowed;
 }
 
-/* Long Break Badge */
+/* Badge para long break */
 .status-badge.long-break {
   background: rgba(251, 146, 60, 0.3);
   border: 1px solid rgba(251, 146, 60, 0.5);
@@ -689,7 +705,7 @@ body {
 
 
 
-/* Leave Requests Styling */
+/* Estilos de solicitudes de permisos */
 .leave-actions {
   margin: 2rem 0;
   text-align: center;
@@ -805,20 +821,23 @@ body {
   color: var(--gray-light);
 }
 
-.request-note, .rejection-reason {
+.request-note,
+.rejection-reason {
   margin-top: 1rem;
   padding: 1rem;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
 }
 
-.request-note strong, .rejection-reason strong {
+.request-note strong,
+.rejection-reason strong {
   display: block;
   margin-bottom: 0.5rem;
   color: var(--white);
 }
 
-.request-note p, .rejection-reason p {
+.request-note p,
+.rejection-reason p {
   margin: 0;
   color: var(--gray-light);
 }
@@ -834,7 +853,8 @@ body {
   justify-content: flex-end;
 }
 
-.btn-cancel, .btn-reject {
+.btn-cancel,
+.btn-reject {
   padding: 0.5rem 1rem;
   background: rgba(239, 68, 68, 0.2);
   border: 1px solid rgba(239, 68, 68, 0.4);
@@ -845,7 +865,8 @@ body {
   font-size: 0.9rem;
 }
 
-.btn-cancel:hover, .btn-reject:hover {
+.btn-cancel:hover,
+.btn-reject:hover {
   background: rgba(239, 68, 68, 0.3);
 }
 
@@ -864,7 +885,7 @@ body {
   background: rgba(16, 185, 129, 0.3);
 }
 
-/* Leave Form */
+/* Formulario de permisos */
 .leave-request-form-container {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
@@ -937,7 +958,7 @@ textarea:focus {
   margin-top: 1.5rem;
 }
 
-/* Supervisor Panel */
+/* Panel de supervisor */
 .supervisor-panel {
   margin-top: 2rem;
 }
@@ -1086,7 +1107,7 @@ textarea:focus {
 }
 
 
-/* Admin Panel Styling */
+/* Estilos panel admin */
 .admin-nav {
   display: flex;
   gap: 1rem;
@@ -1116,7 +1137,7 @@ textarea:focus {
   color: var(--white);
 }
 
-/* Statistics Cards */
+/* Tarjetas de estadisticas */
 .stats-section {
   margin: 2rem 0;
 }
@@ -1193,7 +1214,7 @@ textarea:focus {
   font-size: 0.9rem;
 }
 
-/* Stat card colors */
+/* Colores de tarjetas de stats */
 .stat-card.total {
   border-color: rgba(99, 102, 241, 0.5);
   background: rgba(99, 102, 241, 0.1);
@@ -1224,7 +1245,7 @@ textarea:focus {
   background: rgba(16, 185, 129, 0.1);
 }
 
-/* Quick Actions */
+/* Acciones rapidas */
 .quick-actions {
   margin: 2rem 0;
 }
@@ -1257,7 +1278,7 @@ textarea:focus {
   transform: translateY(-2px);
 }
 
-/* Admin Filters */
+/* Filtros admin */
 .admin-filters {
   display: flex;
   gap: 1rem;
@@ -1304,7 +1325,7 @@ textarea:focus {
   color: var(--white);
 }
 
-/* Admin Table */
+/* Tabla admin */
 .admin-table-container {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
@@ -1342,7 +1363,7 @@ textarea:focus {
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* Role Badges */
+/* Badges de rol */
 .role-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
@@ -1365,7 +1386,7 @@ textarea:focus {
   color: #6ee7b7;
 }
 
-/* Table Buttons */
+/* Botones de tabla */
 .table-btn {
   padding: 0.4rem 0.8rem;
   border: none;
@@ -1403,7 +1424,7 @@ textarea:focus {
   background: rgba(16, 185, 129, 0.4);
 }
 
-/* Teams Grid */
+/* Grid de equipos */
 .teams-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1464,7 +1485,7 @@ textarea:focus {
   margin-top: 1rem;
 }
 
-/* Members List */
+/* Lista de miembros */
 .members-list {
   list-style: none;
   padding: 0;
@@ -1483,13 +1504,13 @@ textarea:focus {
   color: var(--white);
 }
 
-/* Fix spacing for admin-nav and view-toggle at top of cards */
-.work-session-card > .admin-nav:first-child {
+/* Ajuste de espacio en admin-nav y view-toggle al inicio de cards */
+.work-session-card>.admin-nav:first-child {
   margin-top: 0;
   padding-top: 0;
 }
 
-.work-session-card > .view-toggle:first-child {
+.work-session-card>.view-toggle:first-child {
   margin-top: 0;
 }
 
@@ -1503,7 +1524,7 @@ textarea:focus {
   padding-top: 0.5rem;
 }
 
-/* Update admin-nav to match view-toggle style */
+/* Ajustar admin-nav al estilo de view-toggle */
 .admin-nav {
   display: flex;
   gap: 0.5rem;
@@ -1540,7 +1561,7 @@ textarea:focus {
   background: rgba(99, 102, 241, 0.4);
 }
 
-/* Reports Page Styling */
+/* Estilos pagina de reportes */
 .date-range-picker {
   display: flex;
   gap: 1.5rem;
@@ -1583,7 +1604,7 @@ textarea:focus {
   cursor: pointer;
 }
 
-/* Report Summary Cards */
+/* Tarjetas resumen de reportes */
 .report-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1617,7 +1638,7 @@ textarea:focus {
   font-size: 0.9rem;
 }
 
-/* Break Summary */
+/* Resumen de pausas */
 .break-summary-section {
   margin: 2rem 0;
   padding: 1.5rem;
@@ -1655,7 +1676,7 @@ textarea:focus {
   font-weight: 700;
 }
 
-/* Report Table */
+/* Tabla de reportes */
 .report-table-container {
   margin: 2rem 0;
 }
@@ -1703,7 +1724,7 @@ textarea:focus {
   border-bottom: none;
 }
 
-/* Team Hours */
+/* Horas de equipo */
 .team-hours-container {
   margin: 2rem 0;
 }
@@ -1762,7 +1783,7 @@ textarea:focus {
   font-size: 1.1rem;
 }
 
-/* Session Details (collapsible) */
+/* Detalle de sesiones (colapsable) */
 .session-details {
   margin-top: 1rem;
 }
@@ -1796,37 +1817,37 @@ textarea:focus {
   margin-top: 1rem;
 }
 
-/* Responsive design */
+/* Diseño responsive */
 @media (max-width: 768px) {
   .date-range-picker {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .report-summary {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
-  
+
   .member-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .member-stats {
     flex-direction: column;
     gap: 0.5rem;
   }
 }
 
-/* Fix leave-actions spacing in work-session-card */
-.work-session-card > .leave-actions:first-child,
-.work-session-card .view-toggle + .leave-actions {
+/* Ajustar espaciado de leave-actions en work-session-card */
+.work-session-card>.leave-actions:first-child,
+.work-session-card .view-toggle+.leave-actions {
   margin-top: 0 !important;
   padding-top: 0.5rem;
 }
 
-/* Fix loading message positioning */
+/* Ajustar posicion de loading */
 .loading {
   display: flex;
   justify-content: center;
@@ -1836,7 +1857,7 @@ textarea:focus {
   font-size: 1.1rem;
 }
 
-/* Reports page date range picker spacing */
+/* Espaciado del date range picker en reportes */
 .date-range-picker {
   display: flex;
   gap: 1rem;
@@ -1854,9 +1875,9 @@ textarea:focus {
   margin-top: 0 !important;
 }
 
-/* ==================== PRINT STYLES ==================== */
+/* ==================== ESTILOS DE IMPRESION ==================== */
 
-/* Print Page Layout */
+/* Layout de pagina de impresion */
 .print-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -2069,10 +2090,9 @@ textarea:focus {
     text-decoration: none;
   }
 
-  /* Ensure proper sizing for print */
+  /* Asegurar tamaño correcto en impresion */
   @page {
     margin: 0.5in;
     size: letter;
   }
 }
-

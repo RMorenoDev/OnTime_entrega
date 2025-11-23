@@ -12,16 +12,21 @@ import PrintableReport from './pages/PrintableReport';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
+  // Hook de autenticacion global
   const { isAuthenticated } = useAuth();
 
   return (
+    // Rutas publicas y protegidas segun autenticacion
     <Routes>
+      {/* Redireccion inicial segun estado de sesion */}
       <Route
         path="/"
         element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
       />
+      {/* Flujo de autenticacion */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      {/* Zona principal del empleado */}
       <Route
         path="/dashboard"
         element={
@@ -38,6 +43,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      {/* Reportes para empleados/supervisores/admin */}
       <Route
         path="/reports"
         element={
@@ -46,6 +52,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      {/* Vista imprimible de reportes */}
       <Route
         path="/reports/print"
         element={
@@ -54,6 +61,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      {/* Panel admin */}
       <Route
         path="/admin"
         element={
