@@ -1,113 +1,56 @@
-🕒 OnTime – Employee Worktime Management System
-================================================
+# OnTime - Sistema de Gestión de Jornada y Permisos
 
-OnTime is a full-stack web application built with Laravel (PHP) and React (Vite).
-It provides an efficient and secure system for tracking employee work sessions, breaks, and leave requests.
-Designed with scalability and usability in mind, it simplifies daily HR tasks for small and medium-sized companies.
+Aplicación full-stack (Laravel + React/Vite) para fichaje de jornada, pausas y permisos. UI en español y migraciones/seeders incluidas para arrancar rápido.
 
-------------------------------------------------
-🚀 Features
-------------------------------------------------
-- 🔐 Role-based authentication (Admin, Supervisor, Employee)
-- 🕘 Clock-in/out and break tracking
-- 🗓️ Leave and permission management
-- 📊 Reports and statistics dashboard
-- ⚙️ RESTful API (Laravel + Sanctum)
-- 💻 Responsive UI built with React + TailwindCSS
-- 🐳 Dockerized environment using Laravel Sail
+## ✨ Funcionalidades
+- 🔐 Autenticación con roles: Admin, Supervisor, Empleado (Sanctum).
+- 🕒 Fichaje de entrada/salida y control de pausas.
+- 📝 Solicitudes de permisos (vacaciones, médicas, personales) con aprobación/rechazo/cancelación.
+- 📊 Panel de admin con métricas (usuarios, equipos, sesiones activas, permisos).
+- 📄 Reportes de horas (personales/equipo) con vista imprimible.
 
-------------------------------------------------
-🧠 Tech Stack
-------------------------------------------------
-Frontend:
-- ⚛️ React (Vite)
-- 🎨 TailwindCSS
-- 🔗 Axios
-- 🧭 React Router DOM
+## 🛠️ Stack
+- 🎨 Frontend: React (Vite), React Router DOM, Axios, CSS base.
++- 🧰 Backend: Laravel 11 (PHP 8+), Sanctum, MySQL/MariaDB.
+- 🐳 Entorno: Docker (Sail) opcional, Composer, Node.js.
 
-Backend:
-- 🐘 Laravel 11 (PHP 8+)
-- 🔐 Laravel Sanctum
-- 🗄️ MySQL / MariaDB
-- 🐳 Docker + Laravel Sail
-
-Tools:
-- 🧰 Git & GitHub
-- 🧪 Postman (API testing)
-- 🐳 Docker Desktop
-- 💡 VS Code + GitHub Copilot
-
-------------------------------------------------
-## 📂 Project Structure
+## 📁 Estructura
 ```
-OnTime/
-│
-├── backend/                     # Laravel API REST (PHP)
-│   ├── app/
-│   ├── routes/
-│   ├── database/
-│   ├── .env
-│   └── docker-compose.yml
-│
-├── frontend/                    # React + Vite (JavaScript)
-│   ├── src/
-│   ├── public/
-│   └── package.json
-│
-├── docs/                        # Project documentation and diagrams
-│   ├── Documentacion_Proyecto_PI_RamonMoreno.pdf
-│   ├── Diagrams/
-│   └── Screenshots/
-│
-└── README.md
+backend/   # API Laravel (migraciones, seeders, controladores)
+frontend/  # React + Vite (pages, components, contexts)
+docs/      # Documentación y diagramas
+README.md
 ```
 
-
-------------------------------------------------
-⚙️ Installation & Setup
-------------------------------------------------
-Prerequisites:
-- 🐳 Docker Desktop
-- 🧱 Composer
-- 🧩 Node.js (v18+)
-- 🌿 Git
-
-🐘 Backend setup:
+## 🚀 Instalación
+1) Backend
 ```bash
-    cd backend
-    composer install
-    cp .env.example .env
-    ./vendor/bin/sail up -d
-    ./vendor/bin/sail artisan migrate --seed
+cd backend
+composer install
+cp .env.example .env        # Configura la DB si no usas Sail por defecto
+./vendor/bin/sail up -d     # o php artisan serve si no usas Docker
+./vendor/bin/sail artisan migrate --seed
 ```
 
-⚛️ Frontend setup:
+2) Frontend
 ```bash
-    cd ../frontend
-    npm install
-    npm run dev
+cd ../frontend
+npm install
+npm run dev                 # http://localhost:5173
 ```
 
-🌐 Access the app:
+3) 🌐 Rutas por defecto
 - Frontend: http://localhost:5173
-- Backend API: http://localhost/api
+- API: http://localhost/api
 
-------------------------------------------------
-🎯 Project Objectives
-------------------------------------------------
-- 🧩 Develop a modern and functional web solution for employee attendance tracking.
-- 🧠 Apply good coding practices in both frontend and backend layers.
-- 📚 Deliver a fully documented project including diagrams, analysis, and implementation.
+## 🌱 Datos de ejemplo (seeders)
+- Equipos: Comercial, Técnico, Logística (turno partido).
+- Usuarios: 1 admin, 4 supervisores, 15 empleados (contraseña: `password`).
+- Sesiones de trabajo, pausas y permisos generados para pruebas.
 
-------------------------------------------------
-👨‍💻 Author
-------------------------------------------------
-Ramón Moreno Zabala  
-🎓 Higher Degree in Web Application Development (DAW) – IES Julio Verne  
-📅 Academic Year: 2025–2026
+## 📝 Notas
+- UI del frontend en español (login, registro, dashboard, admin, permisos, reportes, impresión).
+- Seeders con acentos: usa UTF-8/colación adecuada en la base de datos.
 
-------------------------------------------------
-📜 License
-------------------------------------------------
-This project was developed for educational purposes as part of the IES Julio Verne DAW program.
-All rights reserved © 2025 Ramón Moreno Zabala.
+## 👤 Autor
+Ramón Moreno Zabala — DAW IES Julio Verne (curso 2025-2026). Proyecto académico; todos los derechos reservados.
