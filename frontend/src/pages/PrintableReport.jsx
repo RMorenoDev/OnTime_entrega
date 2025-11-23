@@ -88,16 +88,6 @@ export default function PrintableReport() {
 
     return (
         <div className="print-page">
-            {/* Print Controls - Hidden when printing */}
-            <div className="print-controls no-print">
-                <button onClick={handlePrint} className="btn-primary">
-                    🖨️ Print Report
-                </button>
-                <button onClick={() => window.close()} className="btn-secondary">
-                    Close
-                </button>
-            </div>
-
             {/* Report Header */}
             <div className="print-header">
                 <h1>🕒 OnTime</h1>
