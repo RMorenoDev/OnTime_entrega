@@ -9,10 +9,14 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * ReportController - Controlador de Reportes
+ * Genera reportes de horas trabajadas para empleados y supervisores
+ */
 class ReportController extends Controller
 {
     /**
-     * Get personal work hours report
+     * Mis horas - Reporte personal de horas trabajadas del empleado
      */
     public function myHours(Request $request)
     {
@@ -25,17 +29,17 @@ class ReportController extends Controller
         $startDate = Carbon::parse($request->start_date)->startOfDay();
         $endDate = Carbon::parse($request->end_date)->endOfDay();
 
-        // Validate date range (max 1 year)
+        // Validar rango de fechas (máximo 1 año)
         if ($startDate->diffInDays($endDate) > 365) {
             return response()->json([
                 'message' => 'Date range cannot exceed 1 year'
             ], 400);
         }
 
-        // Determine which user's hours to fetch
+        // Determinar de qué usuario obtener las horas
         $userId = $request->user()->id;
         
-        // Allow admin to query any user's hours
+        // Permitir al admin consultar las horas de cualquier usuario
         if ($request->user()->role === 'admin' && $request->user_id) {
             $userId = $request->user_id;
         }
@@ -94,17 +98,17 @@ class ReportController extends Controller
         $startDate = Carbon::parse($request->start_date)->startOfDay();
         $endDate = Carbon::parse($request->end_date)->endOfDay();
 
-        // Validate date range (max 1 year)
+        // Validar rango de fechas (máximo 1 año)
         if ($startDate->diffInDays($endDate) > 365) {
             return response()->json([
                 'message' => 'Date range cannot exceed 1 year'
             ], 400);
         }
 
-        // Get team members
+        // Obtener miembros del equipo
         $teamMemberIds = $team->members()->pluck('users.id');
 
-        // Filter by specific user if requested (admin only)
+        // Filtrar por usuario específico si se solicita (solo admin)
         if ($request->user_id && $user->role === 'admin') {
             if (!$teamMemberIds->contains($request->user_id)) {
                 return response()->json([
@@ -114,7 +118,7 @@ class ReportController extends Controller
             $teamMemberIds = collect([$request->user_id]);
         }
 
-        // Get work sessions for team members
+        // Obtener sesiones de trabajo de los miembros del equipo
         $teamMembers = [];
         foreach ($teamMemberIds as $memberId) {
             $memberUser = User::find($memberId);
@@ -141,12 +145,12 @@ class ReportController extends Controller
             }
         }
 
-        // Sort by total hours descending
+        // Ordenar por horas totales descendente
         usort($teamMembers, function($a, $b) {
             return $b['total_hours'] <=> $a['total_hours'];
         });
 
-        // Calculate team summary
+        // Calcular resumen del equipo
         $totalHours = array_sum(array_column($teamMembers, 'total_hours'));
         $avgHoursPerMember = count($teamMembers) > 0 ? $totalHours / count($teamMembers) : 0;
 
@@ -165,7 +169,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Format sessions for response
+     * Formatear sesiones para respuesta
      */
     private function formatSessions($sessions)
     {
@@ -173,11 +177,11 @@ class ReportController extends Controller
             $clockIn = Carbon::parse($session->started_at);
             $clockOut = Carbon::parse($session->ended_at);
             
-            // Calculate total hours
+            // Calcular horas totales
             $totalMinutes = $clockIn->diffInMinutes($clockOut);
             $totalHours = $totalMinutes / 60;
 
-            // Calculate break time
+            // Calcular tiempo de pausas
             $breakMinutes = $session->breaks->sum(function ($break) {
                 if ($break->ended_at) {
                     $start = Carbon::parse($break->started_at);
@@ -188,7 +192,7 @@ class ReportController extends Controller
             });
             $breakHours = $breakMinutes / 60;
 
-            // Net hours (total - breaks)
+            // Horas netas (total - pausas)
             $netHours = $totalHours - $breakHours;
 
             return [
@@ -216,7 +220,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Calculate summary statistics
+     * Calcular estadísticas resumen
      */
     private function calculateSummary($sessions)
     {
@@ -229,7 +233,7 @@ class ReportController extends Controller
             $clockOut = Carbon::parse($session->ended_at);
             $totalHours += $clockIn->diffInMinutes($clockOut) / 60;
 
-            // Calculate break time
+            // Calcular tiempo de pausas
             foreach ($session->breaks as $break) {
                 if ($break->ended_at) {
                     $start = Carbon::parse($break->started_at);
@@ -252,7 +256,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Calculate break summary by type
+     * Calcular resumen de pausas por tipo
      */
     private function calculateBreakSummary($sessions)
     {
@@ -274,7 +278,7 @@ class ReportController extends Controller
             }
         }
 
-        // Round all values
+        // Redondear todos los valores
         foreach ($breakSummary as $type => $duration) {
             $breakSummary[$type] = round($duration, 2);
         }

@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * WorkSession - Modelo de Sesión de Trabajo
+ * Representa una jornada laboral (clock-in hasta clock-out)
+ * Relaciones: pertenece a User, tiene muchas WorkBreaks (pausas)
+ */
 class WorkSession extends Model
 {
     protected $fillable = [

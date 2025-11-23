@@ -1,8 +1,10 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios';
 
+// Contexto de autenticación - gestiona el estado del usuario autenticado
 const AuthContext = createContext(null);
 
+// Hook personalizado para usar el contexto de autenticación
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -11,15 +13,20 @@ export const useAuth = () => {
   return context;
 };
 
+/**
+ * AuthProvider - Proveedor de Contexto de Autenticación
+ * Gestiona el estado global de autenticación del usuario
+ * Proporciona: user, login, logout, register
+ */
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [user, setUser] = useState(null); // Usuario autenticado
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [token, setToken] = useState(localStorage.getItem('token')); // Token de sesión
 
-  // Check if user is already logged in on mount
+  // Verificar si el usuario ya está loggeado al montar el componente
   useEffect(() => {
     if (token) {
-      fetchUser();
+      fetchUser(); // Obtener datos del usuario
     } else {
       setLoading(false);
     }

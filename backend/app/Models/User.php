@@ -8,6 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * User - Modelo de Usuario
+ * Representa usuarios del sistema (admin, supervisor, employee)
+ * Relaciones: pertenece a Team, tiene muchas WorkSessions y LeaveRequests
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */

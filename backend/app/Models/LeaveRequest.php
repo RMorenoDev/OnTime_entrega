@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * LeaveRequest - Modelo de Solicitud de Permiso
+ * Representa solicitudes de vacaciones, permisos médicos y personales
+ * Relaciones: pertenece a User (empleado) y User (supervisor que aprueba)
+ */
 class LeaveRequest extends Model
 {
     protected $fillable = [

@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Team - Modelo de Equipo
+ * Representa grupos de trabajo con un supervisor
+ * Relaciones: tiene muchos Users (members), pertenece a User (supervisor)
+ */
 class Team extends Model
 {
     protected $fillable = ['name', 'supervisor_user_id', 'active'];

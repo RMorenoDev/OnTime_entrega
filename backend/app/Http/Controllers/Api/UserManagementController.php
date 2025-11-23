@@ -8,16 +8,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
+/**
+ * UserManagementController - Controlador de Gestión de Usuarios
+ * Permite a los administradores gestionar usuarios del sistema (CRUD)
+ */
 class UserManagementController extends Controller
 {
     /**
-     * List all users (Admin only)
+     * Listar todos los usuarios (solo admin)
      */
     public function index(Request $request)
     {
         $query = User::with('team');
 
-        // Search by name or email
+        // Buscar por nombre o email
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
@@ -25,12 +29,12 @@ class UserManagementController extends Controller
             });
         }
 
-        // Filter by role
+        // Filtrar por rol
         if ($request->role) {
             $query->where('role', $request->role);
         }
 
-        // Filter by team
+        // Filtrar por equipo
         if ($request->team_id) {
             $query->where('team_id', $request->team_id);
         }
@@ -41,7 +45,7 @@ class UserManagementController extends Controller
     }
 
     /**
-     * Get single user details (Admin only)
+     * Obtener detalles de un usuario (solo admin)
      */
     public function show($id)
     {
@@ -53,7 +57,7 @@ class UserManagementController extends Controller
     }
 
     /**
-     * Update user (Admin only)
+     * Actualizar usuario (solo admin)
      */
     public function update(Request $request, $id)
     {
@@ -66,7 +70,7 @@ class UserManagementController extends Controller
             'team_id' => 'nullable|exists:teams,id',
         ]);
 
-        // Prevent demoting the last admin
+        // Prevenir degradar al último admin
         if (isset($validated['role']) && $validated['role'] !== 'admin' && $user->role === 'admin') {
             $adminCount = User::where('role', 'admin')->count();
             if ($adminCount <= 1) {
@@ -85,7 +89,7 @@ class UserManagementController extends Controller
     }
 
     /**
-     * Assign user to team (Admin only)
+     * Asignar usuario a equipo (solo admin)
      */
     public function assignTeam(Request $request, $id)
     {
@@ -104,7 +108,7 @@ class UserManagementController extends Controller
     }
 
     /**
-     * Change user role (Admin only)
+     * Cambiar rol de usuario (solo admin)
      */
     public function changeRole(Request $request, $id)
     {
@@ -133,21 +137,21 @@ class UserManagementController extends Controller
     }
 
     /**
-     * Delete user (Admin only)
+     * Eliminar usuario (solo admin)
      */
     public function destroy($id)
     {
         $currentUser = Auth::user();
         $user = User::findOrFail($id);
 
-        // Cannot delete self
+        // No puede eliminar a sí mismo
         if ($user->id === $currentUser->id) {
             return response()->json([
                 'message' => 'You cannot delete your own account'
             ], 422);
         }
 
-        // Cannot delete last admin
+        // No puede eliminar al último admin
         if ($user->role === 'admin') {
             $adminCount = User::where('role', 'admin')->count();
             if ($adminCount <= 1) {

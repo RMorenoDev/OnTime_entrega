@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * WorkBreak - Modelo de Pausa
+ * Representa pausas durante la jornada laboral
+ * Relaciones: pertenece a WorkSession
+ */
 class WorkBreak extends Model
 {
     protected $table = 'breaks';

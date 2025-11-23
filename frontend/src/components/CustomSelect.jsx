@@ -1,5 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 
+/**
+ * CustomSelect - Componente de Selector Personalizado
+ * Reemplaza los elementos <select> nativos con un diseño consistente y moderno
+ * Props: options (array), value, onChange, placeholder, disabled, required
+ */
 export default function CustomSelect({
     options = [],
     value,
@@ -11,14 +16,14 @@ export default function CustomSelect({
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    // Get display text for selected value
+    // Obtener texto a mostrar para el valor seleccionado
     const getDisplayText = () => {
         if (!value) return placeholder;
         const selected = options.find(opt => opt.value === value);
         return selected ? selected.label : placeholder;
     };
 
-    // Close dropdown when clicking outside
+    // Cerrar dropdown al hacer clic fuera
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
