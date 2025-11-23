@@ -273,21 +273,19 @@ export default function Reports() {
                             </div>
                         )}
 
-                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-                            <button onClick={fetchReport} className="btn-primary">
-                                📊 Generate Report
-                            </button>
-                            <button
-                                onClick={openPrintView}
-                                className="btn-secondary"
-                                disabled={
-                                    (activeView === 'employees' && !selectedUser) ||
-                                    (activeView === 'team-hours' && user?.role === 'admin' && !selectedTeam)
-                                }
-                            >
-                                🖨️ Print Report
-                            </button>
-                        </div>
+
+                        <button
+                            onClick={openPrintView}
+                            className="btn-primary"
+                            style={{ marginTop: '1.5rem' }}
+                            disabled={
+                                (activeView === 'employees' && !selectedUser) ||
+                                (activeView === 'team-hours' && user?.role === 'admin' && !selectedTeam)
+                            }
+                        >
+                            📊 Generate Report
+                        </button>
+
                     </div>
 
                     {error && <div className="error-message">{error}</div>}

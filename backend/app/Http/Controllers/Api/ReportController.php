@@ -44,7 +44,7 @@ class ReportController extends Controller
             ->whereBetween('started_at', [$startDate, $endDate])
             ->whereNotNull('ended_at')
             ->with('breaks')
-            ->orderBy('started_at', 'desc')
+            ->orderBy('started_at', 'asc')
             ->get();
 
         return response()->json([
