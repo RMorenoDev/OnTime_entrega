@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ejecuta la migracion: agrega rol, equipo y activo al usuario.
      */
     public function up(): void
     {
@@ -19,7 +19,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Revierte la migracion.
      */
     public function down(): void
     {
