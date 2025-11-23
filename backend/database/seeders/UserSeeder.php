@@ -2,73 +2,117 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Team;
-use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        // Create Admin
-        $admin = User::create([
+        // Get teams
+        $devTeam = Team::where('name', 'Development Team')->first();
+        $marketingTeam = Team::where('name', 'Marketing Team')->first();
+        $salesTeam = Team::where('name', 'Sales Team')->first();
+
+        // Admin
+        User::create([
             'name' => 'Admin User',
             'email' => 'admin@ontime.com',
-            'password_hash' => Hash::make('password123'),
+            'password_hash' => Hash::make('password'),
             'role' => 'admin',
-            'active' => true,
+            'team_id' => null
         ]);
 
-        // Create Supervisors
-        $supervisor1 = User::create([
-            'name' => 'John Supervisor',
-            'email' => 'supervisor1@ontime.com',
-            'password_hash' => Hash::make('password123'),
+        // Development Team
+        $devSupervisor = User::create([
+            'name' => 'Dev Supervisor',
+            'email' => 'dev.supervisor@ontime.com',
+            'password_hash' => Hash::make('password'),
             'role' => 'supervisor',
-            'team_id' => 1, // Development Team
-            'active' => true,
+            'team_id' => $devTeam->id
         ]);
 
-        $supervisor2 = User::create([
-            'name' => 'Jane Supervisor',
-            'email' => 'supervisor2@ontime.com',
-            'password_hash' => Hash::make('password123'),
+        User::create([
+            'name' => 'John Developer',
+            'email' => 'john.dev@ontime.com',
+            'password_hash' => Hash::make('password'),
+            'role' => 'employee',
+            'team_id' => $devTeam->id
+        ]);
+
+        User::create([
+            'name' => 'Jane Developer',
+            'email' => 'jane.dev@ontime.com',
+            'password_hash' => Hash::make('password'),
+            'role' => 'employee',
+            'team_id' => $devTeam->id
+        ]);
+
+        // Set supervisor for dev team
+        $devTeam->supervisor_user_id = $devSupervisor->id;
+        $devTeam->save();
+
+        // Marketing Team
+        $marketingSupervisor = User::create([
+            'name' => 'Marketing Supervisor',
+            'email' => 'marketing.supervisor@ontime.com',
+            'password_hash' => Hash::make('password'),
             'role' => 'supervisor',
-            'team_id' => 2, // Sales Team
-            'active' => true,
-        ]);
-
-        // Update teams with supervisors
-        Team::find(1)->update(['supervisor_user_id' => $supervisor1->id]);
-        Team::find(2)->update(['supervisor_user_id' => $supervisor2->id]);
-
-        // Create Employees
-        User::create([
-            'name' => 'Alice Employee',
-            'email' => 'employee1@ontime.com',
-            'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'team_id' => 1, // Development Team
-            'active' => true,
+            'team_id' => $marketingTeam->id
         ]);
 
         User::create([
-            'name' => 'Bob Employee',
-            'email' => 'employee2@ontime.com',
-            'password_hash' => Hash::make('password123'),
+            'name' => 'Alice Marketing',
+            'email' => 'alice.marketing@ontime.com',
+            'password_hash' => Hash::make('password'),
             'role' => 'employee',
-            'team_id' => 1, // Development Team
-            'active' => true,
+            'team_id' => $marketingTeam->id
         ]);
 
         User::create([
-            'name' => 'Charlie Employee',
-            'email' => 'employee3@ontime.com',
-            'password_hash' => Hash::make('password123'),
+            'name' => 'Bob Marketing',
+            'email' => 'bob.marketing@ontime.com',
+            'password_hash' => Hash::make('password'),
             'role' => 'employee',
-            'team_id' => 2, // Sales Team
-            'active' => true,
+            'team_id' => $marketingTeam->id
         ]);
+
+        // Set supervisor for marketing team
+        $marketingTeam->supervisor_user_id = $marketingSupervisor->id;
+        $marketingTeam->save();
+
+        // Sales Team
+        $salesSupervisor = User::create([
+            'name' => 'Sales Supervisor',
+            'email' => 'sales.supervisor@ontime.com',
+            'password_hash' => Hash::make('password'),
+            'role' => 'supervisor',
+            'team_id' => $salesTeam->id
+        ]);
+
+        User::create([
+            'name' => 'Charlie Sales',
+            'email' => 'charlie.sales@ontime.com',
+            'password_hash' => Hash::make('password'),
+            'role' => 'employee',
+            'team_id' => $salesTeam->id
+        ]);
+
+        User::create([
+            'name' => 'Diana Sales',
+            'email' => 'diana.sales@ontime.com',
+            'password_hash' => Hash::make('password'),
+            'role' => 'employee',
+            'team_id' => $salesTeam->id
+        ]);
+
+        // Set supervisor for sales team
+        $salesTeam->supervisor_user_id = $salesSupervisor->id;
+        $salesTeam->save();
     }
 }

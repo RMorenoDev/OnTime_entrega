@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminTeams from './pages/AdminTeams';
 import Reports from './pages/Reports';
+import PrintableReport from './pages/PrintableReport';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -42,6 +43,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Reports />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports/print"
+        element={
+          <ProtectedRoute>
+            <PrintableReport />
           </ProtectedRoute>
         }
       />

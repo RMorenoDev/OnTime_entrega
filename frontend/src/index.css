@@ -1853,3 +1853,226 @@ textarea:focus {
 .date-range-picker .btn-primary {
   margin-top: 0 !important;
 }
+
+/* ==================== PRINT STYLES ==================== */
+
+/* Print Page Layout */
+.print-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  color: #000;
+  min-height: 100vh;
+}
+
+.print-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+.print-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #667eea;
+}
+
+.print-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #667eea;
+}
+
+.print-header h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.print-date-range {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin: 0.5rem 0;
+}
+
+.print-subtitle {
+  font-size: 1rem;
+  color: #374151;
+  font-weight: 600;
+  margin: 0.25rem 0;
+}
+
+.print-content {
+  margin: 2rem 0;
+}
+
+.print-content h3 {
+  font-size: 1.3rem;
+  color: #374151;
+  margin: 1.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.print-content h4 {
+  font-size: 1.1rem;
+  color: #1f2937;
+  margin: 1rem 0 0.5rem;
+}
+
+.print-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.print-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.print-summary-item .label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.print-summary-item .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.print-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.print-table thead {
+  background: #f3f4f6;
+}
+
+.print-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #d1d5db;
+}
+
+.print-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #1f2937;
+}
+
+.print-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.print-table-simple {
+  max-width: 400px;
+}
+
+.print-member-section {
+  margin: 2rem 0;
+  page-break-inside: avoid;
+}
+
+.member-email {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.member-stats {
+  color: #374151;
+  font-size: 0.95rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.print-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e7eb;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.print-loading,
+.print-error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+  color: #374151;
+}
+
+.print-error {
+  color: #dc2626;
+}
+
+/* Print Media Query - Optimize for printing */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-page {
+    max-width: 100%;
+    margin: 0;
+    padding: 0.5in;
+    background: white;
+  }
+
+  .print-header {
+    page-break-after: avoid;
+  }
+
+  .print-member-section {
+    page-break-inside: avoid;
+  }
+
+  .print-table {
+    page-break-inside: avoid;
+  }
+
+  .print-table thead {
+    display: table-header-group;
+  }
+
+  .print-table tbody tr {
+    page-break-inside: avoid;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
+
+  /* Ensure proper sizing for print */
+  @page {
+    margin: 0.5in;
+    size: letter;
+  }
+}
+

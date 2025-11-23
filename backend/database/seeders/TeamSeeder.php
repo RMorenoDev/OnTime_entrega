@@ -2,27 +2,24 @@
 
 namespace Database\Seeders;
 
-use App\Models\Team;
 use Illuminate\Database\Seeder;
+use App\Models\Team;
 
 class TeamSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        // Create teams (supervisors will be assigned after users are created)
-        Team::create([
-            'name' => 'Development Team',
-            'active' => true,
-        ]);
+        $teams = [
+            ['name' => 'Development Team'],
+            ['name' => 'Marketing Team'],
+            ['name' => 'Sales Team']
+        ];
 
-        Team::create([
-            'name' => 'Sales Team',
-            'active' => true,
-        ]);
-
-        Team::create([
-            'name' => 'HR Team',
-            'active' => true,
-        ]);
+        foreach ($teams as $teamData) {
+            Team::create($teamData);
+        }
     }
 }

@@ -117,6 +117,38 @@ export default function Reports() {
         });
     };
 
+    const openPrintView = () => {
+        // Build URL with query parameters
+        const params = new URLSearchParams();
+        params.append('start_date', startDate);
+        params.append('end_date', endDate);
+
+        if (activeView === 'employees') {
+            params.append('type', 'personal');
+            if (selectedUser) {
+                params.append('user_id', selectedUser);
+                // Find user name
+                const user = users.find(u => u.id === parseInt(selectedUser));
+                if (user) params.append('user_name', user.name);
+            }
+        } else if (activeView === 'team-hours') {
+            params.append('type', 'team');
+            if (selectedTeam) {
+                params.append('team_id', selectedTeam);
+                // Find team name
+                const team = teams.find(t => t.id === parseInt(selectedTeam));
+                if (team) params.append('team_name', team.name);
+            }
+        } else {
+            params.append('type', 'personal');
+            params.append('user_name', user?.name || 'My Hours');
+        }
+
+        // Open in new window
+        const printUrl = `/reports/print?${params.toString()}`;
+        window.open(printUrl, '_blank', 'width=1200,height=800');
+    };
+
     return (
         <div className="dashboard-container">
             <div className="dashboard-content">
@@ -241,9 +273,21 @@ export default function Reports() {
                             </div>
                         )}
 
-                        <button onClick={fetchReport} className="btn-primary" style={{ marginTop: '1.5rem' }}>
-                            Generate Report
-                        </button>
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                            <button onClick={fetchReport} className="btn-primary">
+                                📊 Generate Report
+                            </button>
+                            <button
+                                onClick={openPrintView}
+                                className="btn-secondary"
+                                disabled={
+                                    (activeView === 'employees' && !selectedUser) ||
+                                    (activeView === 'team-hours' && user?.role === 'admin' && !selectedTeam)
+                                }
+                            >
+                                🖨️ Print Report
+                            </button>
+                        </div>
                     </div>
 
                     {error && <div className="error-message">{error}</div>}
