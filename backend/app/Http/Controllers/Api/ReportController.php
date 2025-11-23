@@ -179,9 +179,9 @@ class ReportController extends Controller
 
             // Calculate break time
             $breakMinutes = $session->breaks->sum(function ($break) {
-                if ($break->end_time) {
-                    $start = Carbon::parse($break->start_time);
-                    $end = Carbon::parse($break->end_time);
+                if ($break->ended_at) {
+                    $start = Carbon::parse($break->started_at);
+                    $end = Carbon::parse($break->ended_at);
                     return $start->diffInMinutes($end);
                 }
                 return 0;
@@ -200,9 +200,9 @@ class ReportController extends Controller
                 'break_time' => round($breakHours, 2),
                 'net_hours' => round($netHours, 2),
                 'breaks' => $session->breaks->map(function ($break) {
-                    if ($break->end_time) {
-                        $start = Carbon::parse($break->start_time);
-                        $end = Carbon::parse($break->end_time);
+                    if ($break->ended_at) {
+                        $start = Carbon::parse($break->started_at);
+                        $end = Carbon::parse($break->ended_at);
                         $duration = $start->diffInMinutes($end) / 60;
                         return [
                             'type' => $break->break_type,
@@ -231,9 +231,9 @@ class ReportController extends Controller
 
             // Calculate break time
             foreach ($session->breaks as $break) {
-                if ($break->end_time) {
-                    $start = Carbon::parse($break->start_time);
-                    $end = Carbon::parse($break->end_time);
+                if ($break->ended_at) {
+                    $start = Carbon::parse($break->started_at);
+                    $end = Carbon::parse($break->ended_at);
                     $totalBreakTime += $start->diffInMinutes($end) / 60;
                 }
             }
@@ -260,10 +260,10 @@ class ReportController extends Controller
 
         foreach ($sessions as $session) {
             foreach ($session->breaks as $break) {
-                if ($break->end_time) {
+                if ($break->ended_at) {
                     $type = $break->break_type;
-                    $start = Carbon::parse($break->start_time);
-                    $end = Carbon::parse($break->end_time);
+                    $start = Carbon::parse($break->started_at);
+                    $end = Carbon::parse($break->ended_at);
                     $duration = $start->diffInMinutes($end) / 60;
 
                     if (!isset($breakSummary[$type])) {
