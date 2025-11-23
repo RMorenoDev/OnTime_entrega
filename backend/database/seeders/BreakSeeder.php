@@ -5,60 +5,103 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\WorkSession;
 use App\Models\WorkBreak;
+use App\Models\Team;
 use Carbon\Carbon;
 
 class BreakSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $breakTypes = ['Coffee', 'Lunch', 'Snack', 'Personal'];
-        
-        // Get all work sessions
-        $sessions = WorkSession::all();
+        $sessions = WorkSession::with('user.team')->get();
+        $logisticaTeam = Team::where('name', 'Equipo Logística')->first();
 
         foreach ($sessions as $session) {
-            $sessionStart = Carbon::parse($session->started_at);
-            $sessionEnd = Carbon::parse($session->ended_at);
-            $sessionDuration = $sessionStart->diffInHours($sessionEnd);
+            $clockIn = Carbon::parse($session->started_at);
+            $clockOut = Carbon::parse($session->ended_at);
+            $isSplitShift = ($session->user->team_id === $logisticaTeam->id);
 
-            // Number of breaks based on session duration
-            $numBreaks = $sessionDuration >= 8 ? rand(2, 3) : rand(1, 2);
+            // Sesiones de turno partido (mañana o tarde)
+            if ($isSplitShift) {
+                $sessionDuration = $clockIn->diffInHours($clockOut);
+                
+                if ($sessionDuration >= 5) {
+                    // Sesión de mañana (08:00-14:00) - tiene break de 30 min pagado
+                    $breakStart = $clockIn->copy()->addHours(3)->addMinutes(rand(0, 30));
+                    $breakEnd = $breakStart->copy()->addMinutes(30); // 30 minutos pagados
+                    
+                    WorkBreak::create([
+                        'work_session_id' => $session->id,
+                        'break_type' => 'Café',
+                        'started_at' => $breakStart,
+                        'ended_at' => $breakEnd,
+                        'is_paid' => true
+                    ]);
+                } elseif ($sessionDuration >= 1.5) {
+                    // Sesión de tarde (15:00-17:00) - break corto
+                    if (rand(1, 100) <= 60) {
+                        $breakStart = $clockIn->copy()->addMinutes(45);
+                        $breakEnd = $breakStart->copy()->addMinutes(10);
+                        
+                        WorkBreak::create([
+                            'work_session_id' => $session->id,
+                            'break_type' => 'Café',
+                            'started_at' => $breakStart,
+                            'ended_at' => $breakEnd,
+                            'is_paid' => true
+                        ]);
+                    }
+                }
+            } else {
+                // Horario normal: siempre tienen 30 min de break pagado
+                $breaks = [];
+                
+                // Break de café por la mañana (30 min pagado)
+                $morningBreak = $clockIn->copy()->addHours(2)->addMinutes(rand(0, 30));
+                $breaks[] = [
+                    'type' => 'Café',
+                    'start' => $morningBreak,
+                    'duration' => 30,
+                    'is_paid' => true
+                ];
 
-            $currentTime = $sessionStart->copy()->addHours(2); // Start breaks after 2 hours
-
-            for ($i = 0; $i < $numBreaks; $i++) {
-                // Ensure we don't exceed session end time
-                if ($currentTime->greaterThanOrEqualTo($sessionEnd->copy()->subHour())) {
-                    break;
+                // Comida (30-60 min, los primeros 30 pagados)
+                if (rand(1, 100) <= 85) {
+                    $lunchBreak = $clockIn->copy()->addHours(4)->addMinutes(rand(0, 30));
+                    $lunchDuration = rand(30, 60);
+                    $breaks[] = [
+                        'type' => 'Comida',
+                        'start' => $lunchBreak,
+                        'duration' => $lunchDuration,
+                        'is_paid' => $lunchDuration <= 30 // Solo los primeros 30 min son pagados
+                    ];
                 }
 
-                $breakType = $breakTypes[array_rand($breakTypes)];
-                
-                // Break duration based on type
-                $breakDuration = match($breakType) {
-                    'Lunch' => rand(30, 60),
-                    'Coffee' => rand(10, 20),
-                    'Snack' => rand(10, 15),
-                    'Personal' => rand(5, 20),
-                    default => rand(10, 30)
-                };
+                // Break de tarde ocasional
+                if (rand(1, 100) <= 40) {
+                    $afternoonBreak = $clockIn->copy()->addHours(6)->addMinutes(rand(0, 30));
+                    $breaks[] = [
+                        'type' => 'Café',
+                        'start' => $afternoonBreak,
+                        'duration' => 10,
+                        'is_paid' => true
+                    ];
+                }
 
-                $breakStart = $currentTime->copy();
-                $breakEnd = $breakStart->copy()->addMinutes($breakDuration);
-
-                WorkBreak::create([
-                    'work_session_id' => $session->id,
-                    'break_type' => $breakType,
-                    'started_at' => $breakStart,
-                    'ended_at' => $breakEnd,
-                    'is_paid' => in_array($breakType, ['Coffee', 'Snack']) // Coffee and snacks are paid
-                ]);
-
-                // Move current time forward for next break (spacing breaks apart)
-                $currentTime->addMinutes($breakDuration + rand(60, 120));
+                foreach ($breaks as $breakData) {
+                    $breakStart = $breakData['start'];
+                    $breakEnd = $breakStart->copy()->addMinutes($breakData['duration']);
+                    
+                    // Ensure break doesn't exceed session time
+                    if ($breakEnd->lte($clockOut)) {
+                        WorkBreak::create([
+                            'work_session_id' => $session->id,
+                            'break_type' => $breakData['type'],
+                            'started_at' => $breakStart,
+                            'ended_at' => $breakEnd,
+                            'is_paid' => $breakData['is_paid']
+                        ]);
+                    }
+                }
             }
         }
     }

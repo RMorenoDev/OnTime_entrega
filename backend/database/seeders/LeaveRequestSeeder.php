@@ -9,84 +9,156 @@ use Carbon\Carbon;
 
 class LeaveRequestSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    private function getSpanishReason($type): string
+    {
+        $reasons = [
+            'vacation' => [
+                'Vacaciones de verano planificadas',
+                'Viaje familiar programado',
+                'Días de descanso acumulados',
+                'Vacaciones navideñas',
+                'Puente festivo',
+                'Asuntos personales y descanso',
+            ],
+            'medical' => [
+                'Gripe estacional',
+                'Cita médica especialista',
+                'Revisión médica programada',
+                'Malestar general',
+                'Dolor de espalda',
+                'Consulta odontológica',
+            ],
+            'personal' => [
+                'Asuntos familiares urgentes',
+                'Trámites administrativos',
+                'Mudanza de domicilio',
+                'Cita oficial',
+                'Gestiones bancarias importantes',
+                'Asuntos legales pendientes',
+            ]
+        ];
+
+        return $reasons[$type][array_rand($reasons[$type])];
+    }
+
+    private function getSpanishRejectionReason(): string
+    {
+        $reasons = [
+            'Falta de personal ese día',
+            'Periodo de alta carga de trabajo',
+            'Ya hay otro compañero de baja',
+            'Necesitamos cubrir el puesto',
+            'Solicitud tardía, insuficiente preaviso',
+            'Conflicto con calendario laboral',
+        ];
+
+        return $reasons[array_rand($reasons)];
+    }
+
     public function run(): void
     {
-        // Get all employees and supervisors
-        $users = User::whereIn('role', ['employee', 'supervisor'])->get();
-        
+        $employees = User::where('role', 'employee')->get();
+        $supervisors = User::where('role', 'supervisor')->get();
+
         $leaveTypes = ['vacation', 'medical', 'personal'];
         $statuses = ['pending', 'approved', 'rejected'];
 
-        foreach ($users as $user) {
-            // Create 2-4 leave requests per user
-            $numRequests = rand(2, 4);
+        // Generar al menos 50 solicitudes
+        $requestsToCreate = 60;
+        $requestsCreated = 0;
 
-            for ($i = 0; $i < $numRequests; $i++) {
+        // Distribuir las solicitudes entre empleados
+        foreach ($employees as $employee) {
+            // Cada empleado tiene entre 2 y 5 solicitudes
+            $numRequests = rand(2, 5);
+            
+            for ($i = 0; $i < $numRequests && $requestsCreated < $requestsToCreate; $i++) {
                 $type = $leaveTypes[array_rand($leaveTypes)];
                 $status = $statuses[array_rand($statuses)];
-
-                // Random dates (some past, some future)
-                $daysOffset = rand(-30, 60);
+                
+                // Generar fechas aleatorias en los últimos 60 días o futuros 30 días
+                $daysOffset = rand(-60, 30);
                 $startDate = Carbon::now()->addDays($daysOffset);
-                $duration = rand(1, 5); // 1-5 days
-                $endDate = $startDate->copy()->addDays($duration);
+                
+                // Duración: 1-5 días
+                $duration = rand(1, 5);
+                $endDate = $startDate->copy()->addDays($duration - 1);
 
                 $leaveRequest = LeaveRequest::create([
-                    'user_id' => $user->id,
+                    'user_id' => $employee->id,
                     'leave_type' => $type,
-                    'is_paid' => $type === 'vacation',
+                    'is_paid' => $type === 'vacation' || ($type === 'medical' && rand(1, 100) <= 70),
                     'is_full_day' => true,
                     'start_at' => $startDate,
                     'end_at' => $endDate,
-                    'note' => $this->generateReason($type),
+                    'note' => $this->getSpanishReason($type),
                     'status' => $status
                 ]);
 
-                // Add approval/rejection details for processed requests
+                // Si está aprobada o rechazada, asignar supervisor
                 if ($status === 'approved' || $status === 'rejected') {
-                    // Get a supervisor or admin to approve/reject
-                    $approver = User::whereIn('role', ['supervisor', 'admin'])->inRandomOrder()->first();
+                    // Buscar supervisor del equipo o admin
+                    $approver = null;
+                    if ($employee->team_id) {
+                        $approver = User::where('team_id', $employee->team_id)
+                            ->where('role', 'supervisor')
+                            ->inRandomOrder()
+                            ->first();
+                    }
                     
+                    if (!$approver) {
+                        $approver = User::where('role', 'admin')->first();
+                    }
+
                     $leaveRequest->update([
                         'supervisor_id' => $approver->id,
-                        'reviewed_at' => Carbon::now()->subDays(rand(1, 10)),
+                        'reviewed_at' => Carbon::now()->subDays(rand(1, 15)),
                         'rejection_reason' => $status === 'rejected' 
-                            ? 'Due to team scheduling conflicts' 
+                            ? $this->getSpanishRejectionReason()
                             : null
                     ]);
                 }
+
+                $requestsCreated++;
             }
         }
-    }
 
-    /**
-     * Generate realistic reason based on leave type
-     */
-    private function generateReason(string $type): string
-    {
-        return match($type) {
-            'vacation' => collect([
-                'Family vacation',
-                'Personal travel',
-                'Rest and relaxation',
-                'Holiday trip'
-            ])->random(),
-            'medical' => collect([
-                'Medical appointment',
-                'Doctor visit',
-                'Health checkup',
-                'Medical treatment'
-            ])->random(),
-            'personal' => collect([
-                'Personal matters',
-                'Family emergency',
-                'Personal appointment',
-                'Family event'
-            ])->random(),
-            default => 'Leave request'
-        };
+        // Añadir algunas solicitudes de supervisores también
+        foreach ($supervisors as $supervisor) {
+            if ($requestsCreated >= $requestsToCreate) break;
+
+            $type = $leaveTypes[array_rand($leaveTypes)];
+            $status = $statuses[array_rand($statuses)];
+            
+            $daysOffset = rand(-40, 20);
+            $startDate = Carbon::now()->addDays($daysOffset);
+            $duration = rand(1, 3);
+            $endDate = $startDate->copy()->addDays($duration - 1);
+
+            $leaveRequest = LeaveRequest::create([
+                'user_id' => $supervisor->id,
+                'leave_type' => $type,
+                'is_paid' => true,
+                'is_full_day' => true,
+                'start_at' => $startDate,
+                'end_at' => $endDate,
+                'note' => $this->getSpanishReason($type),
+                'status' => $status
+            ]);
+
+            if ($status === 'approved' || $status === 'rejected') {
+                $admin = User::where('role', 'admin')->first();
+                
+                $leaveRequest->update([
+                    'supervisor_id' => $admin->id,
+                    'reviewed_at' => Carbon::now()->subDays(rand(1, 10)),
+                    'rejection_reason' => $status === 'rejected' 
+                        ? $this->getSpanishRejectionReason()
+                        : null
+                ]);
+            }
+
+            $requestsCreated++;
+        }
     }
 }

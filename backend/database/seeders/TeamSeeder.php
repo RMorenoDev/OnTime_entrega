@@ -7,15 +7,12 @@ use App\Models\Team;
 
 class TeamSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $teams = [
-            ['name' => 'Development Team'],
-            ['name' => 'Marketing Team'],
-            ['name' => 'Sales Team']
+            ['name' => 'Equipo Comercial'],
+            ['name' => 'Equipo Técnico'],
+            ['name' => 'Equipo Logística'], // Este tendrá turno partido
         ];
 
         foreach ($teams as $teamData) {
