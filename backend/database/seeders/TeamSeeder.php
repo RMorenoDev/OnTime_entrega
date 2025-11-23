@@ -9,10 +9,11 @@ class TeamSeeder extends Seeder
 {
     public function run(): void
     {
+        // Crea equipos base para asignar usuarios
         $teams = [
             ['name' => 'Equipo Comercial'],
             ['name' => 'Equipo Técnico'],
-            ['name' => 'Equipo Logística'], // Este tendrá turno partido
+            ['name' => 'Equipo Logística'], // Este tendra turno partido
         ];
 
         foreach ($teams as $teamData) {

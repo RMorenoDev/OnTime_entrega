@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 class LeaveRequestSeeder extends Seeder
 {
+    // Razones de ejemplo en espanol por tipo
     private function getSpanishReason($type): string
     {
         $reasons = [
@@ -41,6 +42,7 @@ class LeaveRequestSeeder extends Seeder
         return $reasons[$type][array_rand($reasons[$type])];
     }
 
+    // Razones de rechazo de ejemplo
     private function getSpanishRejectionReason(): string
     {
         $reasons = [
@@ -76,11 +78,11 @@ class LeaveRequestSeeder extends Seeder
                 $type = $leaveTypes[array_rand($leaveTypes)];
                 $status = $statuses[array_rand($statuses)];
                 
-                // Generar fechas aleatorias en los últimos 60 días o futuros 30 días
+                // Fechas aleatorias en los ultimos 60 dias o futuros 30 dias
                 $daysOffset = rand(-60, 30);
                 $startDate = Carbon::now()->addDays($daysOffset);
                 
-                // Duración: 1-5 días
+                // Duracion: 1-5 dias
                 $duration = rand(1, 5);
                 $endDate = $startDate->copy()->addDays($duration - 1);
 
@@ -95,7 +97,7 @@ class LeaveRequestSeeder extends Seeder
                     'status' => $status
                 ]);
 
-                // Si está aprobada o rechazada, asignar supervisor
+                // Si esta aprobada o rechazada, asignar supervisor
                 if ($status === 'approved' || $status === 'rejected') {
                     // Buscar supervisor del equipo o admin
                     $approver = null;
@@ -123,7 +125,7 @@ class LeaveRequestSeeder extends Seeder
             }
         }
 
-        // Añadir algunas solicitudes de supervisores también
+        // Anadir algunas solicitudes de supervisores tambien
         foreach ($supervisors as $supervisor) {
             if ($requestsCreated >= $requestsToCreate) break;
 

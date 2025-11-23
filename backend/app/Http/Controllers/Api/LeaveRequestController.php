@@ -7,16 +7,20 @@ use App\Models\LeaveRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * LeaveRequestController - Controlador de Solicitudes de Permisos
+ * Gestiona solicitudes de vacaciones, bajas médicas y permisos personales
+ */
 class LeaveRequestController extends Controller
 {
     /**
-     * Create a new leave request (Employee)
+     * Crear solicitud de permiso - Los empleados crean nuevas solicitudes
      */
     public function store(Request $request)
     {
         $user = Auth::user();
 
-        // Validate request
+        // Validar datos de la solicitud
         $validated = $request->validate([
             'leave_type' => 'required|in:vacation,medical,personal',
             'is_paid' => 'required|boolean',
@@ -27,21 +31,21 @@ class LeaveRequestController extends Controller
             'note' => 'required|string|max:1000',
         ]);
 
-        // Validate duration_hours for partial day requests
+        // Validar horas de duración para solicitudes de medio día
         if (!$validated['is_full_day'] && !$request->duration_hours) {
             return response()->json([
                 'message' => 'Duration in hours is required for partial day requests'
             ], 422);
         }
 
-        // Validate duration_hours is in 0.5 hour blocks
+        // Validar que las horas sean en bloques de 0.5
         if (!$validated['is_full_day'] && fmod($request->duration_hours, 0.5) !== 0.0) {
             return response()->json([
                 'message' => 'Duration must be in half-hour blocks (0.5, 1.0, 1.5, etc.)'
             ], 422);
         }
 
-        // Check for overlapping leave requests
+        // Verificar solicitudes de permiso superpuestas
         $overlapping = LeaveRequest::where('user_id', $user->id)
             ->whereIn('status', ['pending', 'approved'])
             ->where(function ($query) use ($validated) {
@@ -60,19 +64,19 @@ class LeaveRequestController extends Controller
             ], 422);
         }
 
-        // Get supervisor from user's team
-        // If user is a supervisor, their requests go to admin
-        // If user is an employee, their requests go to their team's supervisor
+        // Obtener supervisor del equipo del usuario
+        // Si el usuario es supervisor, sus solicitudes van al admin
+        // Si el usuario es empleado, sus solicitudes van al supervisor de su equipo
         $supervisor_id = null;
         if ($user->role === 'supervisor') {
-            // Find an admin user (CEO)
+            // Buscar un usuario administrador
             $admin = \App\Models\User::where('role', 'admin')->first();
             $supervisor_id = $admin?->id;
         } else {
             $supervisor_id = $user->team?->supervisor_user_id;
         }
 
-        // Create leave request
+        // Crear solicitud de permiso
         $leaveRequest = LeaveRequest::create([
             'user_id' => $user->id,
             'supervisor_id' => $supervisor_id,
@@ -93,7 +97,7 @@ class LeaveRequestController extends Controller
     }
 
     /**
-     * List user's own leave requests (Employee)
+     * Listar solicitudes propias - El empleado ve sus solicitudes
      */
     public function index(Request $request)
     {
@@ -102,7 +106,7 @@ class LeaveRequestController extends Controller
         $query = LeaveRequest::where('user_id', $user->id)
             ->with(['supervisor']);
 
-        // Filter by status if provided
+        // Filtrar por estado si se proporciona
         if ($request->status) {
             $query->where('status', $request->status);
         }
@@ -113,13 +117,13 @@ class LeaveRequestController extends Controller
     }
 
     /**
-     * List pending leave requests for supervisor's team (Supervisor only)
+     * Listar solicitudes pendientes del equipo (solo supervisores)
      */
     public function pending(Request $request)
     {
         $user = Auth::user();
 
-        // If user is admin, show all supervisor leave requests
+        // Si el usuario es admin, mostrar todas las solicitudes de supervisores
         if ($user->role === 'admin') {
             $leaveRequests = LeaveRequest::whereHas('user', function ($query) {
                     $query->where('role', 'supervisor');
@@ -129,10 +133,10 @@ class LeaveRequestController extends Controller
                 ->orderBy('created_at', 'asc')
                 ->get();
         } else {
-            // If user is supervisor, show team members' requests (not other supervisors)
+            // Si el usuario es supervisor, mostrar solicitudes de miembros del equipo
             $teamMembers = \App\Models\User::where('team_id', $user->team_id)
-                ->where('id', '!=', $user->id) // Exclude supervisor themselves
-                ->where('role', '!=', 'supervisor') // Exclude other supervisors
+                ->where('id', '!=', $user->id) // Excluir al supervisor mismo
+                ->where('role', '!=', 'supervisor') // Excluir otros supervisores
                 ->pluck('id');
 
             $leaveRequests = LeaveRequest::whereIn('user_id', $teamMembers)
@@ -148,20 +152,20 @@ class LeaveRequestController extends Controller
     }
 
     /**
-     * List all employee leave requests (Admin only)
+     * Listar todas las solicitudes de empleados (solo admin)
      */
     public function allEmployees(Request $request)
     {
         $user = Auth::user();
 
-        // Only admins can see all employee requests
+        // Solo los admins pueden ver todas las solicitudes de empleados
         if ($user->role !== 'admin') {
             return response()->json([
                 'message' => 'Access denied. Admin role required.'
             ], 403);
         }
 
-        // Get all employee leave requests (exclude supervisors and admins)
+        // Obtener todas las solicitudes de empleados (excluir supervisores y admins)
         $leaveRequests = LeaveRequest::whereHas('user', function ($query) {
                 $query->where('role', 'employee');
             })
@@ -176,7 +180,7 @@ class LeaveRequestController extends Controller
     }
 
     /**
-     * Approve leave request (Supervisor and Admin)
+     * Aprobar solicitud de permiso (supervisores y admin)
      */
     public function approve(Request $request, $id)
     {
@@ -184,8 +188,8 @@ class LeaveRequestController extends Controller
 
         $leaveRequest = LeaveRequest::findOrFail($id);
 
-        // Admins can approve any request
-        // Supervisors can only approve requests from their team
+        // Los admins pueden aprobar cualquier solicitud
+        // Los supervisores solo pueden aprobar solicitudes de su equipo
         if ($user->role === 'supervisor') {
             if ($leaveRequest->user->team_id !== $user->team_id) {
                 return response()->json([
@@ -194,7 +198,7 @@ class LeaveRequestController extends Controller
             }
         }
 
-        // Verify status is pending
+        // Verificar que el estado sea pendiente
         if (!$leaveRequest->isPending()) {
             return response()->json([
                 'message' => 'Only pending requests can be approved'
@@ -214,7 +218,7 @@ class LeaveRequestController extends Controller
     }
 
     /**
-     * Reject leave request (Supervisor and Admin)
+     * Rechazar solicitud de permiso (supervisores y admin)
      */
     public function reject(Request $request, $id)
     {
@@ -226,8 +230,8 @@ class LeaveRequestController extends Controller
 
         $leaveRequest = LeaveRequest::findOrFail($id);
 
-        // Admins can reject any request
-        // Supervisors can only reject requests from their team
+        // Los admins pueden rechazar cualquier solicitud
+        // Los supervisores solo pueden rechazar solicitudes de su equipo
         if ($user->role === 'supervisor') {
             if ($leaveRequest->user->team_id !== $user->team_id) {
                 return response()->json([
@@ -236,7 +240,7 @@ class LeaveRequestController extends Controller
             }
         }
 
-        // Verify status is pending
+        // Verificar que el estado sea pendiente
         if (!$leaveRequest->isPending()) {
             return response()->json([
                 'message' => 'Only pending requests can be rejected'
@@ -257,7 +261,7 @@ class LeaveRequestController extends Controller
     }
 
     /**
-     * Cancel own leave request (Employee)
+     * Cancelar solicitud propia (empleado)
      */
     public function cancel(Request $request, $id)
     {
@@ -265,14 +269,14 @@ class LeaveRequestController extends Controller
 
         $leaveRequest = LeaveRequest::findOrFail($id);
 
-        // Verify the leave request belongs to the user
+        // Verificar que la solicitud pertenezca al usuario
         if ($leaveRequest->user_id !== $user->id) {
             return response()->json([
                 'message' => 'You can only cancel your own leave requests'
             ], 403);
         }
 
-        // Verify status is pending or approved
+        // Verificar que el estado sea pendiente o aprobado
         if (!in_array($leaveRequest->status, ['pending', 'approved'])) {
             return response()->json([
                 'message' => 'Only pending or approved requests can be cancelled'

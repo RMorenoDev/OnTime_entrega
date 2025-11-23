@@ -7,20 +7,25 @@ use App\Models\WorkSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * WorkSessionController - Controlador de Sesiones de Trabajo
+ * Gestiona el fichaje de entrada y salida de los empleados.
+ */
 class WorkSessionController extends Controller
 {
     /**
-     * Clock in - Start a new work session
+     * Fichar entrada: inicia una nueva sesion de trabajo.
      */
     public function clockIn(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::user(); // Usuario autenticado
 
-        // Check if user already has an active work session
+        // Verificar si el usuario ya tiene una sesion activa (sin ended_at)
         $activeSession = WorkSession::where('user_id', $user->id)
             ->whereNull('ended_at')
             ->first();
 
+        // Si ya hay sesion activa, no permitir fichar de nuevo
         if ($activeSession) {
             return response()->json([
                 'message' => 'You already have an active work session',
@@ -28,77 +33,79 @@ class WorkSessionController extends Controller
             ], 422);
         }
 
-        // Create new work session
+        // Crear nueva sesion de trabajo
         $session = WorkSession::create([
             'user_id' => $user->id,
-            'started_at' => now(),
+            'started_at' => now(), // Hora actual de entrada
             'source' => 'employee',
-            'note' => $request->note,
+            'note' => $request->note, // Nota opcional
         ]);
 
         return response()->json([
             'message' => 'Clocked in successfully',
-            'session' => $session->load('breaks')
+            'session' => $session->load('breaks') // Incluir pausas (vacio al iniciar)
         ], 201);
     }
 
     /**
-     * Clock out - End current work session
+     * Fichar salida: finaliza la sesion de trabajo actual.
      */
     public function clockOut(Request $request)
     {
         $user = Auth::user();
 
-        // Find active work session
+        // Buscar la sesion activa del usuario
         $session = WorkSession::where('user_id', $user->id)
             ->whereNull('ended_at')
             ->first();
 
+        // Si no hay sesion activa, devolver error
         if (!$session) {
             return response()->json([
                 'message' => 'No active work session found'
             ], 404);
         }
 
-        // End any active breaks first
+        // Finalizar cualquier pausa activa automaticamente
         $activeBreak = $session->breaks()->whereNull('ended_at')->first();
         if ($activeBreak) {
             $activeBreak->update(['ended_at' => now()]);
         }
 
-        // End work session
+        // Finalizar la sesion de trabajo
         $session->update([
-            'ended_at' => now(),
+            'ended_at' => now(), // Hora actual de salida
             'note' => $request->note ?? $session->note,
         ]);
 
         return response()->json([
             'message' => 'Clocked out successfully',
-            'session' => $session->load('breaks')
+            'session' => $session->load('breaks') // Incluir todas las pausas
         ]);
     }
 
     /**
-     * Get active work session
+     * Obtener la sesion activa para mostrar en el dashboard.
      */
     public function getActive()
     {
         $user = Auth::user();
 
+        // Buscar sesion sin ended_at (activa) con sus pausas
         $session = WorkSession::where('user_id', $user->id)
             ->whereNull('ended_at')
             ->with(['breaks' => function ($query) {
-                $query->orderBy('started_at', 'asc');
+                $query->orderBy('started_at', 'asc'); // Ordenar pausas por inicio
             }])
             ->first();
 
         return response()->json([
-            'session' => $session
+            'session' => $session // null si no hay sesion activa
         ]);
     }
 
     /**
-     * List user's work sessions
+     * Listado paginado de sesiones del usuario.
      */
     public function index(Request $request)
     {

@@ -6,10 +6,13 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Middleware EnsureSupervisor - Requiere rol supervisor o admin.
+ */
 class EnsureSupervisor
 {
     /**
-     * Handle an incoming request.
+     * Garantiza que el usuario sea supervisor o admin.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */

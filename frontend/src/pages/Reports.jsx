@@ -2,40 +2,43 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
+import logo from '../assets/ontime_logo.png';
+import CustomSelect from '../components/CustomSelect';
 
 export default function Reports() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [activeView, setActiveView] = useState(user?.role === 'admin' ? 'employees' : 'my-hours');
+    const [loading, setLoading] = useState(false); // Estado de carga
+    const [error, setError] = useState(''); // Mensaje de error
+    const [activeView, setActiveView] = useState(user?.role === 'admin' ? 'employees' : 'my-hours'); // Vista actual
 
-    // Date range - default to current month
+    // Rango de fechas: mes actual por defecto
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    const [startDate, setStartDate] = useState(firstDay.toISOString().split('T')[0]);
-    const [endDate, setEndDate] = useState(today.toISOString().split('T')[0]);
+    const [startDate, setStartDate] = useState(firstDay.toISOString().split('T')[0]); // Fecha inicio
+    const [endDate, setEndDate] = useState(today.toISOString().split('T')[0]); // Fecha fin
 
-    // Report data
-    const [reportData, setReportData] = useState(null);
-    const [teamData, setTeamData] = useState(null);
+    // Datos de reportes
+    const [reportData, setReportData] = useState(null); // Datos de reporte personal
+    const [teamData, setTeamData] = useState(null); // Datos de reporte de equipo
 
-    // Admin selectors
-    const [teams, setTeams] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [selectedTeam, setSelectedTeam] = useState('');
-    const [selectedUser, setSelectedUser] = useState('');
+    // Selectores para admin
+    const [teams, setTeams] = useState([]); // Equipos para selects
+    const [users, setUsers] = useState([]); // Usuarios para selects
+    const [selectedTeam, setSelectedTeam] = useState(''); // Equipo escogido
+    const [selectedUser, setSelectedUser] = useState(''); // Usuario escogido
 
     useEffect(() => {
         if (user?.role === 'admin') {
-            fetchTeamsAndUsers();
+            fetchTeamsAndUsers(); // Solo admins cargan listas completas
         }
     }, [user]);
 
     useEffect(() => {
-        fetchReport();
+        fetchReport(); // Refrescar reporte ante cambios de filtro/vista
     }, [activeView, startDate, endDate, selectedTeam, selectedUser]);
 
+    // Carga equipos y usuarios para selects de admin
     const fetchTeamsAndUsers = async () => {
         try {
             const [teamsRes, usersRes] = await Promise.all([
@@ -52,16 +55,17 @@ export default function Reports() {
         }
     };
 
+    // Obtener datos de reporte segun vista activa
     const fetchReport = async () => {
         if (!startDate || !endDate) return;
 
-        // For employees view, require user selection
+        // Para vista de empleados, requerir seleccion de usuario
         if (activeView === 'employees' && !selectedUser) {
             setReportData(null);
             return;
         }
 
-        // For team hours, require team selection for admins
+        // Para horas de equipo, requerir seleccion de equipo si es admin
         if (activeView === 'team-hours' && user?.role === 'admin' && !selectedTeam) {
             setTeamData(null);
             return;
@@ -76,7 +80,6 @@ export default function Reports() {
                 if (selectedUser) {
                     params.user_id = selectedUser;
                 }
-                console.log('Fetching my-hours with params:', params);
                 const response = await api.get('/reports/my-hours', { params });
                 setReportData(response.data);
             } else {
@@ -89,13 +92,13 @@ export default function Reports() {
             }
         } catch (err) {
             console.error('Report fetch error:', err);
-            setError(err.response?.data?.message || 'Failed to fetch report');
+            setError(err.response?.data?.message || 'Error al obtener el reporte');
         } finally {
             setLoading(false);
         }
     };
 
-    // Convert decimal hours to HH:MM format
+    // Convertir horas decimales a formato HH:MM
     const formatHoursMinutes = (decimalHours) => {
         if (!decimalHours && decimalHours !== 0) return '0:00';
         const hours = Math.floor(decimalHours);
@@ -109,7 +112,7 @@ export default function Reports() {
     };
 
     const formatDate = (date) => {
-        return new Date(date).toLocaleDateString('en-US', {
+        return new Date(date).toLocaleDateString('es-ES', {
             weekday: 'short',
             year: 'numeric',
             month: 'short',
@@ -118,7 +121,7 @@ export default function Reports() {
     };
 
     const openPrintView = () => {
-        // Build URL with query parameters
+        // Construir URL con parametros de consulta
         const params = new URLSearchParams();
         params.append('start_date', startDate);
         params.append('end_date', endDate);
@@ -127,24 +130,24 @@ export default function Reports() {
             params.append('type', 'personal');
             if (selectedUser) {
                 params.append('user_id', selectedUser);
-                // Find user name
-                const user = users.find(u => u.id === parseInt(selectedUser));
-                if (user) params.append('user_name', user.name);
+                // Buscar nombre del usuario
+                const userRow = users.find(u => u.id === parseInt(selectedUser));
+                if (userRow) params.append('user_name', userRow.name);
             }
         } else if (activeView === 'team-hours') {
             params.append('type', 'team');
             if (selectedTeam) {
                 params.append('team_id', selectedTeam);
-                // Find team name
+                // Buscar nombre del equipo
                 const team = teams.find(t => t.id === parseInt(selectedTeam));
                 if (team) params.append('team_name', team.name);
             }
         } else {
             params.append('type', 'personal');
-            params.append('user_name', user?.name || 'My Hours');
+            params.append('user_name', user?.name || 'Mis horas');
         }
-
-        // Open in new window
+        
+        // Abrir en nueva ventana
         const printUrl = `/reports/print?${params.toString()}`;
         window.open(printUrl, '_blank', 'width=1200,height=800');
     };
@@ -154,10 +157,13 @@ export default function Reports() {
             <div className="dashboard-content">
                 <div className="dashboard-header">
                     <div>
-                        <h1>🕒 OnTime</h1>
+                        <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <img src={logo} alt="OnTime Logo" style={{ width: '32px', height: '32px' }} />
+                            OnTime
+                        </h1>
                     </div>
                     <div style={{ textAlign: 'center', flex: 1 }}>
-                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Work Hours Reports</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Reportes de horas</h2>
                         <p style={{ margin: '0.5rem 0 0', color: 'var(--gray-light)', fontSize: '0.9rem' }}>
                             {user?.name} • {user?.role}
                         </p>
@@ -165,23 +171,23 @@ export default function Reports() {
                     <div style={{ textAlign: 'right', display: 'flex', gap: '0.5rem' }}>
                         {user?.role === 'admin' && (
                             <button onClick={() => navigate('/admin')} className="btn-secondary">
-                                Admin Panel
+                                Panel de admin
                             </button>
                         )}
                         <button onClick={() => navigate('/leave-requests')} className="btn-secondary">
-                            Leave Requests
+                            Permisos
                         </button>
                         <button onClick={() => navigate('/')} className="btn-secondary">
                             Dashboard
                         </button>
                         <button onClick={logout} className="btn-secondary">
-                            Logout
+                            Cerrar sesión
                         </button>
                     </div>
                 </div>
 
                 <div className="work-session-card">
-                    {/* View Toggle for Supervisors */}
+                    {/* Cambio de vista para supervisores */}
                     {(user?.role === 'supervisor' || user?.role === 'admin') && (
                         <div className="view-toggle">
                             {user?.role === 'admin' ? (
@@ -190,13 +196,13 @@ export default function Reports() {
                                         className={`toggle-btn ${activeView === 'employees' ? 'active' : ''}`}
                                         onClick={() => setActiveView('employees')}
                                     >
-                                        Employees
+                                        Empleados
                                     </button>
                                     <button
                                         className={`toggle-btn ${activeView === 'team-hours' ? 'active' : ''}`}
                                         onClick={() => setActiveView('team-hours')}
                                     >
-                                        Team Hours
+                                        Horas por equipo
                                     </button>
                                 </>
                             ) : (
@@ -205,23 +211,23 @@ export default function Reports() {
                                         className={`toggle-btn ${activeView === 'my-hours' ? 'active' : ''}`}
                                         onClick={() => setActiveView('my-hours')}
                                     >
-                                        My Hours
+                                        Mis horas
                                     </button>
                                     <button
                                         className={`toggle-btn ${activeView === 'team-hours' ? 'active' : ''}`}
                                         onClick={() => setActiveView('team-hours')}
                                     >
-                                        Team Hours
+                                        Horas del equipo
                                     </button>
                                 </>
                             )}
                         </div>
                     )}
 
-                    {/* Date Range Picker */}
+                    {/* Selector de rango de fechas */}
                     <div className="date-range-picker">
                         <div className="date-input-group">
-                            <label>Start Date</label>
+                            <label>Fecha inicio</label>
                             <input
                                 type="date"
                                 value={startDate}
@@ -230,7 +236,7 @@ export default function Reports() {
                             />
                         </div>
                         <div className="date-input-group">
-                            <label>End Date</label>
+                            <label>Fecha fin</label>
                             <input
                                 type="date"
                                 value={endDate}
@@ -240,36 +246,34 @@ export default function Reports() {
                             />
                         </div>
 
-                        {/* Admin Selectors */}
+                        {/* Selectores para admin */}
                         {user?.role === 'admin' && activeView === 'employees' && (
                             <div className="date-input-group">
-                                <label>Select Employee</label>
-                                <select
+                                <label>Selecciona empleado</label>
+                                <CustomSelect
+                                    options={[
+                                        { value: '', label: '-- Selecciona un empleado --' },
+                                        ...users.map(u => ({ value: u.id, label: u.name }))
+                                    ]}
                                     value={selectedUser}
-                                    onChange={(e) => setSelectedUser(e.target.value)}
-                                    className="filter-select"
-                                >
-                                    <option value="">-- Select an Employee --</option>
-                                    {Array.isArray(users) && users.map(u => (
-                                        <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
-                                    ))}
-                                </select>
+                                    onChange={(value) => setSelectedUser(value)}
+                                    placeholder="-- Selecciona un empleado --"
+                                />
                             </div>
                         )}
 
                         {user?.role === 'admin' && activeView === 'team-hours' && (
                             <div className="date-input-group">
-                                <label>Select Team</label>
-                                <select
+                                <label>Selecciona equipo</label>
+                                <CustomSelect
+                                    options={[
+                                        { value: '', label: '-- Selecciona un equipo --' },
+                                        ...teams.map(t => ({ value: t.id, label: t.name }))
+                                    ]}
                                     value={selectedTeam}
-                                    onChange={(e) => setSelectedTeam(e.target.value)}
-                                    className="filter-select"
-                                >
-                                    <option value="">-- Select a Team --</option>
-                                    {Array.isArray(teams) && teams.map(t => (
-                                        <option key={t.id} value={t.id}>{t.name}</option>
-                                    ))}
-                                </select>
+                                    onChange={(value) => setSelectedTeam(value)}
+                                    placeholder="-- Selecciona un equipo --"
+                                />
                             </div>
                         )}
 
@@ -283,7 +287,7 @@ export default function Reports() {
                                 (activeView === 'team-hours' && user?.role === 'admin' && !selectedTeam)
                             }
                         >
-                            📊 Generate Report
+                            📄 Generar reporte
                         </button>
 
                     </div>
@@ -291,33 +295,33 @@ export default function Reports() {
                     {error && <div className="error-message">{error}</div>}
 
                     {loading ? (
-                        <div className="loading">Loading report...</div>
+                        <div className="loading">Cargando reporte...</div>
                     ) : (activeView === 'my-hours' || activeView === 'employees') && reportData ? (
                         <>
-                            {/* Summary Cards */}
+                            {/* Tarjetas de resumen */}
                             <div className="report-summary">
                                 <div className="summary-card">
                                     <div className="summary-value">{formatHoursMinutes(reportData.summary.total_hours)}</div>
-                                    <div className="summary-label">Total Hours</div>
+                                    <div className="summary-label">Horas totales</div>
                                 </div>
                                 <div className="summary-card">
                                     <div className="summary-value">{formatHoursMinutes(reportData.summary.net_hours)}</div>
-                                    <div className="summary-label">Net Hours (Total - Breaks)</div>
+                                    <div className="summary-label">Horas netas (total - pausas)</div>
                                 </div>
                                 <div className="summary-card">
                                     <div className="summary-value">{reportData.summary.days_worked}</div>
-                                    <div className="summary-label">Days Worked</div>
+                                    <div className="summary-label">Días trabajados</div>
                                 </div>
                                 <div className="summary-card">
                                     <div className="summary-value">{formatHoursMinutes(reportData.summary.avg_hours_per_day)}</div>
-                                    <div className="summary-label">Avg Hours/Day</div>
+                                    <div className="summary-label">Promedio horas/día</div>
                                 </div>
                             </div>
 
-                            {/* Break Summary */}
+                            {/* Resumen de pausas */}
                             {Object.keys(reportData.break_summary).length > 0 && (
                                 <div className="break-summary-section">
-                                    <h3>Break Time Summary</h3>
+                                    <h3>Resumen de pausas</h3>
                                     <div className="break-summary-grid">
                                         {Object.entries(reportData.break_summary).map(([type, hours]) => (
                                             <div key={type} className="break-summary-item">
@@ -329,23 +333,23 @@ export default function Reports() {
                                 </div>
                             )}
 
-                            {/* Work Sessions Table */}
+                            {/* Tabla de sesiones de trabajo */}
                             <div className="report-table-container">
-                                <h3>Work Sessions</h3>
+                                <h3>Sesiones de trabajo</h3>
                                 {reportData.sessions.length === 0 ? (
                                     <p style={{ textAlign: 'center', color: 'var(--gray-light)', padding: '2rem' }}>
-                                        No work sessions found for this period
+                                        No se encontraron sesiones en este periodo
                                     </p>
                                 ) : (
                                     <table className="report-table">
                                         <thead>
                                             <tr>
-                                                <th>Date</th>
-                                                <th>Clock In</th>
-                                                <th>Clock Out</th>
-                                                <th>Total Hours</th>
-                                                <th>Break Time</th>
-                                                <th>Net Hours</th>
+                                                <th>Fecha</th>
+                                                <th>Entrada</th>
+                                                <th>Salida</th>
+                                                <th>Horas</th>
+                                                <th>Pausas</th>
+                                                <th>Horas netas</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -366,35 +370,35 @@ export default function Reports() {
                         </>
                     ) : activeView === 'team-hours' && teamData ? (
                         <>
-                            {/* Team Name Display */}
+                            {/* Cabecera con nombre de equipo */}
                             {teamData.team && (
                                 <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                                    <h3 style={{ color: 'var(--white)', margin: 0 }}>🏢 {teamData.team.name}</h3>
+                                    <h3 style={{ color: 'var(--white)', margin: 0 }}>🧑‍🤝‍🧑 {teamData.team.name}</h3>
                                 </div>
                             )}
 
-                            {/* Team Summary */}
+                            {/* Resumen del equipo */}
                             <div className="report-summary">
                                 <div className="summary-card">
                                     <div className="summary-value">{formatHoursMinutes(teamData.team_summary.total_hours)}</div>
-                                    <div className="summary-label">Team Total Hours</div>
+                                    <div className="summary-label">Horas totales del equipo</div>
                                 </div>
                                 <div className="summary-card">
                                     <div className="summary-value">{formatHoursMinutes(teamData.team_summary.avg_hours_per_member)}</div>
-                                    <div className="summary-label">Avg per Member</div>
+                                    <div className="summary-label">Promedio por miembro</div>
                                 </div>
                                 <div className="summary-card">
                                     <div className="summary-value">{teamData.team_summary.members_count}</div>
-                                    <div className="summary-label">Active Members</div>
+                                    <div className="summary-label">Miembros activos</div>
                                 </div>
                             </div>
 
-                            {/* Team Members List */}
+                            {/* Lista de miembros del equipo */}
                             <div className="team-hours-container">
-                                <h3>Team Member Hours</h3>
+                                <h3>Horas por miembro</h3>
                                 {teamData.team_members.length === 0 ? (
                                     <p style={{ textAlign: 'center', color: 'var(--gray-light)', padding: '2rem' }}>
-                                        No work sessions found for team members in this period
+                                        No hay sesiones de trabajo en este periodo
                                     </p>
                                 ) : (
                                     teamData.team_members.map(member => (
@@ -406,20 +410,20 @@ export default function Reports() {
                                                 </div>
                                                 <div className="member-stats">
                                                     <span><strong>{formatHoursMinutes(member.total_hours)}</strong> total</span>
-                                                    <span>{member.days_worked} days</span>
-                                                    <span>{formatHoursMinutes(member.avg_hours)} avg</span>
+                                                    <span>{member.days_worked} días</span>
+                                                    <span>{formatHoursMinutes(member.avg_hours)} promedio</span>
                                                 </div>
                                             </div>
                                             <details className="session-details">
-                                                <summary>View Sessions ({member.sessions.length})</summary>
+                                                <summary>Ver sesiones ({member.sessions.length})</summary>
                                                 <table className="report-table">
                                                     <thead>
                                                         <tr>
-                                                            <th>Date</th>
-                                                            <th>Clock In</th>
-                                                            <th>Clock Out</th>
-                                                            <th>Total Hours</th>
-                                                            <th>Net Hours</th>
+                                                            <th>Fecha</th>
+                                                            <th>Entrada</th>
+                                                            <th>Salida</th>
+                                                            <th>Horas totales</th>
+                                                            <th>Horas netas</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -442,7 +446,11 @@ export default function Reports() {
                         </>
                     ) : !loading && (
                         <p style={{ textAlign: 'center', color: 'var(--gray-light)', padding: '2rem' }}>
-                            {activeView === 'employees' ? 'Select an employee and click "Generate Report"' : activeView === 'team-hours' ? 'Select a team and click "Generate Report"' : 'Select a date range and click "Generate Report"'}
+                            {activeView === 'employees'
+                                ? 'Selecciona un empleado y pulsa "Generar reporte"'
+                                : activeView === 'team-hours'
+                                    ? 'Selecciona un equipo y pulsa "Generar reporte"'
+                                    : 'Selecciona un rango de fechas y pulsa "Generar reporte"'}
                         </p>
                     )}
                 </div>

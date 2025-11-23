@@ -8,7 +8,7 @@ const api = axios.create({
     },
 });
 
-// Add token to requests
+// Agregar token a cada request si existe
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
@@ -22,12 +22,12 @@ api.interceptors.request.use(
     }
 );
 
-// Handle responses
+// Manejo de respuestas
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            // Token expired or invalid
+            // Token expirado o invalido: limpiar y redirigir
             localStorage.removeItem('token');
             window.location.href = '/login';
         }

@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+/**
+ * UserController - Controlador de usuarios (pendiente de implementar endpoints).
+ */
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar recursos.
      */
     public function index()
     {
@@ -16,7 +19,7 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crear un nuevo recurso.
      */
     public function store(Request $request)
     {
@@ -24,7 +27,7 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar un recurso concreto.
      */
     public function show(string $id)
     {
@@ -32,7 +35,7 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar un recurso existente.
      */
     public function update(Request $request, string $id)
     {
@@ -40,7 +43,7 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar un recurso.
      */
     public function destroy(string $id)
     {

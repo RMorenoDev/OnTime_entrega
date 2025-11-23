@@ -10,6 +10,7 @@ use Carbon\Carbon;
 
 class BreakSeeder extends Seeder
 {
+    // Genera pausas de ejemplo para las sesiones existentes
     public function run(): void
     {
         $sessions = WorkSession::with('user.team')->get();
@@ -20,12 +21,12 @@ class BreakSeeder extends Seeder
             $clockOut = Carbon::parse($session->ended_at);
             $isSplitShift = ($session->user->team_id === $logisticaTeam->id);
 
-            // Sesiones de turno partido (mañana o tarde)
+            // Sesiones de turno partido (manana o tarde)
             if ($isSplitShift) {
                 $sessionDuration = $clockIn->diffInHours($clockOut);
                 
                 if ($sessionDuration >= 5) {
-                    // Sesión de mañana (08:00-14:00) - tiene break de 30 min pagado
+                    // Sesion de manana (08:00-14:00) - break de 30 min pagado
                     $breakStart = $clockIn->copy()->addHours(3)->addMinutes(rand(0, 30));
                     $breakEnd = $breakStart->copy()->addMinutes(30); // 30 minutos pagados
                     
@@ -37,14 +38,14 @@ class BreakSeeder extends Seeder
                         'is_paid' => true
                     ]);
                 } elseif ($sessionDuration >= 1.5) {
-                    // Sesión de tarde (15:00-17:00) - break corto
+                    // Sesion de tarde (15:00-17:00) - break corto
                     if (rand(1, 100) <= 60) {
                         $breakStart = $clockIn->copy()->addMinutes(45);
                         $breakEnd = $breakStart->copy()->addMinutes(10);
                         
                         WorkBreak::create([
                             'work_session_id' => $session->id,
-                            'break_type' => 'Café',
+                        'break_type' => 'Café',
                             'started_at' => $breakStart,
                             'ended_at' => $breakEnd,
                             'is_paid' => true
@@ -55,7 +56,7 @@ class BreakSeeder extends Seeder
                 // Horario normal: siempre tienen 30 min de break pagado
                 $breaks = [];
                 
-                // Break de café por la mañana (30 min pagado)
+                // Break de cafe por la manana (30 min pagado)
                 $morningBreak = $clockIn->copy()->addHours(2)->addMinutes(rand(0, 30));
                 $breaks[] = [
                     'type' => 'Café',
@@ -91,7 +92,7 @@ class BreakSeeder extends Seeder
                     $breakStart = $breakData['start'];
                     $breakEnd = $breakStart->copy()->addMinutes($breakData['duration']);
                     
-                    // Ensure break doesn't exceed session time
+                    // Asegurar que la pausa no exceda la sesion
                     if ($breakEnd->lte($clockOut)) {
                         WorkBreak::create([
                             'work_session_id' => $session->id,

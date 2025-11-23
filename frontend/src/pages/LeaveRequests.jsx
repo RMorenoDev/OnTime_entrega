@@ -2,26 +2,28 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
+import logo from '../assets/ontime_logo.png';
 import LeaveRequestForm from '../components/LeaveRequestForm';
 import SupervisorPanel from './SupervisorPanel';
 
 export default function LeaveRequests() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [myRequests, setMyRequests] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [showForm, setShowForm] = useState(false);
-    const [filter, setFilter] = useState('all');
-    // Default view: 'supervisor' for admins, 'my-requests' for others
+    const [myRequests, setMyRequests] = useState([]); // Mis solicitudes
+    const [loading, setLoading] = useState(true); // Estado de carga
+    const [error, setError] = useState(''); // Errores en UI
+    const [showForm, setShowForm] = useState(false); // Mostrar formulario
+    const [filter, setFilter] = useState('all'); // Filtro de estado
+    // Vista por defecto: 'supervisor' para admins, 'my-requests' para otros
     const [activeView, setActiveView] = useState(user?.role === 'admin' ? 'supervisor' : 'my-requests');
 
+    // Obtener solicitudes propias
     const fetchMyRequests = async () => {
         try {
             const response = await api.get('/leave-requests');
             setMyRequests(response.data.data || []);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to fetch leave requests');
+            setError(err.response?.data?.message || 'Error al obtener solicitudes');
         } finally {
             setLoading(false);
         }
@@ -29,36 +31,37 @@ export default function LeaveRequests() {
 
     useEffect(() => {
         if (activeView === 'my-requests') {
-            fetchMyRequests();
+            fetchMyRequests(); // Cargar solo cuando se esta en vista personal
         }
     }, [activeView]);
 
+    // Cancelar solicitud
     const handleCancel = async (id) => {
-        if (!confirm('Are you sure you want to cancel this leave request?')) return;
+        if (!confirm('¿Seguro que deseas cancelar esta solicitud?')) return;
 
         try {
             await api.put(`/leave-requests/${id}/cancel`);
             fetchMyRequests();
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to cancel request');
+            setError(err.response?.data?.message || 'Error al cancelar solicitud');
         }
     };
 
     const getStatusBadge = (status) => {
         const badges = {
-            pending: <span className="status-badge badge-pending">⏳ Pending</span>,
-            approved: <span className="status-badge badge-approved">✓ Approved</span>,
-            rejected: <span className="status-badge badge-rejected">✕ Rejected</span>,
-            cancelled: <span className="status-badge badge-cancelled">⊗ Cancelled</span>
+            pending: <span className="status-badge badge-pending">⏳ Pendiente</span>,
+            approved: <span className="status-badge badge-approved">✅ Aprobada</span>,
+            rejected: <span className="status-badge badge-rejected">❌ Rechazada</span>,
+            cancelled: <span className="status-badge badge-cancelled">🚫 Cancelada</span>
         };
         return badges[status] || status;
     };
 
     const getLeaveTypeBadge = (type) => {
         const badges = {
-            vacation: '🏖️ Vacation',
-            medical: '🏥 Medical',
-            personal: '🚶 Personal'
+            vacation: '🌴 Vacaciones',
+            medical: '🏖️ Médica',
+            personal: '🙋 Personal'
         };
         return badges[type] || type;
     };
@@ -68,9 +71,9 @@ export default function LeaveRequests() {
             const start = new Date(request.start_at);
             const end = new Date(request.end_at);
             const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-            return `${days} day${days > 1 ? 's' : ''}`;
+            return `${days} día${days > 1 ? 's' : ''}`;
         }
-        return `${request.duration_hours} hours`;
+        return `${request.duration_hours} horas`;
     };
 
     const filteredRequests = filter === 'all'
@@ -82,10 +85,13 @@ export default function LeaveRequests() {
             <div className="dashboard-content">
                 <div className="dashboard-header">
                     <div>
-                        <h1>🕒 OnTime</h1>
+                        <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <img src={logo} alt="OnTime Logo" style={{ width: '32px', height: '32px' }} />
+                            OnTime
+                        </h1>
                     </div>
                     <div style={{ textAlign: 'center', flex: 1 }}>
-                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Leave Requests</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Solicitudes de permiso</h2>
                         <p style={{ margin: '0.5rem 0 0', color: 'var(--gray-light)', fontSize: '0.9rem' }}>
                             {user?.name} • {user?.role}
                         </p>
@@ -93,37 +99,37 @@ export default function LeaveRequests() {
                     <div style={{ textAlign: 'right', display: 'flex', gap: '0.5rem' }}>
                         {user?.role === 'admin' && (
                             <button onClick={() => navigate('/admin')} className="btn-secondary">
-                                Admin Panel
+                                Panel de admin
                             </button>
                         )}
                         <button onClick={() => navigate('/reports')} className="btn-secondary">
-                            Reports
+                            Reportes
                         </button>
                         <button onClick={() => navigate('/')} className="btn-secondary">
                             Dashboard
                         </button>
                         <button onClick={logout} className="btn-secondary">
-                            Logout
+                            Cerrar sesión
                         </button>
                     </div>
                 </div>
 
-                {/* Main Content Card */}
+                {/* Tarjeta principal de contenido */}
                 <div className="work-session-card">
-                    {/* View Toggle - Different for Admin vs Supervisor */}
+                    {/* Cambio de vista segun rol (admin vs supervisor) */}
                     {user?.role === 'admin' ? (
                         <div className="view-toggle">
                             <button
                                 className={`toggle-btn ${activeView === 'supervisor' ? 'active' : ''}`}
                                 onClick={() => setActiveView('supervisor')}
                             >
-                                Supervisor Requests
+                                Solicitudes de supervisores
                             </button>
                             <button
                                 className={`toggle-btn ${activeView === 'employees' ? 'active' : ''}`}
                                 onClick={() => setActiveView('employees')}
                             >
-                                Employee Requests
+                                Solicitudes de empleados
                             </button>
                         </div>
                     ) : user?.role === 'supervisor' ? (
@@ -132,18 +138,18 @@ export default function LeaveRequests() {
                                 className={`toggle-btn ${activeView === 'my-requests' ? 'active' : ''}`}
                                 onClick={() => setActiveView('my-requests')}
                             >
-                                My Requests
+                                Mis solicitudes
                             </button>
                             <button
                                 className={`toggle-btn ${activeView === 'supervisor' ? 'active' : ''}`}
                                 onClick={() => setActiveView('supervisor')}
                             >
-                                Team Requests
+                                Solicitudes del equipo
                             </button>
                         </div>
                     ) : null}
 
-                    {/* Admin views */}
+                    {/* Vistas para admin/supervisor */}
                     {user?.role === 'admin' && activeView === 'supervisor' ? (
                         <SupervisorPanel />
                     ) : user?.role === 'admin' && activeView === 'employees' ? (
@@ -164,7 +170,7 @@ export default function LeaveRequests() {
                                 <>
                                     <div className="leave-actions">
                                         <button onClick={() => setShowForm(true)} className="btn-primary">
-                                            + New Leave Request
+                                            + Nueva solicitud
                                         </button>
                                     </div>
 
@@ -173,35 +179,35 @@ export default function LeaveRequests() {
                                             className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
                                             onClick={() => setFilter('all')}
                                         >
-                                            All
+                                            Todas
                                         </button>
                                         <button
                                             className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
                                             onClick={() => setFilter('pending')}
                                         >
-                                            Pending
+                                            Pendientes
                                         </button>
                                         <button
                                             className={`filter-btn ${filter === 'approved' ? 'active' : ''}`}
                                             onClick={() => setFilter('approved')}
                                         >
-                                            Approved
+                                            Aprobadas
                                         </button>
                                         <button
                                             className={`filter-btn ${filter === 'rejected' ? 'active' : ''}`}
                                             onClick={() => setFilter('rejected')}
                                         >
-                                            Rejected
+                                            Rechazadas
                                         </button>
                                     </div>
 
                                     {error && <div className="error-message">{error}</div>}
 
                                     {loading ? (
-                                        <div className="loading">Loading...</div>
+                                        <div className="loading">Cargando...</div>
                                     ) : filteredRequests.length === 0 ? (
                                         <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--gray-light)' }}>
-                                            <p>No leave requests found</p>
+                                            <p>No hay solicitudes</p>
                                         </div>
                                     ) : (
                                         <div className="leave-requests-list">
@@ -214,20 +220,20 @@ export default function LeaveRequests() {
 
                                                     <div className="card-body">
                                                         <div className="request-info">
-                                                            <p><strong>Period:</strong> {new Date(request.start_at).toLocaleDateString()}
+                                                            <p><strong>Periodo:</strong> {new Date(request.start_at).toLocaleDateString()}
                                                                 {request.end_at && ` - ${new Date(request.end_at).toLocaleDateString()}`}</p>
-                                                            <p><strong>Duration:</strong> {formatDuration(request)}</p>
-                                                            <p><strong>Type:</strong> {request.is_paid ? 'Paid' : 'Unpaid'}</p>
+                                                            <p><strong>Duración:</strong> {formatDuration(request)}</p>
+                                                            <p><strong>Tipo:</strong> {request.is_paid ? 'Pagado' : 'No pagado'}</p>
                                                         </div>
 
                                                         <div className="request-note">
-                                                            <strong>Reason:</strong>
+                                                            <strong>Motivo:</strong>
                                                             <p>{request.note}</p>
                                                         </div>
 
                                                         {request.rejection_reason && (
                                                             <div className="rejection-reason">
-                                                                <strong>Rejection Reason:</strong>
+                                                                <strong>Motivo de rechazo:</strong>
                                                                 <p>{request.rejection_reason}</p>
                                                             </div>
                                                         )}
@@ -239,7 +245,7 @@ export default function LeaveRequests() {
                                                                 onClick={() => handleCancel(request.id)}
                                                                 className="btn-cancel"
                                                             >
-                                                                Cancel Request
+                                                                Cancelar solicitud
                                                             </button>
                                                         </div>
                                                     )}

@@ -1,8 +1,13 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+/**
+ * ProtectedRoute - Componente de Ruta Protegida
+ * Redirige a login si el usuario no está autenticado
+ * Muestra loading mientras verifica autenticación
+ */
 export default function ProtectedRoute({ children }) {
-    const { isAuthenticated, loading } = useAuth();
+    const { isAuthenticated, loading } = useAuth(); // Estado global de auth
 
     if (loading) {
         return (
