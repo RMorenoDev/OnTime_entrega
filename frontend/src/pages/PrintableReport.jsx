@@ -90,17 +90,21 @@ export default function PrintableReport() {
     return (
         <div className="print-page">
             {/* Report Header */}
-            <div className="print-header">
-                <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <img src={logo} alt="OnTime Logo" style={{ width: '32px', height: '32px' }} />
-                    OnTime
-                </h1>
-                <h2>Work Hours Report</h2>
-                <p className="print-date-range">
-                    {formatDate(startDate)} - {formatDate(endDate)}
-                </p>
-                {userName && <p className="print-subtitle">Employee: {userName}</p>}
-                {teamName && <p className="print-subtitle">Team: {teamName}</p>}
+            <div className="print-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2rem' }}>
+                {/* Logo on the left */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <img src={logo} alt="OnTime Logo" style={{ width: '48px', height: '48px' }} />
+                </div>
+
+                {/* Report info on the right */}
+                <div style={{ flex: 1, textAlign: 'right' }}>
+                    <h2 style={{ margin: '0 0 0.5rem 0' }}>Work Hours Report</h2>
+                    <p className="print-date-range" style={{ margin: '0.25rem 0' }}>
+                        {formatDate(startDate)} - {formatDate(endDate)}
+                    </p>
+                    {userName && <p className="print-subtitle" style={{ margin: '0.25rem 0' }}>Employee: {userName}</p>}
+                    {teamName && <p className="print-subtitle" style={{ margin: '0.25rem 0' }}>Team: {teamName}</p>}
+                </div>
             </div>
 
             {/* Personal Report */}
