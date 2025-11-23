@@ -40,7 +40,7 @@ class AuthController extends Controller
             'team_name' => 'nullable|string|max:80',
         ]);
 
-        // Create user
+        // Crear usuario
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -48,13 +48,13 @@ class AuthController extends Controller
             'role' => $request->role ?? 'employee',
         ]);
 
-        // Handle team if provided
+        // Manejar equipo si se proporciona
         if ($request->team_name) {
             $team = \App\Models\Team::where('name', $request->team_name)->first();
 
-            // If team doesn't exist
+            // Si el equipo no existe
             if (!$team) {
-                // Supervisors can create new teams
+                // Los supervisores pueden crear nuevos equipos
                 if ($user->role === 'supervisor') {
                     $team = \App\Models\Team::create([
                         'name' => $request->team_name,
@@ -62,8 +62,8 @@ class AuthController extends Controller
                         'active' => true,
                     ]);
                 } else {
-                    // Employees cannot create teams
-                    $user->delete(); // Remove the created user
+                    // Los empleados no pueden crear equipos
+                    $user->delete(); // Eliminar al usuario recien creado
                     return response()->json([
                         'message' => 'Team validation failed',
                         'errors' => [
@@ -72,7 +72,7 @@ class AuthController extends Controller
                     ], 422);
                 }
             } else {
-                // Team exists - assign supervisor if needed
+                // Si el equipo existe, asignar supervisor si hace falta
                 if ($user->role === 'supervisor' && !$team->supervisor_user_id) {
                     $team->update(['supervisor_user_id' => $user->id]);
                 }
@@ -91,7 +91,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Login user and create token
+     * Iniciar sesion y crear token
      */
     public function login(Request $request)
     {
@@ -118,7 +118,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout user (revoke current token)
+     * Cerrar sesion (revoca el token actual)
      */
     public function logout(Request $request)
     {
@@ -130,7 +130,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Get authenticated user
+     * Obtener usuario autenticado
      */
     public function me(Request $request)
     {

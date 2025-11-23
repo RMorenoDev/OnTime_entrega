@@ -6,10 +6,13 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Middleware EnsureAdmin - Restringe acceso a usuarios con rol admin.
+ */
 class EnsureAdmin
 {
     /**
-     * Handle an incoming request.
+     * Garantiza que el usuario autenticado sea admin.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */

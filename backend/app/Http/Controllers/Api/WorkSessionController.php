@@ -9,23 +9,23 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * WorkSessionController - Controlador de Sesiones de Trabajo
- * Gestiona el fichaje de entrada/salida de los empleados
+ * Gestiona el fichaje de entrada y salida de los empleados.
  */
 class WorkSessionController extends Controller
 {
     /**
-     * Fichar entrada - Inicia una nueva sesión de trabajo
+     * Fichar entrada: inicia una nueva sesion de trabajo.
      */
     public function clockIn(Request $request)
     {
         $user = Auth::user(); // Usuario autenticado
 
-        // Verificar si el usuario ya tiene una sesión activa (sin ended_at)
+        // Verificar si el usuario ya tiene una sesion activa (sin ended_at)
         $activeSession = WorkSession::where('user_id', $user->id)
             ->whereNull('ended_at')
             ->first();
 
-        // Si ya hay sesión activa, no permitir fichar de nuevo
+        // Si ya hay sesion activa, no permitir fichar de nuevo
         if ($activeSession) {
             return response()->json([
                 'message' => 'You already have an active work session',
@@ -33,7 +33,7 @@ class WorkSessionController extends Controller
             ], 422);
         }
 
-        // Crear nueva sesión de trabajo
+        // Crear nueva sesion de trabajo
         $session = WorkSession::create([
             'user_id' => $user->id,
             'started_at' => now(), // Hora actual de entrada
@@ -43,36 +43,36 @@ class WorkSessionController extends Controller
 
         return response()->json([
             'message' => 'Clocked in successfully',
-            'session' => $session->load('breaks') // Incluir pausas (vacío al iniciar)
+            'session' => $session->load('breaks') // Incluir pausas (vacio al iniciar)
         ], 201);
     }
 
     /**
-     * Fichar salida - Finaliza la sesión de trabajo actual
+     * Fichar salida: finaliza la sesion de trabajo actual.
      */
     public function clockOut(Request $request)
     {
         $user = Auth::user();
 
-        // Buscar la sesión activa del usuario
+        // Buscar la sesion activa del usuario
         $session = WorkSession::where('user_id', $user->id)
             ->whereNull('ended_at')
             ->first();
 
-        // Si no hay sesión activa, error
+        // Si no hay sesion activa, devolver error
         if (!$session) {
             return response()->json([
                 'message' => 'No active work session found'
             ], 404);
         }
 
-        // Finalizar cualquier pausa activa automáticamente
+        // Finalizar cualquier pausa activa automaticamente
         $activeBreak = $session->breaks()->whereNull('ended_at')->first();
         if ($activeBreak) {
             $activeBreak->update(['ended_at' => now()]);
         }
 
-        // Finalizar la sesión de trabajo
+        // Finalizar la sesion de trabajo
         $session->update([
             'ended_at' => now(), // Hora actual de salida
             'note' => $request->note ?? $session->note,
@@ -85,13 +85,13 @@ class WorkSessionController extends Controller
     }
 
     /**
-     * Obtener sesión activa - Para mostrar en el dashboard
+     * Obtener la sesion activa para mostrar en el dashboard.
      */
     public function getActive()
     {
         $user = Auth::user();
 
-        // Buscar sesión sin ended_at (activa) con sus pausas
+        // Buscar sesion sin ended_at (activa) con sus pausas
         $session = WorkSession::where('user_id', $user->id)
             ->whereNull('ended_at')
             ->with(['breaks' => function ($query) {
@@ -100,12 +100,12 @@ class WorkSessionController extends Controller
             ->first();
 
         return response()->json([
-            'session' => $session // null si no hay sesión activa
+            'session' => $session // null si no hay sesion activa
         ]);
     }
 
     /**
-     * List user's work sessions
+     * Listado paginado de sesiones del usuario.
      */
     public function index(Request $request)
     {

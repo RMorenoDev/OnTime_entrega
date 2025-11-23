@@ -5,12 +5,12 @@ import api from '../api/axios';
 
 export default function PrintableReport() {
     const [searchParams] = useSearchParams();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [reportData, setReportData] = useState(null);
-    const [teamData, setTeamData] = useState(null);
+    const [loading, setLoading] = useState(true); // Estado de carga
+    const [error, setError] = useState(''); // Mensajes de error
+    const [reportData, setReportData] = useState(null); // Datos de reporte personal
+    const [teamData, setTeamData] = useState(null); // Datos de reporte de equipo
 
-    // Get parameters from URL
+    // Obtener parametros desde la URL
     const reportType = searchParams.get('type'); // 'personal' or 'team'
     const startDate = searchParams.get('start_date');
     const endDate = searchParams.get('end_date');
@@ -20,9 +20,10 @@ export default function PrintableReport() {
     const teamName = searchParams.get('team_name');
 
     useEffect(() => {
-        fetchReportData();
+        fetchReportData(); // Cargar datos al montar
     }, []);
 
+    // Recuperar datos del reporte (personal o de equipo)
     const fetchReportData = async () => {
         try {
             if (reportType === 'personal') {
@@ -46,6 +47,7 @@ export default function PrintableReport() {
         }
     };
 
+    // Formatea horas decimales a HH:MM
     const formatHoursMinutes = (decimalHours) => {
         if (!decimalHours && decimalHours !== 0) return '0:00';
         const hours = Math.floor(decimalHours);
@@ -53,11 +55,13 @@ export default function PrintableReport() {
         return `${hours}:${minutes.toString().padStart(2, '0')}`;
     };
 
+    // Formatea HH:MM:SS a HH:MM
     const formatTime = (time) => {
-        if (!time) return '—';
+        if (!time) return '-';
         return time.substring(0, 5);
     };
 
+    // Fecha legible para impresion
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString('en-US', {
             weekday: 'short',
@@ -67,6 +71,7 @@ export default function PrintableReport() {
         });
     };
 
+    // Lanza la impresion del reporte
     const handlePrint = () => {
         window.print();
     };
@@ -89,15 +94,15 @@ export default function PrintableReport() {
 
     return (
         <div className="print-page">
-            {/* Report Header */}
+            {/* Encabezado del reporte */}
             <div className="print-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2rem' }}>
-                {/* Logo on the left */}
+                {/* Logo a la izquierda */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <img src={logo} alt="OnTime Logo" style={{ width: '48px', height: '48px' }} />
                     <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: 'bold' }}>OnTime</h1>
                 </div>
 
-                {/* Report info on the right */}
+                {/* Info del reporte a la derecha */}
                 <div style={{ flex: 1, textAlign: 'right' }}>
                     <h2 style={{ margin: '0 0 0.5rem 0' }}>Work Hours Report</h2>
                     <p className="print-date-range" style={{ margin: '0.25rem 0' }}>
@@ -108,10 +113,10 @@ export default function PrintableReport() {
                 </div>
             </div>
 
-            {/* Personal Report */}
+            {/* Reporte personal */}
             {reportType === 'personal' && reportData && (
                 <div className="print-content">
-                    {/* Summary */}
+                    {/* Resumen */}
                     <div className="print-summary">
                         <div className="print-summary-item">
                             <span className="label">Total Hours:</span>
@@ -131,7 +136,7 @@ export default function PrintableReport() {
                         </div>
                     </div>
 
-                    {/* Work Sessions Table */}
+                    {/* Tabla de sesiones de trabajo */}
                     <h3>Work Sessions</h3>
                     <table className="print-table">
                         <thead>
@@ -158,7 +163,7 @@ export default function PrintableReport() {
                         </tbody>
                     </table>
 
-                    {/* Break Summary */}
+                    {/* Resumen de pausas */}
                     {Object.keys(reportData.break_summary).length > 0 && (
                         <>
                             <h3>Break Time Summary</h3>
@@ -183,10 +188,10 @@ export default function PrintableReport() {
                 </div>
             )}
 
-            {/* Team Report */}
+            {/* Reporte de equipo */}
             {reportType === 'team' && teamData && (
                 <div className="print-content">
-                    {/* Team Summary */}
+                    {/* Resumen del equipo */}
                     <div className="print-summary">
                         <div className="print-summary-item">
                             <span className="label">Team Total Hours:</span>
@@ -202,7 +207,7 @@ export default function PrintableReport() {
                         </div>
                     </div>
 
-                    {/* Team Members */}
+                    {/* Miembros del equipo */}
                     <h3>Team Members</h3>
                     {teamData.team_members.map(member => (
                         <div key={member.user.id} className="print-member-section">
@@ -241,7 +246,7 @@ export default function PrintableReport() {
                 </div>
             )}
 
-            {/* Footer */}
+            {/* Pie de pagina */}
             <div className="print-footer">
                 <p>Generated on: {new Date().toLocaleString()}</p>
                 <p>OnTime - Work Hours Management System</p>

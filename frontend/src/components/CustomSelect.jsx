@@ -13,8 +13,8 @@ export default function CustomSelect({
     disabled = false,
     required = false
 }) {
-    const [isOpen, setIsOpen] = useState(false);
-    const dropdownRef = useRef(null);
+    const [isOpen, setIsOpen] = useState(false); // Controla apertura del menu
+    const dropdownRef = useRef(null); // Ref para detectar clic fuera
 
     // Obtener texto a mostrar para el valor seleccionado
     const getDisplayText = () => {
@@ -34,6 +34,7 @@ export default function CustomSelect({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Seleccionar opcion y cerrar
     const handleSelect = (optionValue) => {
         onChange(optionValue);
         setIsOpen(false);

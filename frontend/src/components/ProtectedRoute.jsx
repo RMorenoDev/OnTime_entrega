@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
  * Muestra loading mientras verifica autenticación
  */
 export default function ProtectedRoute({ children }) {
-    const { isAuthenticated, loading } = useAuth();
+    const { isAuthenticated, loading } = useAuth(); // Estado global de auth
 
     if (loading) {
         return (

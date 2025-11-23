@@ -7,26 +7,26 @@ import CustomSelect from '../components/CustomSelect';
 import '../index.css';
 
 export default function Register() {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordConfirmation, setPasswordConfirmation] = useState('');
-    const [role, setRole] = useState('');
-    const [teamName, setTeamName] = useState('');
-    const [teams, setTeams] = useState([]);
-    const [filteredTeams, setFilteredTeams] = useState([]);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
+    const [name, setName] = useState(''); // Nombre completo
+    const [email, setEmail] = useState(''); // Email
+    const [password, setPassword] = useState(''); // Password
+    const [passwordConfirmation, setPasswordConfirmation] = useState(''); // Confirmacion
+    const [role, setRole] = useState(''); // Rol seleccionado
+    const [teamName, setTeamName] = useState(''); // Nombre del equipo
+    const [teams, setTeams] = useState([]); // Equipos disponibles
+    const [filteredTeams, setFilteredTeams] = useState([]); // Equipos filtrados para supervisor
+    const [showSuggestions, setShowSuggestions] = useState(false); // Toggle de sugerencias
+    const [errors, setErrors] = useState({}); // Errores de validacion/API
+    const [loading, setLoading] = useState(false); // Estado de envio
     const { register } = useAuth();
     const navigate = useNavigate();
 
-    // Fetch teams on mount
+    // Obtener equipos al montar
     useEffect(() => {
         const fetchTeams = async () => {
             try {
                 const response = await api.get('/teams');
-                // API returns {teams: [...]}
+                // La API devuelve {teams: [...]}
                 const teamsData = response.data.teams || [];
                 setTeams(teamsData);
                 setFilteredTeams(teamsData);
@@ -37,7 +37,7 @@ export default function Register() {
         fetchTeams();
     }, []);
 
-    // Filter teams for supervisor autocomplete
+    // Filtrar equipos para autocompletar de supervisores
     useEffect(() => {
         if (role === 'supervisor' && teamName) {
             const filtered = teams.filter(team =>
@@ -49,6 +49,7 @@ export default function Register() {
         }
     }, [teamName, teams, role]);
 
+    // Enviar registro
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
@@ -123,7 +124,7 @@ export default function Register() {
                     <div className="form-group">
                         <label htmlFor="teamName">Team {role === 'employee' ? '*' : ''}</label>
                         {role === 'employee' ? (
-                            // Custom dropdown for employees
+                            // Selector personalizado para empleados
                             <CustomSelect
                                 options={teams.map(team => ({
                                     value: team.name,
@@ -136,7 +137,7 @@ export default function Register() {
                                 required={role === 'employee'}
                             />
                         ) : (
-                            // Text input with visible suggestions for supervisors
+                            // Input de texto con sugerencias visibles para supervisores
                             <div style={{ position: 'relative', width: '100%' }}>
                                 <input
                                     id="teamName"

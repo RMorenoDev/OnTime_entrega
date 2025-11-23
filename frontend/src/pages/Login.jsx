@@ -5,13 +5,14 @@ import logo from '../assets/ontime_logo.png';
 import '../index.css';
 
 export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState(''); // Input email
+    const [password, setPassword] = useState(''); // Input password
+    const [errors, setErrors] = useState({}); // Errores de validacion/API
+    const [loading, setLoading] = useState(false); // Estado de envio
     const { login } = useAuth();
     const navigate = useNavigate();
 
+    // Enviar formulario de login
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});

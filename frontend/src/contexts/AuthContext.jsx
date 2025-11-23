@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  // Obtener datos del usuario autenticado usando el token
   const fetchUser = async () => {
     try {
       const response = await api.get('/me', {
@@ -46,6 +47,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Registro con creación de token + usuario
   const register = async (name, email, password, passwordConfirmation, role = 'employee', teamName = '') => {
     try {
       const response = await api.post('/register', {
@@ -69,6 +71,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Login con almacenamiento de token
   const login = async (email, password) => {
     try {
       const response = await api.post('/login', { email, password });
@@ -85,6 +88,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Logout con revocación de token en backend y limpieza local
   const logout = async () => {
     try {
       if (token) {
@@ -101,7 +105,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Add token to all requests if available
+  // Añadir/quitar token por defecto en axios cuando cambie
   useEffect(() => {
     if (token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;

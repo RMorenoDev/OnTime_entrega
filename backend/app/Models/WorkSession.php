@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * WorkSession - Modelo de Sesión de Trabajo
- * Representa una jornada laboral (clock-in hasta clock-out)
- * Relaciones: pertenece a User, tiene muchas WorkBreaks (pausas)
+ * WorkSession - Modelo de Sesion de Trabajo
+ * Representa una jornada laboral (clock-in hasta clock-out).
+ * Relaciones: pertenece a User y tiene muchas WorkBreaks (pausas).
  */
 class WorkSession extends Model
 {
@@ -24,25 +24,19 @@ class WorkSession extends Model
         'ended_at' => 'datetime',
     ];
 
-    /**
-     * Get the user that owns the work session
-     */
+    /** Usuario al que pertenece la sesion de trabajo. */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the breaks for the work session
-     */
+    /** Pausas asociadas a la sesion de trabajo. */
     public function breaks()
     {
         return $this->hasMany(WorkBreak::class);
     }
 
-    /**
-     * Calculate total minutes worked
-     */
+    /** Calcula minutos totales trabajados. */
     public function calculateTotalMinutes()
     {
         if ($this->clock_out) {
@@ -51,17 +45,13 @@ class WorkSession extends Model
         }
     }
 
-    /**
-     * Check if session is active
-     */
+    /** Verifica si la sesion esta activa. */
     public function isActive()
     {
         return $this->status === 'in_progress';
     }
 
-    /**
-     * Clock out
-     */
+    /** Realiza clock-out de la sesion. */
     public function clockOut()
     {
         $this->clock_out = now();

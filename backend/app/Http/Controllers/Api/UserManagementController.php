@@ -118,7 +118,7 @@ class UserManagementController extends Controller
             'role' => 'required|in:employee,supervisor,admin',
         ]);
 
-        // Prevent demoting the last admin
+        // Evitar degradar al ultimo admin
         if ($validated['role'] !== 'admin' && $user->role === 'admin') {
             $adminCount = User::where('role', 'admin')->count();
             if ($adminCount <= 1) {

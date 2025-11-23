@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * WorkBreak - Modelo de Pausa
- * Representa pausas durante la jornada laboral
- * Relaciones: pertenece a WorkSession
+ * Representa pausas durante la jornada laboral.
+ * Relaciones: pertenece a WorkSession.
  */
 class WorkBreak extends Model
 {
@@ -28,9 +28,7 @@ class WorkBreak extends Model
         'is_paid' => 'boolean',
     ];
 
-    /**
-     * Get the work session that owns the break
-     */
+    /** Sesion de trabajo a la que pertenece la pausa. */
     public function workSession()
     {
         return $this->belongsTo(WorkSession::class);

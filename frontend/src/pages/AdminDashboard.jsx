@@ -6,12 +6,12 @@ import api from '../api/axios';
 export default function AdminDashboard() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [stats, setStats] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [stats, setStats] = useState(null); // Datos del dashboard
+    const [loading, setLoading] = useState(true); // Estado de carga
+    const [error, setError] = useState(''); // Mensajes de error
 
     useEffect(() => {
-        fetchStats();
+        fetchStats(); // Carga estadisticas al montar
     }, []);
 
     const fetchStats = async () => {
@@ -62,7 +62,7 @@ export default function AdminDashboard() {
                         {error && <div className="error-message">{error}</div>}
 
                         <div className="work-session-card">
-                            {/* Navigation Tabs */}
+                            {/* Pestañas de navegacion */}
                             <div className="admin-nav">
                                 <button className="admin-nav-btn active" onClick={() => navigate('/admin')}>
                                     📊 Dashboard
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
 
                             {stats && (
                                 <>
-                                    {/* Users Statistics */}
+                                    {/* Estadisticas de usuarios */}
                                     <div className="stats-section">
                                         <h3>👥 Users</h3>
                                         <div className="stats-grid">
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
 
-                                    {/* Teams & Work Sessions */}
+                                    {/* Equipos y sesiones */}
                                     <div className="stats-grid-2col">
                                         <div className="stats-section">
                                             <h3>🏢 Teams</h3>
@@ -125,7 +125,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
 
-                                    {/* Leave Requests */}
+                                    {/* Solicitudes de permiso */}
                                     <div className="stats-section">
                                         <h3>📝 Leave Requests</h3>
                                         <div className="stats-grid-mini">
@@ -140,7 +140,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
 
-                                    {/* Quick Actions */}
+                                    {/* Acciones rapidas */}
                                     <div className="quick-actions">
                                         <h3>⚡ Quick Actions</h3>
                                         <div className="action-buttons">

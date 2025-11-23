@@ -70,16 +70,16 @@ class ReportController extends Controller
         $user = $request->user();
         $team = null;
 
-        // Admin can choose any team or see all teams
+        // El admin puede elegir cualquier equipo o ver todos los equipos
         if ($user->role === 'admin') {
             if ($request->team_id) {
                 $team = \App\Models\Team::find($request->team_id);
             } else {
-                // If no team specified, get the first team or supervised team
+                // Si no se especifica equipo, usar el primero o el que supervise
                 $team = $user->supervisedTeam ?? \App\Models\Team::first();
             }
         } else {
-            // For supervisors, check if they are IN a team (regardless of being supervisor)
+            // Para supervisores, validar que pertenezcan a un equipo
             $team = $user->team;
             
             if (!$team) {

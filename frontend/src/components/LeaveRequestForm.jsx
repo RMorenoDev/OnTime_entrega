@@ -4,8 +4,8 @@ import api from '../api/axios';
 
 export default function LeaveRequestForm({ onSuccess, onCancel }) {
     const { user } = useAuth();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false); // Estado de envio
+    const [error, setError] = useState(''); // Mensaje de error
 
     const [formData, setFormData] = useState({
         leave_type: 'vacation',
@@ -17,6 +17,7 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
         note: '',
     });
 
+    // Envio del formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -40,6 +41,7 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
         }
     };
 
+    // Actualiza campos del formulario
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -48,16 +50,16 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
         }));
     };
 
-    // Generate half-hour options (0.5 to 24 in 0.5 increments)
+    // Generar opciones de horas en pasos de 0.5
     const hourOptions = [];
     for (let i = 0.5; i <= 24; i += 0.5) {
         hourOptions.push(i);
     }
 
-    // Get today's date in YYYY-MM-DD format for min attribute
+    // Fecha minima (hoy) para date
     const today = new Date().toISOString().split('T')[0];
 
-    // Get current datetime in YYYY-MM-DDTHH:MM format
+    // Fecha y hora actual para datetime-local
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     const currentDateTime = now.toISOString().slice(0, 16);

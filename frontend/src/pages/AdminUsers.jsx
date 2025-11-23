@@ -7,22 +7,23 @@ import CustomSelect from '../components/CustomSelect';
 export default function AdminUsers() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [users, setUsers] = useState([]);
-    const [teams, setTeams] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [search, setSearch] = useState('');
-    const [roleFilter, setRoleFilter] = useState('');
-    const [teamFilter, setTeamFilter] = useState('');
-    const [editingUser, setEditingUser] = useState(null);
-    const [formData, setFormData] = useState({ name: '', email: '', role: '', team_id: '' });
-    const [actionLoading, setActionLoading] = useState(false);
+    const [users, setUsers] = useState([]); // Lista de usuarios
+    const [teams, setTeams] = useState([]); // Equipos para filtros y asignaciones
+    const [loading, setLoading] = useState(true); // Cargando tabla
+    const [error, setError] = useState(''); // Mensaje de error
+    const [search, setSearch] = useState(''); // Filtro texto
+    const [roleFilter, setRoleFilter] = useState(''); // Filtro por rol
+    const [teamFilter, setTeamFilter] = useState(''); // Filtro por equipo
+    const [editingUser, setEditingUser] = useState(null); // Usuario en edicion
+    const [formData, setFormData] = useState({ name: '', email: '', role: '', team_id: '' }); // Datos del modal
+    const [actionLoading, setActionLoading] = useState(false); // Estado de acciones CRUD
 
     useEffect(() => {
-        fetchUsers();
-        fetchTeams();
+        fetchUsers(); // Cargar usuarios con filtros
+        fetchTeams(); // Cargar equipos para selects
     }, [search, roleFilter, teamFilter]);
 
+    // Obtener usuarios con filtros aplicados
     const fetchUsers = async () => {
         try {
             const params = {};
@@ -39,6 +40,7 @@ export default function AdminUsers() {
         }
     };
 
+    // Obtener equipos para filtros y asignaciones
     const fetchTeams = async () => {
         try {
             const response = await api.get('/admin/teams');
@@ -48,6 +50,7 @@ export default function AdminUsers() {
         }
     };
 
+    // Prepara el modal de edicion
     const handleEdit = (user) => {
         setEditingUser(user);
         setFormData({
@@ -58,6 +61,7 @@ export default function AdminUsers() {
         });
     };
 
+    // Guardar cambios del usuario
     const handleUpdate = async () => {
         setActionLoading(true);
         setError('');
@@ -73,6 +77,7 @@ export default function AdminUsers() {
         }
     };
 
+    // Eliminar usuario
     const handleDelete = async (userId) => {
         if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
 
@@ -129,7 +134,7 @@ export default function AdminUsers() {
                 {error && <div className="error-message">{error}</div>}
 
                 <div className="work-session-card">
-                    {/* Navigation Tabs */}
+                    {/* Pestañas de navegacion */}
                     <div className="admin-nav">
                         <button className="admin-nav-btn" onClick={() => navigate('/admin')}>
                             📊 Dashboard
@@ -142,7 +147,7 @@ export default function AdminUsers() {
                         </button>
                     </div>
 
-                    {/* Filters */}
+                    {/* Filtros */}
                     <div className="admin-filters">
                         <input
                             type="text"
@@ -173,7 +178,7 @@ export default function AdminUsers() {
                         />
                     </div>
 
-                    {/* Users Table */}
+                    {/* Tabla de usuarios */}
                     {loading ? (
                         <div className="loading">Loading users...</div>
                     ) : (
@@ -207,7 +212,7 @@ export default function AdminUsers() {
                     )}
                 </div>
 
-                {/* Edit User Modal */}
+                {/* Modal editar usuario */}
                 {editingUser && (
                     <div className="modal-overlay" onClick={() => setEditingUser(null)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>

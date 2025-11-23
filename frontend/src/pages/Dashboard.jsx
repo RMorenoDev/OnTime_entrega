@@ -7,19 +7,19 @@ import logo from '../assets/ontime_logo.png';
 export default function Dashboard() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [activeSession, setActiveSession] = useState(null);
-    const [activeBreak, setActiveBreak] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [activeSession, setActiveSession] = useState(null); // Sesion de trabajo en curso
+    const [activeBreak, setActiveBreak] = useState(null); // Pausa activa
+    const [loading, setLoading] = useState(false); // Estados de botones
+    const [error, setError] = useState(''); // Mensaje de error en pantalla
 
-    // Fetch active work session
+    // Obtener sesion de trabajo activa
     const fetchActiveSession = async () => {
         try {
             const response = await api.get('/work-sessions/active');
             const session = response.data.session;
             setActiveSession(session);
 
-            // Check if there's an active break
+            // Verificar si hay una pausa activa
             if (session?.breaks) {
                 const currentBreak = session.breaks.find(b => !b.ended_at);
                 setActiveBreak(currentBreak || null);
@@ -30,12 +30,13 @@ export default function Dashboard() {
     };
 
     useEffect(() => {
-        fetchActiveSession();
-        // Refresh every 30 seconds
+        fetchActiveSession(); // Primer fetch al montar
+        // Refrescar cada 30 segundos
         const interval = setInterval(fetchActiveSession, 30000);
         return () => clearInterval(interval);
     }, []);
 
+    // Inicia la jornada
     const handleClockIn = async () => {
         setLoading(true);
         setError('');
@@ -49,6 +50,7 @@ export default function Dashboard() {
         }
     };
 
+    // Cierra la jornada
     const handleClockOut = async () => {
         setLoading(true);
         setError('');
@@ -63,6 +65,7 @@ export default function Dashboard() {
         }
     };
 
+    // Inicia una pausa
     const handleStartBreak = async (breakType, isPaid) => {
         setLoading(true);
         setError('');
@@ -80,6 +83,7 @@ export default function Dashboard() {
         }
     };
 
+    // Finaliza la pausa activa
     const handleEndBreak = async () => {
         setLoading(true);
         setError('');
@@ -94,6 +98,7 @@ export default function Dashboard() {
         }
     };
 
+    // Calcula la duracion de la pausa en curso
     const getBreakDuration = () => {
         if (!activeBreak?.started_at) return '00:00:00';
         const start = new Date(activeBreak.started_at);
@@ -105,12 +110,12 @@ export default function Dashboard() {
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
-    const [timer, setTimer] = useState(getBreakDuration());
+    const [timer, setTimer] = useState(getBreakDuration()); // Contador visible de la pausa
 
     useEffect(() => {
         if (activeBreak && !activeBreak.ended_at) {
             const interval = setInterval(() => {
-                setTimer(getBreakDuration());
+                setTimer(getBreakDuration()); // Actualiza cada segundo
             }, 1000);
             return () => clearInterval(interval);
         }
@@ -157,7 +162,7 @@ export default function Dashboard() {
                     </div>
                 )}
 
-                {/* Work Session Card */}
+                {/* Tarjeta de sesion de trabajo */}
                 <div className="work-session-card">
                     <h3 style={{ textAlign: 'center' }}>⏰ Work Session</h3>
 
@@ -252,7 +257,7 @@ export default function Dashboard() {
                                 </div>
                             )}
 
-                            {/* Show completed breaks */}
+                            {/* Mostrar pausas completadas */}
                             {activeSession?.breaks && activeSession.breaks.filter(b => b.ended_at).length > 0 && (
                                 <div className="breaks-history">
                                     <h5>Completed Breaks</h5>

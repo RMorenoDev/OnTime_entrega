@@ -69,7 +69,7 @@ class TeamManagementController extends Controller
             'supervisor_user_id' => 'nullable|exists:users,id',
         ]);
 
-        // Validate supervisor role if provided
+        // Validar rol de supervisor si se proporciona
         if (isset($validated['supervisor_user_id'])) {
             $supervisor = User::find($validated['supervisor_user_id']);
             if ($supervisor && !in_array($supervisor->role, ['supervisor', 'admin'])) {
@@ -94,7 +94,7 @@ class TeamManagementController extends Controller
     {
         $team = Team::withCount('members')->findOrFail($id);
 
-        // Cannot delete team with members
+        // No se puede eliminar un equipo con miembros activos
         if ($team->members_count > 0) {
             return response()->json([
                 'message' => 'Cannot delete team with members. Please reassign members first.'

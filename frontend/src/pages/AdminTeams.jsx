@@ -7,22 +7,23 @@ import CustomSelect from '../components/CustomSelect';
 export default function AdminTeams() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [teams, setTeams] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [editingTeam, setEditingTeam] = useState(null);
-    const [creatingTeam, setCreatingTeam] = useState(false);
-    const [formData, setFormData] = useState({ name: '', supervisor_user_id: '' });
-    const [actionLoading, setActionLoading] = useState(false);
-    const [viewingMembers, setViewingMembers] = useState(null);
-    const [members, setMembers] = useState([]);
+    const [teams, setTeams] = useState([]); // Listado de equipos
+    const [users, setUsers] = useState([]); // Usuarios para asignar supervisor
+    const [loading, setLoading] = useState(true); // Carga inicial
+    const [error, setError] = useState(''); // Errores de UI
+    const [editingTeam, setEditingTeam] = useState(null); // Equipo en edicion
+    const [creatingTeam, setCreatingTeam] = useState(false); // Modal de creacion
+    const [formData, setFormData] = useState({ name: '', supervisor_user_id: '' }); // Formulario basico
+    const [actionLoading, setActionLoading] = useState(false); // Estado de acciones CRUD
+    const [viewingMembers, setViewingMembers] = useState(null); // Equipo seleccionado para ver miembros
+    const [members, setMembers] = useState([]); // Miembros cargados
 
     useEffect(() => {
-        fetchTeams();
-        fetchUsers();
+        fetchTeams(); // Cargar equipos
+        fetchUsers(); // Cargar usuarios para dropdowns
     }, []);
 
+    // Obtener equipos desde la API
     const fetchTeams = async () => {
         try {
             const response = await api.get('/admin/teams');
@@ -34,6 +35,7 @@ export default function AdminTeams() {
         }
     };
 
+    // Obtener usuarios para dropdown de supervisor
     const fetchUsers = async () => {
         try {
             const response = await api.get('/admin/users');
@@ -43,6 +45,7 @@ export default function AdminTeams() {
         }
     };
 
+    // Crear nuevo equipo
     const handleCreate = async () => {
         setActionLoading(true);
         setError('');
@@ -59,6 +62,7 @@ export default function AdminTeams() {
         }
     };
 
+    // Actualizar equipo existente
     const handleUpdate = async () => {
         setActionLoading(true);
         setError('');
@@ -75,6 +79,7 @@ export default function AdminTeams() {
         }
     };
 
+    // Eliminar equipo (sin miembros)
     const handleDelete = async (teamId) => {
         if (!confirm('Are you sure you want to delete this team? The team must have no members.')) return;
 
@@ -90,6 +95,7 @@ export default function AdminTeams() {
         }
     };
 
+    // Ver miembros del equipo seleccionado
     const handleViewMembers = async (team) => {
         try {
             const response = await api.get(`/admin/teams/${team.id}/members`);
@@ -100,7 +106,7 @@ export default function AdminTeams() {
         }
     };
 
-    const supervisors = users.filter(u => u.role === 'supervisor' || u.role === 'admin');
+    const supervisors = users.filter(u => u.role === 'supervisor' || u.role === 'admin'); // Opciones validas para supervisor
 
     return (
         <div className="dashboard-container">
@@ -134,7 +140,7 @@ export default function AdminTeams() {
                 {error && <div className="error-message">{error}</div>}
 
                 <div className="work-session-card">
-                    {/* Navigation Tabs */}
+                    {/* Pestañas de navegacion */}
                     <div className="admin-nav">
                         <button className="admin-nav-btn" onClick={() => navigate('/admin')}>
                             📊 Dashboard
@@ -153,7 +159,7 @@ export default function AdminTeams() {
                         </button>
                     </div>
 
-                    {/* Teams Grid */}
+                    {/* Grid de equipos */}
                     {loading ? (
                         <div className="loading">Loading teams...</div>
                     ) : (
@@ -187,7 +193,7 @@ export default function AdminTeams() {
                     )}
                 </div>
 
-                {/* Create Team Modal */}
+                {/* Modal crear equipo */}
                 {creatingTeam && (
                     <div className="modal-overlay" onClick={() => setCreatingTeam(false)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -230,7 +236,7 @@ export default function AdminTeams() {
                     </div>
                 )}
 
-                {/* Edit Team Modal */}
+                {/* Modal editar equipo */}
                 {editingTeam && (
                     <div className="modal-overlay" onClick={() => setEditingTeam(null)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -272,7 +278,7 @@ export default function AdminTeams() {
                     </div>
                 )}
 
-                {/* View Members Modal */}
+                {/* Modal ver miembros */}
                 {viewingMembers && (
                     <div className="modal-overlay" onClick={() => setViewingMembers(null)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>

@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * LeaveRequest - Modelo de Solicitud de Permiso
- * Representa solicitudes de vacaciones, permisos médicos y personales
- * Relaciones: pertenece a User (empleado) y User (supervisor que aprueba)
+ * Representa solicitudes de vacaciones, permisos medicos y personales.
+ * Relaciones: pertenece a User (empleado) y User (supervisor que aprueba).
  */
 class LeaveRequest extends Model
 {
@@ -35,69 +35,53 @@ class LeaveRequest extends Model
         'duration_hours' => 'decimal:1',
     ];
 
-    /**
-     * Get the employee who requested leave
-     */
+    /** Obtener el empleado que solicito el permiso. */
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Get the supervisor who reviewed the request
-     */
+    /** Obtener el supervisor que reviso la solicitud. */
     public function supervisor()
     {
         return $this->belongsTo(User::class, 'supervisor_id');
     }
 
-    /**
-     * Check if request is pending
-     */
+    /** Verifica si la solicitud esta pendiente. */
     public function isPending()
     {
         return $this->status === 'pending';
     }
 
-    /**
-     * Check if request is approved
-     */
+    /** Verifica si la solicitud esta aprobada. */
     public function isApproved()
     {
         return $this->status === 'approved';
     }
 
-    /**
-     * Check if request is rejected
-     */
+    /** Verifica si la solicitud esta rechazada. */
     public function isRejected()
     {
         return $this->status === 'rejected';
     }
 
-    /**
-     * Check if request is cancelled
-     */
+    /** Verifica si la solicitud esta cancelada. */
     public function isCancelled()
     {
         return $this->status === 'cancelled';
     }
 
-    /**
-     * Get duration in days (for full day requests)
-     */
+    /** Duracion en dias (para solicitudes de dia completo). */
     public function getDurationInDays()
     {
         if (!$this->is_full_day || !$this->end_at) {
             return 0;
         }
         
-        return $this->start_at->diffInDays($this->end_at) + 1; // +1 to include both start and end day
+        return $this->start_at->diffInDays($this->end_at) + 1; // +1 para incluir dia inicial y final
     }
 
-    /**
-     * Get formatted duration string
-     */
+    /** Devuelve la duracion formateada en texto. */
     public function getFormattedDuration()
     {
         if ($this->is_full_day) {

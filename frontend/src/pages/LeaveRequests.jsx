@@ -9,14 +9,15 @@ import SupervisorPanel from './SupervisorPanel';
 export default function LeaveRequests() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [myRequests, setMyRequests] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [showForm, setShowForm] = useState(false);
-    const [filter, setFilter] = useState('all');
-    // Default view: 'supervisor' for admins, 'my-requests' for others
+    const [myRequests, setMyRequests] = useState([]); // Mis solicitudes
+    const [loading, setLoading] = useState(true); // Estado de carga
+    const [error, setError] = useState(''); // Errores en UI
+    const [showForm, setShowForm] = useState(false); // Mostrar formulario
+    const [filter, setFilter] = useState('all'); // Filtro de estado
+    // Vista por defecto: 'supervisor' para admins, 'my-requests' para otros
     const [activeView, setActiveView] = useState(user?.role === 'admin' ? 'supervisor' : 'my-requests');
 
+    // Obtener solicitudes propias
     const fetchMyRequests = async () => {
         try {
             const response = await api.get('/leave-requests');
@@ -30,10 +31,11 @@ export default function LeaveRequests() {
 
     useEffect(() => {
         if (activeView === 'my-requests') {
-            fetchMyRequests();
+            fetchMyRequests(); // Cargar solo cuando se esta en vista personal
         }
     }, [activeView]);
 
+    // Cancelar solicitud
     const handleCancel = async (id) => {
         if (!confirm('Are you sure you want to cancel this leave request?')) return;
 
@@ -112,9 +114,9 @@ export default function LeaveRequests() {
                     </div>
                 </div>
 
-                {/* Main Content Card */}
+                {/* Tarjeta principal de contenido */}
                 <div className="work-session-card">
-                    {/* View Toggle - Different for Admin vs Supervisor */}
+                    {/* Cambio de vista segun rol (admin vs supervisor) */}
                     {user?.role === 'admin' ? (
                         <div className="view-toggle">
                             <button
@@ -147,7 +149,7 @@ export default function LeaveRequests() {
                         </div>
                     ) : null}
 
-                    {/* Admin views */}
+                    {/* Vistas para admin */}
                     {user?.role === 'admin' && activeView === 'supervisor' ? (
                         <SupervisorPanel />
                     ) : user?.role === 'admin' && activeView === 'employees' ? (

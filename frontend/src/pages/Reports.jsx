@@ -8,36 +8,37 @@ import CustomSelect from '../components/CustomSelect';
 export default function Reports() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [activeView, setActiveView] = useState(user?.role === 'admin' ? 'employees' : 'my-hours');
+    const [loading, setLoading] = useState(false); // Estado de carga
+    const [error, setError] = useState(''); // Mensaje de error
+    const [activeView, setActiveView] = useState(user?.role === 'admin' ? 'employees' : 'my-hours'); // Vista actual
 
-    // Date range - default to current month
+    // Rango de fechas: mes actual por defecto
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    const [startDate, setStartDate] = useState(firstDay.toISOString().split('T')[0]);
-    const [endDate, setEndDate] = useState(today.toISOString().split('T')[0]);
+    const [startDate, setStartDate] = useState(firstDay.toISOString().split('T')[0]); // Fecha inicio
+    const [endDate, setEndDate] = useState(today.toISOString().split('T')[0]); // Fecha fin
 
-    // Report data
-    const [reportData, setReportData] = useState(null);
-    const [teamData, setTeamData] = useState(null);
+    // Datos de reportes
+    const [reportData, setReportData] = useState(null); // Datos de reporte personal
+    const [teamData, setTeamData] = useState(null); // Datos de reporte de equipo
 
-    // Admin selectors
-    const [teams, setTeams] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [selectedTeam, setSelectedTeam] = useState('');
-    const [selectedUser, setSelectedUser] = useState('');
+    // Selectores para admin
+    const [teams, setTeams] = useState([]); // Equipos para selects
+    const [users, setUsers] = useState([]); // Usuarios para selects
+    const [selectedTeam, setSelectedTeam] = useState(''); // Equipo escogido
+    const [selectedUser, setSelectedUser] = useState(''); // Usuario escogido
 
     useEffect(() => {
         if (user?.role === 'admin') {
-            fetchTeamsAndUsers();
+            fetchTeamsAndUsers(); // Solo admins cargan listas completas
         }
     }, [user]);
 
     useEffect(() => {
-        fetchReport();
+        fetchReport(); // Refrescar reporte ante cambios de filtro/vista
     }, [activeView, startDate, endDate, selectedTeam, selectedUser]);
 
+    // Carga equipos y usuarios para selects de admin
     const fetchTeamsAndUsers = async () => {
         try {
             const [teamsRes, usersRes] = await Promise.all([
@@ -54,16 +55,17 @@ export default function Reports() {
         }
     };
 
+    // Obtener datos de reporte segun vista activa
     const fetchReport = async () => {
         if (!startDate || !endDate) return;
 
-        // For employees view, require user selection
+        // Para vista de empleados, requerir seleccion de usuario
         if (activeView === 'employees' && !selectedUser) {
             setReportData(null);
             return;
         }
 
-        // For team hours, require team selection for admins
+        // Para horas de equipo, requerir seleccion de equipo si es admin
         if (activeView === 'team-hours' && user?.role === 'admin' && !selectedTeam) {
             setTeamData(null);
             return;
@@ -97,7 +99,7 @@ export default function Reports() {
         }
     };
 
-    // Convert decimal hours to HH:MM format
+    // Convertir horas decimales a formato HH:MM
     const formatHoursMinutes = (decimalHours) => {
         if (!decimalHours && decimalHours !== 0) return '0:00';
         const hours = Math.floor(decimalHours);
@@ -120,7 +122,7 @@ export default function Reports() {
     };
 
     const openPrintView = () => {
-        // Build URL with query parameters
+        // Construir URL con parametros de consulta
         const params = new URLSearchParams();
         params.append('start_date', startDate);
         params.append('end_date', endDate);
@@ -129,7 +131,7 @@ export default function Reports() {
             params.append('type', 'personal');
             if (selectedUser) {
                 params.append('user_id', selectedUser);
-                // Find user name
+                // Buscar nombre del usuario
                 const user = users.find(u => u.id === parseInt(selectedUser));
                 if (user) params.append('user_name', user.name);
             }
@@ -137,7 +139,7 @@ export default function Reports() {
             params.append('type', 'team');
             if (selectedTeam) {
                 params.append('team_id', selectedTeam);
-                // Find team name
+                // Buscar nombre del equipo
                 const team = teams.find(t => t.id === parseInt(selectedTeam));
                 if (team) params.append('team_name', team.name);
             }
@@ -146,7 +148,7 @@ export default function Reports() {
             params.append('user_name', user?.name || 'My Hours');
         }
 
-        // Open in new window
+        // Abrir en nueva ventana
         const printUrl = `/reports/print?${params.toString()}`;
         window.open(printUrl, '_blank', 'width=1200,height=800');
     };
@@ -186,7 +188,7 @@ export default function Reports() {
                 </div>
 
                 <div className="work-session-card">
-                    {/* View Toggle for Supervisors */}
+                    {/* Cambio de vista para supervisores */}
                     {(user?.role === 'supervisor' || user?.role === 'admin') && (
                         <div className="view-toggle">
                             {user?.role === 'admin' ? (
@@ -223,7 +225,7 @@ export default function Reports() {
                         </div>
                     )}
 
-                    {/* Date Range Picker */}
+                    {/* Selector de rango de fechas */}
                     <div className="date-range-picker">
                         <div className="date-input-group">
                             <label>Start Date</label>
@@ -245,7 +247,7 @@ export default function Reports() {
                             />
                         </div>
 
-                        {/* Admin Selectors */}
+                        {/* Selectores para admin */}
                         {user?.role === 'admin' && activeView === 'employees' && (
                             <div className="date-input-group">
                                 <label>Select Employee</label>
@@ -297,7 +299,7 @@ export default function Reports() {
                         <div className="loading">Loading report...</div>
                     ) : (activeView === 'my-hours' || activeView === 'employees') && reportData ? (
                         <>
-                            {/* Summary Cards */}
+                            {/* Tarjetas de resumen */}
                             <div className="report-summary">
                                 <div className="summary-card">
                                     <div className="summary-value">{formatHoursMinutes(reportData.summary.total_hours)}</div>
@@ -317,7 +319,7 @@ export default function Reports() {
                                 </div>
                             </div>
 
-                            {/* Break Summary */}
+                            {/* Resumen de pausas */}
                             {Object.keys(reportData.break_summary).length > 0 && (
                                 <div className="break-summary-section">
                                     <h3>Break Time Summary</h3>
@@ -332,7 +334,7 @@ export default function Reports() {
                                 </div>
                             )}
 
-                            {/* Work Sessions Table */}
+                            {/* Tabla de sesiones de trabajo */}
                             <div className="report-table-container">
                                 <h3>Work Sessions</h3>
                                 {reportData.sessions.length === 0 ? (
@@ -369,14 +371,14 @@ export default function Reports() {
                         </>
                     ) : activeView === 'team-hours' && teamData ? (
                         <>
-                            {/* Team Name Display */}
+                            {/* Cabecera con nombre de equipo */}
                             {teamData.team && (
                                 <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
                                     <h3 style={{ color: 'var(--white)', margin: 0 }}>🏢 {teamData.team.name}</h3>
                                 </div>
                             )}
 
-                            {/* Team Summary */}
+                            {/* Resumen del equipo */}
                             <div className="report-summary">
                                 <div className="summary-card">
                                     <div className="summary-value">{formatHoursMinutes(teamData.team_summary.total_hours)}</div>
@@ -392,7 +394,7 @@ export default function Reports() {
                                 </div>
                             </div>
 
-                            {/* Team Members List */}
+                            {/* Lista de miembros del equipo */}
                             <div className="team-hours-container">
                                 <h3>Team Member Hours</h3>
                                 {teamData.team_members.length === 0 ? (

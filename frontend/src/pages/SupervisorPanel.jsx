@@ -2,16 +2,17 @@ import { useState, useEffect } from 'react';
 import api from '../api/axios';
 
 export default function SupervisorPanel({ isEmployeeView = false }) {
-    const [pendingRequests, setPendingRequests] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [selectedRequest, setSelectedRequest] = useState(null);
-    const [rejectionReason, setRejectionReason] = useState('');
-    const [actionLoading, setActionLoading] = useState(false);
+    const [pendingRequests, setPendingRequests] = useState([]); // Lista de solicitudes pendientes
+    const [loading, setLoading] = useState(true); // Estado de carga inicial
+    const [error, setError] = useState(''); // Mensajes de error
+    const [selectedRequest, setSelectedRequest] = useState(null); // Solicitud seleccionada
+    const [rejectionReason, setRejectionReason] = useState(''); // Motivo de rechazo
+    const [actionLoading, setActionLoading] = useState(false); // Estado de acciones
 
+    // Cargar solicitudes pendientes (o de empleados) segun el modo
     const fetchPendingRequests = async () => {
         try {
-            // Use different endpoint based on view mode
+            // Usar endpoint distinto segun el modo de vista
             const endpoint = isEmployeeView ? '/leave-requests/all-employees' : '/leave-requests/pending';
             const response = await api.get(endpoint);
             setPendingRequests(response.data.leave_requests);
@@ -23,9 +24,10 @@ export default function SupervisorPanel({ isEmployeeView = false }) {
     };
 
     useEffect(() => {
-        fetchPendingRequests();
+        fetchPendingRequests(); // Recargar si cambia el modo de vista
     }, [isEmployeeView]);
 
+    // Aprobar solicitud
     const handleApprove = async (id) => {
         setActionLoading(true);
         setError('');
@@ -40,6 +42,7 @@ export default function SupervisorPanel({ isEmployeeView = false }) {
         }
     };
 
+    // Rechazar solicitud
     const handleReject = async () => {
         if (!rejectionReason.trim()) {
             setError('Rejection reason is required');
@@ -52,9 +55,9 @@ export default function SupervisorPanel({ isEmployeeView = false }) {
             await api.put(`/leave-requests/${selectedRequest.id}/reject`, {
                 rejection_reason: rejectionReason
             });
-            // Remove from pending list
+            // Quitar de la lista de pendientes
             setPendingRequests(prev => prev.filter(req => req.id !== selectedRequest.id));
-            // Close modal and reset
+            // Cerrar modal y reiniciar estado
             setSelectedRequest(null);
             setRejectionReason('');
             alert('Leave request rejected successfully');
@@ -65,6 +68,7 @@ export default function SupervisorPanel({ isEmployeeView = false }) {
         }
     };
 
+    // Mapea tipo de permiso a clase de badge
     const getStatusBadgeClass = (leaveType) => {
         const types = {
             vacation: 'badge-vacation',
@@ -74,6 +78,7 @@ export default function SupervisorPanel({ isEmployeeView = false }) {
         return types[leaveType] || 'badge-default';
     };
 
+    // Formatea la duracion a texto legible
     const formatDuration = (request) => {
         if (request.is_full_day) {
             const start = new Date(request.start_at);
@@ -161,7 +166,7 @@ export default function SupervisorPanel({ isEmployeeView = false }) {
                 </div>
             )}
 
-            {/* Reject Modal */}
+            {/* Modal de rechazo */}
             {selectedRequest && (
                 <div className="modal-overlay" onClick={() => setSelectedRequest(null)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
