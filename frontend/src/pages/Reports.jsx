@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
+import logo from '../assets/ontime_logo.png';
 
 export default function Reports() {
     const { user, logout } = useAuth();
@@ -154,7 +155,10 @@ export default function Reports() {
             <div className="dashboard-content">
                 <div className="dashboard-header">
                     <div>
-                        <h1>🕒 OnTime</h1>
+                        <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <img src={logo} alt="OnTime Logo" style={{ width: '32px', height: '32px' }} />
+                            OnTime
+                        </h1>
                     </div>
                     <div style={{ textAlign: 'center', flex: 1 }}>
                         <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Work Hours Reports</h2>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import logo from '../assets/ontime_logo.png';
 import api from '../api/axios';
 
 export default function PrintableReport() {
@@ -90,7 +91,10 @@ export default function PrintableReport() {
         <div className="print-page">
             {/* Report Header */}
             <div className="print-header">
-                <h1>🕒 OnTime</h1>
+                <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <img src={logo} alt="OnTime Logo" style={{ width: '32px', height: '32px' }} />
+                    OnTime
+                </h1>
                 <h2>Work Hours Report</h2>
                 <p className="print-date-range">
                     {formatDate(startDate)} - {formatDate(endDate)}

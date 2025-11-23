@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
+import logo from '../assets/ontime_logo.png';
 import LeaveRequestForm from '../components/LeaveRequestForm';
 import SupervisorPanel from './SupervisorPanel';
 
@@ -82,7 +83,10 @@ export default function LeaveRequests() {
             <div className="dashboard-content">
                 <div className="dashboard-header">
                     <div>
-                        <h1>🕒 OnTime</h1>
+                        <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <img src={logo} alt="OnTime Logo" style={{ width: '32px', height: '32px' }} />
+                            OnTime
+                        </h1>
                     </div>
                     <div style={{ textAlign: 'center', flex: 1 }}>
                         <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Leave Requests</h2>

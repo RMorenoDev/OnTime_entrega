@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import logo from '../assets/ontime_logo.png';
 import '../index.css';
 
 export default function Register() {
@@ -34,7 +35,10 @@ export default function Register() {
         <div className="auth-container">
             <div className="auth-card">
                 <div className="auth-header">
-                    <h1>🕒 OnTime</h1>
+                    <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                        <img src={logo} alt="OnTime Logo" style={{ width: '32px', height: '32px' }} />
+                        OnTime
+                    </h1>
                     <h2>Create Account</h2>
                     <p>Get started with your free account</p>
                 </div>
