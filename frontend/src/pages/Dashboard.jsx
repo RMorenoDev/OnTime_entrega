@@ -31,8 +31,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         fetchActiveSession(); // Primer fetch al montar
-        // Refrescar cada 30 segundos
-        const interval = setInterval(fetchActiveSession, 30000);
+        const interval = setInterval(fetchActiveSession, 30000); // Refrescar cada 30 segundos
         return () => clearInterval(interval);
     }, []);
 
@@ -44,7 +43,7 @@ export default function Dashboard() {
             const response = await api.post('/work-sessions/clock-in');
             setActiveSession(response.data.session);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to clock in');
+            setError(err.response?.data?.message || 'Error al fichar entrada');
         } finally {
             setLoading(false);
         }
@@ -59,7 +58,7 @@ export default function Dashboard() {
             setActiveSession(null);
             setActiveBreak(null);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to clock out');
+            setError(err.response?.data?.message || 'Error al fichar salida');
         } finally {
             setLoading(false);
         }
@@ -75,9 +74,9 @@ export default function Dashboard() {
                 is_paid: isPaid,
             });
             setActiveBreak(response.data.break);
-            await fetchActiveSession(); // Refresh to get updated breaks
+            await fetchActiveSession(); // Refresh para obtener pausas actualizadas
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to start break');
+            setError(err.response?.data?.message || 'Error al iniciar pausa');
         } finally {
             setLoading(false);
         }
@@ -90,9 +89,9 @@ export default function Dashboard() {
         try {
             await api.post('/breaks/end');
             setActiveBreak(null);
-            await fetchActiveSession(); // Refresh to get updated breaks
+            await fetchActiveSession(); // Refresh para obtener pausas actualizadas
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to end break');
+            setError(err.response?.data?.message || 'Error al finalizar pausa');
         } finally {
             setLoading(false);
         }
@@ -132,7 +131,7 @@ export default function Dashboard() {
                         </h1>
                     </div>
                     <div style={{ textAlign: 'center', flex: 1 }}>
-                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Welcome back, {user?.name}!</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>¡Bienvenido de nuevo, {user?.name}!</h2>
                         <p className="user-email" style={{ margin: '0.5rem 0 0.25rem' }}>{user?.email}</p>
                         <p style={{ margin: 0, color: 'var(--gray-light)', fontSize: '0.9rem' }}>
                             {user?.role} {user?.team && `• ${user.team.name}`}
@@ -141,17 +140,17 @@ export default function Dashboard() {
                     <div style={{ textAlign: 'right', display: 'flex', gap: '0.5rem' }}>
                         {user?.role === 'admin' && (
                             <button onClick={() => navigate('/admin')} className="btn-secondary">
-                                Admin Panel
+                                Panel de admin
                             </button>
                         )}
                         <button onClick={() => navigate('/reports')} className="btn-secondary">
-                            Reports
+                            Reportes
                         </button>
                         <button onClick={() => navigate('/leave-requests')} className="btn-secondary">
-                            Leave Requests
+                            Permisos
                         </button>
                         <button onClick={logout} className="btn-secondary">
-                            Logout
+                            Cerrar sesión
                         </button>
                     </div>
                 </div>
@@ -164,17 +163,17 @@ export default function Dashboard() {
 
                 {/* Tarjeta de sesion de trabajo */}
                 <div className="work-session-card">
-                    <h3 style={{ textAlign: 'center' }}>⏰ Work Session</h3>
+                    <h3 style={{ textAlign: 'center' }}>Sesión de trabajo</h3>
 
                     {!activeSession ? (
                         <div className="status-section">
-                            <p className="status-text">Not clocked in</p>
+                            <p className="status-text">No has fichado</p>
                             <button
                                 onClick={handleClockIn}
                                 className="btn-primary"
                                 disabled={loading}
                             >
-                                {loading ? 'Clocking in...' : '🟢 Clock In'}
+                                {loading ? 'Fichando entrada...' : 'Fichar entrada'}
                             </button>
                         </div>
                     ) : (
@@ -182,35 +181,35 @@ export default function Dashboard() {
                             {!activeBreak ? (
                                 <>
                                     <div className="session-info">
-                                        <div className="status-badge working">Working</div>
+                                        <div className="status-badge working">Trabajando</div>
                                         <p className="session-start">
-                                            Clock in at {new Date(activeSession.started_at).toLocaleTimeString()}
+                                            Entrada a las {new Date(activeSession.started_at).toLocaleTimeString()}
                                         </p>
                                     </div>
 
                                     <div className="break-controls">
-                                        <h4 style={{ textAlign: 'center' }}>Take a Break</h4>
+                                        <h4 style={{ textAlign: 'center' }}>Tomar una pausa</h4>
                                         <div className="break-buttons">
                                             <button
                                                 onClick={() => handleStartBreak('coffee', true)}
                                                 className="btn-break"
                                                 disabled={loading}
                                             >
-                                                ☕ Coffee
+                                                ☕ Café
                                             </button>
                                             <button
                                                 onClick={() => handleStartBreak('snack', true)}
                                                 className="btn-break"
                                                 disabled={loading}
                                             >
-                                                🥐 Snack
+                                                🍪 Snack
                                             </button>
                                             <button
                                                 onClick={() => handleStartBreak('personal', false)}
                                                 className="btn-break"
                                                 disabled={loading}
                                             >
-                                                🚶 Personal
+                                                🙋 Personal
                                             </button>
                                         </div>
                                         <button
@@ -218,23 +217,23 @@ export default function Dashboard() {
                                             className="btn-break-large"
                                             disabled={loading}
                                         >
-                                            🍽️ Split Shift
+                                            🍽️  Turno partido
                                         </button>
                                     </div>
                                 </>
                             ) : (
                                 <div className="active-break">
                                     <div className={`status-badge ${activeBreak.break_type === 'split_shift' ? 'long-break' : 'break'}`}>
-                                        {activeBreak.break_type === 'split_shift' ? 'On long break' : 'On Break'}
+                                        {activeBreak.break_type === 'split_shift' ? 'Pausa larga' : 'En pausa'}
                                     </div>
 
                                     {activeBreak.break_type === 'split_shift' ? (
                                         <div className="split-shift-info">
                                             <p className="session-start">
-                                                Clock in at: {new Date(activeSession.started_at).toLocaleTimeString()}
+                                                Entrada: {new Date(activeSession.started_at).toLocaleTimeString()}
                                             </p>
                                             <p className="session-start">
-                                                Break started at: {new Date(activeBreak.started_at).toLocaleTimeString()}
+                                                Pausa iniciada: {new Date(activeBreak.started_at).toLocaleTimeString()}
                                             </p>
                                         </div>
                                     ) : (
@@ -242,8 +241,8 @@ export default function Dashboard() {
                                             <div className="timer-display">
                                                 <div className="timer">{timer}</div>
                                             </div>
-                                            <p>Break Type: <strong>{activeBreak.break_type}</strong></p>
-                                            <p className="session-start">Clock in at: {new Date(activeBreak.started_at).toLocaleTimeString()}</p>
+                                            <p>Tipo de pausa: <strong>{activeBreak.break_type}</strong></p>
+                                            <p className="session-start">Entrada: {new Date(activeBreak.started_at).toLocaleTimeString()}</p>
                                         </>
                                     )}
 
@@ -252,7 +251,7 @@ export default function Dashboard() {
                                         className="btn-primary"
                                         disabled={loading}
                                     >
-                                        {loading ? 'Ending...' : '⏸️ End Break'}
+                                        {loading ? 'Cerrando pausa...' : 'Finalizar pausa'}
                                     </button>
                                 </div>
                             )}
@@ -260,7 +259,7 @@ export default function Dashboard() {
                             {/* Mostrar pausas completadas */}
                             {activeSession?.breaks && activeSession.breaks.filter(b => b.ended_at).length > 0 && (
                                 <div className="breaks-history">
-                                    <h5>Completed Breaks</h5>
+                                    <h5>Pausas completadas</h5>
                                     {activeSession.breaks.filter(b => b.ended_at).map((b, index) => {
                                         const start = new Date(b.started_at);
                                         const end = new Date(b.ended_at);
@@ -287,7 +286,7 @@ export default function Dashboard() {
                                 disabled={loading}
                                 style={{ marginTop: '1.5rem' }}
                             >
-                                {loading ? 'Clocking out...' : '🔴 Clock Out'}
+                                {loading ? 'Fichando salida...' : 'Fichar salida'}
                             </button>
                         </div>
                     )}

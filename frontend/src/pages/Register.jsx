@@ -73,13 +73,12 @@ export default function Register() {
                         <img src={logo} alt="OnTime Logo" style={{ width: '32px', height: '32px' }} />
                         OnTime
                     </h1>
-                    <h2>Create Account</h2>
-                    <p>Get started with your free account</p>
+                    <h2>Crea tu cuenta</h2>
                 </div>
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
-                        <label htmlFor="name">Full Name</label>
+                        <label htmlFor="name">Nombre completo</label>
                         <input
                             id="name"
                             type="text"
@@ -87,13 +86,13 @@ export default function Register() {
                             onChange={(e) => setName(e.target.value)}
                             required
                             autoComplete="name"
-                            placeholder="John Doe"
+                            placeholder="Juan Pérez"
                         />
                         {errors.name && <span className="error-text">{errors.name[0]}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="email">Email Address</label>
+                        <label htmlFor="email">Correo electrónico</label>
                         <input
                             id="email"
                             type="email"
@@ -101,28 +100,28 @@ export default function Register() {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                             autoComplete="email"
-                            placeholder="you@example.com"
+                            placeholder="tu@ejemplo.com"
                         />
                         {errors.email && <span className="error-text">{errors.email[0]}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="role">Role *</label>
+                        <label htmlFor="role">Rol *</label>
                         <CustomSelect
                             options={[
-                                { value: 'employee', label: 'Employee' },
+                                { value: 'employee', label: 'Empleado' },
                                 { value: 'supervisor', label: 'Supervisor' }
                             ]}
                             value={role}
                             onChange={(value) => setRole(value)}
-                            placeholder="Select your role..."
+                            placeholder="Selecciona tu rol..."
                             required
                         />
                         {errors.role && <span className="error-text">{errors.role[0]}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="teamName">Team {role === 'employee' ? '*' : ''}</label>
+                        <label htmlFor="teamName">Equipo {role === 'employee' ? '*' : ''}</label>
                         {role === 'employee' ? (
                             // Selector personalizado para empleados
                             <CustomSelect
@@ -132,7 +131,7 @@ export default function Register() {
                                 }))}
                                 value={teamName}
                                 onChange={(value) => setTeamName(value)}
-                                placeholder="Select a team..."
+                                placeholder="Selecciona un equipo..."
                                 disabled={!role}
                                 required={role === 'employee'}
                             />
@@ -148,7 +147,7 @@ export default function Register() {
                                         setShowSuggestions(true);
                                     }}
                                     onFocus={() => setShowSuggestions(true)}
-                                    placeholder="Start typing to filter teams..."
+                                    placeholder="Escribe para filtrar equipos..."
                                     disabled={!role}
                                     autoComplete="off"
                                     style={{ width: '100%' }}
@@ -196,7 +195,7 @@ export default function Register() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">Contraseña</label>
                         <input
                             id="password"
                             type="password"
@@ -204,13 +203,13 @@ export default function Register() {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             autoComplete="new-password"
-                            placeholder="At least 8 characters"
+                            placeholder="Al menos 8 caracteres"
                         />
                         {errors.password && <span className="error-text">{errors.password[0]}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password_confirmation">Confirm Password</label>
+                        <label htmlFor="password_confirmation">Confirmar contraseña</label>
                         <input
                             id="password_confirmation"
                             type="password"
@@ -218,7 +217,7 @@ export default function Register() {
                             onChange={(e) => setPasswordConfirmation(e.target.value)}
                             required
                             autoComplete="new-password"
-                            placeholder="Repeat your password"
+                            placeholder="Repite tu contraseña"
                         />
                     </div>
 
@@ -227,15 +226,15 @@ export default function Register() {
                     )}
 
                     <button type="submit" className="btn-primary" disabled={loading}>
-                        {loading ? 'Creating account...' : 'Create Account'}
+                        {loading ? 'Creando cuenta...' : 'Crear cuenta'}
                     </button>
                 </form>
 
                 <div className="auth-footer">
                     <p>
-                        Already have an account?{' '}
+                        ¿Ya tienes cuenta?{' '}
                         <Link to="/login" className="link">
-                            Sign in
+                            Inicia sesión
                         </Link>
                     </p>
                 </div>

@@ -20,7 +20,7 @@ export default function AdminDashboard() {
             setStats(response.data);
         } catch (err) {
             console.error('Admin stats error:', err);
-            setError(err.response?.data?.message || 'Failed to fetch statistics');
+            setError(err.response?.data?.message || 'Error al obtener estadísticas');
         } finally {
             setLoading(false);
         }
@@ -30,31 +30,31 @@ export default function AdminDashboard() {
         <div className="dashboard-container">
             <div className="dashboard-content">
                 {loading ? (
-                    <div className="loading">Loading admin dashboard...</div>
+                    <div className="loading">Cargando panel de admin...</div>
                 ) : (
                     <>
                         <div className="dashboard-header">
                             <div>
-                                <h1>⚙️ Admin Panel</h1>
+                                <h1>⚙️ Panel de Admin</h1>
                             </div>
                             <div style={{ textAlign: 'center', flex: 1 }}>
-                                <h2 style={{ margin: 0, fontSize: '1.5rem' }}>System Overview</h2>
+                                <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Resumen del sistema</h2>
                                 <p style={{ margin: '0.5rem 0 0', color: 'var(--gray-light)', fontSize: '0.9rem' }}>
                                     {user?.name} • Admin
                                 </p>
                             </div>
                             <div style={{ textAlign: 'right', display: 'flex', gap: '0.5rem' }}>
                                 <button onClick={() => navigate('/reports')} className="btn-secondary">
-                                    Reports
+                                    Reportes
                                 </button>
                                 <button onClick={() => navigate('/leave-requests')} className="btn-secondary">
-                                    Leave Requests
+                                    Permisos
                                 </button>
                                 <button onClick={() => navigate('/')} className="btn-secondary">
                                     Dashboard
                                 </button>
                                 <button onClick={logout} className="btn-secondary">
-                                    Logout
+                                    Cerrar sesión
                                 </button>
                             </div>
                         </div>
@@ -68,10 +68,10 @@ export default function AdminDashboard() {
                                     📊 Dashboard
                                 </button>
                                 <button className="admin-nav-btn" onClick={() => navigate('/admin/users')}>
-                                    👥 Users
+                                    👤 Usuarios
                                 </button>
                                 <button className="admin-nav-btn" onClick={() => navigate('/admin/teams')}>
-                                    🏢 Teams
+                                    🧑‍🤝‍🧑 Equipos
                                 </button>
                             </div>
 
@@ -79,11 +79,11 @@ export default function AdminDashboard() {
                                 <>
                                     {/* Estadisticas de usuarios */}
                                     <div className="stats-section">
-                                        <h3>👥 Users</h3>
+                                        <h3>👤 Usuarios</h3>
                                         <div className="stats-grid">
                                             <div className="stat-card total">
                                                 <div className="stat-value">{stats.users.total}</div>
-                                                <div className="stat-label">Total Users</div>
+                                                <div className="stat-label">Usuarios totales</div>
                                             </div>
                                             <div className="stat-card admin">
                                                 <div className="stat-value">{stats.users.admins}</div>
@@ -91,11 +91,11 @@ export default function AdminDashboard() {
                                             </div>
                                             <div className="stat-card supervisor">
                                                 <div className="stat-value">{stats.users.supervisors}</div>
-                                                <div className="stat-label">Supervisors</div>
+                                                <div className="stat-label">Supervisores</div>
                                             </div>
                                             <div className="stat-card employee">
                                                 <div className="stat-value">{stats.users.employees}</div>
-                                                <div className="stat-label">Employees</div>
+                                                <div className="stat-label">Empleados</div>
                                             </div>
                                         </div>
                                     </div>
@@ -103,23 +103,23 @@ export default function AdminDashboard() {
                                     {/* Equipos y sesiones */}
                                     <div className="stats-grid-2col">
                                         <div className="stats-section">
-                                            <h3>🏢 Teams</h3>
+                                            <h3>🧑‍🤝‍🧑 Equipos</h3>
                                             <div className="stat-card-large">
                                                 <div className="stat-value">{stats.teams.total}</div>
-                                                <div className="stat-label">Total Teams</div>
+                                                <div className="stat-label">Equipos totales</div>
                                             </div>
                                         </div>
 
                                         <div className="stats-section">
-                                            <h3>⏱️ Work Sessions</h3>
+                                            <h3>⏱️ Sesiones de trabajo</h3>
                                             <div className="stats-grid-mini">
                                                 <div className="stat-card-small">
                                                     <div className="stat-value">{stats.work_sessions.active}</div>
-                                                    <div className="stat-label">Active Now</div>
+                                                    <div className="stat-label">Activas ahora</div>
                                                 </div>
                                                 <div className="stat-card-small">
                                                     <div className="stat-value">{stats.work_sessions.today}</div>
-                                                    <div className="stat-label">Today</div>
+                                                    <div className="stat-label">Hoy</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -127,31 +127,31 @@ export default function AdminDashboard() {
 
                                     {/* Solicitudes de permiso */}
                                     <div className="stats-section">
-                                        <h3>📝 Leave Requests</h3>
+                                        <h3>📝 Permisos</h3>
                                         <div className="stats-grid-mini">
                                             <div className="stat-card-small pending">
                                                 <div className="stat-value">{stats.leave_requests.pending}</div>
-                                                <div className="stat-label">Pending</div>
+                                                <div className="stat-label">Pendientes</div>
                                             </div>
                                             <div className="stat-card-small approved">
                                                 <div className="stat-value">{stats.leave_requests.approved_this_month}</div>
-                                                <div className="stat-label">Approved This Month</div>
+                                                <div className="stat-label">Aprobadas este mes</div>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Acciones rapidas */}
                                     <div className="quick-actions">
-                                        <h3>⚡ Quick Actions</h3>
+                                        <h3>⚡ Acciones rápidas</h3>
                                         <div className="action-buttons">
                                             <button className="action-btn" onClick={() => navigate('/admin/users')}>
-                                                👤 Manage Users
+                                                👤 Gestionar usuarios
                                             </button>
                                             <button className="action-btn" onClick={() => navigate('/admin/teams')}>
-                                                🏢 Manage Teams
+                                                🧑‍🤝‍🧑 Gestionar equipos
                                             </button>
                                             <button className="action-btn" onClick={() => navigate('/leave-requests')}>
-                                                📋 Review Leave Requests
+                                                📝 Revisar permisos
                                             </button>
                                         </div>
                                     </div>

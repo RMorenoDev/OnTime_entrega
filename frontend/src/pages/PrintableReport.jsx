@@ -41,7 +41,7 @@ export default function PrintableReport() {
             }
         } catch (err) {
             console.error('Failed to fetch report:', err);
-            setError(err.response?.data?.message || 'Failed to load report');
+            setError(err.response?.data?.message || 'Error al cargar el reporte');
         } finally {
             setLoading(false);
         }
@@ -57,13 +57,13 @@ export default function PrintableReport() {
 
     // Formatea HH:MM:SS a HH:MM
     const formatTime = (time) => {
-        if (!time) return '-';
+        if (!time) return '—';
         return time.substring(0, 5);
     };
 
     // Fecha legible para impresion
     const formatDate = (date) => {
-        return new Date(date).toLocaleDateString('en-US', {
+        return new Date(date).toLocaleDateString('es-ES', {
             weekday: 'short',
             year: 'numeric',
             month: 'short',
@@ -79,7 +79,7 @@ export default function PrintableReport() {
     if (loading) {
         return (
             <div className="print-page">
-                <div className="print-loading">Loading report...</div>
+                <div className="print-loading">Cargando reporte...</div>
             </div>
         );
     }
@@ -104,12 +104,12 @@ export default function PrintableReport() {
 
                 {/* Info del reporte a la derecha */}
                 <div style={{ flex: 1, textAlign: 'right' }}>
-                    <h2 style={{ margin: '0 0 0.5rem 0' }}>Work Hours Report</h2>
+                    <h2 style={{ margin: '0 0 0.5rem 0' }}>Reporte de horas</h2>
                     <p className="print-date-range" style={{ margin: '0.25rem 0' }}>
                         {formatDate(startDate)} - {formatDate(endDate)}
                     </p>
-                    {userName && <p className="print-subtitle" style={{ margin: '0.25rem 0' }}>Employee: {userName}</p>}
-                    {teamName && <p className="print-subtitle" style={{ margin: '0.25rem 0' }}>Team: {teamName}</p>}
+                    {userName && <p className="print-subtitle" style={{ margin: '0.25rem 0' }}>Empleado: {userName}</p>}
+                    {teamName && <p className="print-subtitle" style={{ margin: '0.25rem 0' }}>Equipo: {teamName}</p>}
                 </div>
             </div>
 
@@ -119,34 +119,34 @@ export default function PrintableReport() {
                     {/* Resumen */}
                     <div className="print-summary">
                         <div className="print-summary-item">
-                            <span className="label">Total Hours:</span>
+                            <span className="label">Horas totales:</span>
                             <span className="value">{formatHoursMinutes(reportData.summary.total_hours)}</span>
                         </div>
                         <div className="print-summary-item">
-                            <span className="label">Net Hours:</span>
+                            <span className="label">Horas netas:</span>
                             <span className="value">{formatHoursMinutes(reportData.summary.net_hours)}</span>
                         </div>
                         <div className="print-summary-item">
-                            <span className="label">Days Worked:</span>
+                            <span className="label">Días trabajados:</span>
                             <span className="value">{reportData.summary.days_worked}</span>
                         </div>
                         <div className="print-summary-item">
-                            <span className="label">Average Hours/Day:</span>
+                            <span className="label">Promedio horas/día:</span>
                             <span className="value">{formatHoursMinutes(reportData.summary.avg_hours_per_day)}</span>
                         </div>
                     </div>
 
                     {/* Tabla de sesiones de trabajo */}
-                    <h3>Work Sessions</h3>
+                    <h3>Sesiones de trabajo</h3>
                     <table className="print-table">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Clock In</th>
-                                <th>Clock Out</th>
-                                <th>Total Hours</th>
-                                <th>Break Time</th>
-                                <th>Net Hours</th>
+                                <th>Fecha</th>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>Horas</th>
+                                <th>Pausas</th>
+                                <th>Horas netas</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -166,12 +166,12 @@ export default function PrintableReport() {
                     {/* Resumen de pausas */}
                     {Object.keys(reportData.break_summary).length > 0 && (
                         <>
-                            <h3>Break Time Summary</h3>
+                            <h3>Resumen de pausas</h3>
                             <table className="print-table print-table-simple">
                                 <thead>
                                     <tr>
-                                        <th>Break Type</th>
-                                        <th>Total Time</th>
+                                        <th>Tipo de pausa</th>
+                                        <th>Tiempo total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -194,39 +194,39 @@ export default function PrintableReport() {
                     {/* Resumen del equipo */}
                     <div className="print-summary">
                         <div className="print-summary-item">
-                            <span className="label">Team Total Hours:</span>
+                            <span className="label">Horas totales del equipo:</span>
                             <span className="value">{formatHoursMinutes(teamData.team_summary.total_hours)}</span>
                         </div>
                         <div className="print-summary-item">
-                            <span className="label">Average per Member:</span>
+                            <span className="label">Promedio por miembro:</span>
                             <span className="value">{formatHoursMinutes(teamData.team_summary.avg_hours_per_member)}</span>
                         </div>
                         <div className="print-summary-item">
-                            <span className="label">Active Members:</span>
+                            <span className="label">Miembros activos:</span>
                             <span className="value">{teamData.team_summary.members_count}</span>
                         </div>
                     </div>
 
                     {/* Miembros del equipo */}
-                    <h3>Team Members</h3>
+                    <h3>Miembros del equipo</h3>
                     {teamData.team_members.map(member => (
                         <div key={member.user.id} className="print-member-section">
                             <h4>{member.user.name}</h4>
                             <p className="member-email">{member.user.email}</p>
                             <p className="member-stats">
                                 Total: <strong>{formatHoursMinutes(member.total_hours)}</strong> |
-                                Days: {member.days_worked} |
-                                Average: {formatHoursMinutes(member.avg_hours)}
+                                Días: {member.days_worked} |
+                                Promedio: {formatHoursMinutes(member.avg_hours)}
                             </p>
 
                             <table className="print-table">
                                 <thead>
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Clock In</th>
-                                        <th>Clock Out</th>
-                                        <th>Total Hours</th>
-                                        <th>Net Hours</th>
+                                        <th>Fecha</th>
+                                        <th>Entrada</th>
+                                        <th>Salida</th>
+                                        <th>Horas totales</th>
+                                        <th>Horas netas</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -248,8 +248,8 @@ export default function PrintableReport() {
 
             {/* Pie de pagina */}
             <div className="print-footer">
-                <p>Generated on: {new Date().toLocaleString()}</p>
-                <p>OnTime - Work Hours Management System</p>
+                <p>Generado el: {new Date().toLocaleString()}</p>
+                <p>OnTime - Sistema de gestión de horas de trabajo</p>
             </div>
         </div>
     );
