@@ -51,7 +51,7 @@ services:
         value: true
 
   # PostgreSQL Database
-  - type: pgsql
+  - type: postgres
     name: ontime-db
     plan: free
     databaseName: ontime
