@@ -19,23 +19,23 @@ services:
         value: pgsql
       - key: DB_HOST
         fromDatabase:
-          name: ontime-db
+          name: ontime
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: ontime-db
+          name: ontime
           property: port
       - key: DB_DATABASE
         fromDatabase:
-          name: ontime-db
+          name: ontime
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: ontime-db
+          name: ontime
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: ontime-db
+          name: ontime
           property: password
       - key: SESSION_DRIVER
         value: database
@@ -51,7 +51,5 @@ services:
         value: true
 
 databases:
-  - name: ontime-db
+  - name: ontime
     plan: free
-    databaseName: ontime
-    databaseUser: ontime
