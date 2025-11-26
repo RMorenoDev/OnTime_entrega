@@ -1,0 +1,58 @@
+services:
+  # Laravel Backend
+  - type: web
+    name: ontime-backend
+    runtime: php
+    plan: free
+    buildCommand: bash ./backend/build.sh
+    startCommand: php backend/artisan serve --host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: APP_NAME
+        value: OnTime
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: ontime-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: ontime-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: ontime-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: ontime-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: ontime-db
+          property: password
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+      - key: SESSION_SECURE_COOKIE
+        value: true
+
+  # PostgreSQL Database
+  - type: pgsql
+    name: ontime-db
+    plan: free
+    databaseName: ontime
+    databaseUser: ontime

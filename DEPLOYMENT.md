@@ -1,284 +1,359 @@
-# 🚀 Guía de Despliegue en Railway
+# 🚀 Guía de Despliegue - Render + Vercel
 
-Esta guía te llevará paso a paso para desplegar tu proyecto OnTime en Railway de forma gratuita.
+Despliega tu proyecto OnTime **100% GRATIS** usando Render para el backend y Vercel para el frontend.
+
+---
+
+## 📊 Arquitectura del Despliegue
+
+```
+┌─────────────┐         HTTPS          ┌──────────────┐
+│   Usuario   │ ──────────────────────► │   Vercel     │
+└─────────────┘                         │  (Frontend)  │
+                                        │   React      │
+                                        └──────┬───────┘
+                                               │
+                                        HTTPS API Calls
+                                               │
+                                        ┌──────▼───────┐
+                                        │    Render    │
+                                        │  (Backend)   │
+                                        │   Laravel    │
+                                        └──────┬───────┘
+                                               │
+                                        ┌──────▼───────┐
+                                        │  PostgreSQL  │
+                                        │   Database   │
+                                        └──────────────┘
+```
+
+**Frontend (Vercel):**
+- ✅ React + Vite
+- ✅ Never sleeps
+- ✅ Global CDN (ultra rápido)
+- ✅ HTTPS automático
+
+**Backend (Render):**
+- ✅ Laravel + PostgreSQL
+- ✅ HTTPS automático
+- ⚠️ Duerme después de 15 min (se despierta en ~30s)
+
+---
 
 ## 📋 Requisitos Previos
 
 - [ ] Cuenta de GitHub
-- [ ] Repositorio del proyecto en GitHub
-- [ ] Cuenta de Railway (gratis)
+- [ ] Repositorio OnTime en GitHub
+- [ ] Cuenta de Render (gratuita, sin tarjeta de crédito)
+- [ ] Cuenta de Vercel (gratuita, sin tarjeta de crédito)
 
 ---
 
-## 🎯 Paso 1: Preparar el Repositorio
+## 🗄️ PASO 1: Desplegar Backend en Render
 
-### 1.1 Asegúrate de que todos los cambios estén commiteados
+### 1.1 Crear Cuenta en Render
 
-```bash
-git add .
-git commit -m "Add Railway deployment configuration"
-git push origin deploy
+1. Ve a [render.com](https://render.com)
+2. Haz clic en **"Get Started"**
+3. Inicia sesión con GitHub
+4. Autoriza a Render para acceder a tus repositorios
+
+### 1.2 Crear Web Service
+
+1. En el dashboard, haz clic en **"New +"** → **"Blueprint"**
+2. Conecta tu repositorio **OnTime_entrega**
+3. Selecciona la rama **deploy**
+4. Render detectará automáticamente el archivo `render.yaml`
+5. Haz clic en **"Apply"**
+
+> [!IMPORTANT]
+> Render creará automáticamente:
+> - 🌐 **Web Service** (Laravel backend)
+> - 🗄️ **PostgreSQL Database** (1GB gratis)
+> - 🔗 Variables de entorno conectadas automáticamente
+
+### 1.3 Esperar el Despliegue
+
+El proceso toma 5-7 minutos:
+
+```
+📥 Clonando repositorio...
+📦 Instalando dependencias de Composer...
+🗄️ Creando base de datos PostgreSQL...
+📋 Ejecutando migraciones...
+⚡ Optimizando Laravel...
+✅ Despliegue completado!
 ```
 
-### 1.2 Archivos de configuración creados
+### 1.4 Obtener la URL del Backend
 
-Los siguientes archivos ya han sido creados para ti:
+1. Una vez completado, ve a tu **Web Service**
+2. Copia la URL (ejemplo: `https://ontime-backend.onrender.com`)
+3. **¡Guarda esta URL!** La necesitarás para el frontend
 
-- ✅ [`railway.toml`](file:///c:/Users/rmore/Desktop/PI/Proyecto/OnTime_entrega/railway.toml) - Configuración principal de Railway
-- ✅ [`nixpacks.toml`](file:///c:/Users/rmore/Desktop/PI/Proyecto/OnTime_entrega/nixpacks.toml) - Configuración de build
-- ✅ [`backend/deploy.sh`](file:///c:/Users/rmore/Desktop/PI/Proyecto/OnTime_entrega/backend/deploy.sh) - Script de despliegue
-- ✅ Vite configurado para producción
-- ✅ `.env.example` actualizado con configuración de producción
+### 1.5 Verificar el Backend
 
----
-
-## 🚂 Paso 2: Crear Cuenta en Railway
-
-1. Ve a [railway.app](https://railway.app)
-2. Haz clic en **"Login"** o **"Start a New Project"**
-3. Inicia sesión con tu cuenta de GitHub
-4. Autoriza a Railway para acceder a tus repositorios
-
----
-
-## 📦 Paso 3: Crear un Nuevo Proyecto
-
-### 3.1 Iniciar proyecto desde GitHub
-
-1. En el dashboard de Railway, haz clic en **"New Project"**
-2. Selecciona **"Deploy from GitHub repo"**
-3. Busca y selecciona tu repositorio **OnTime_entrega**
-4. Selecciona la rama **deploy**
-
-### 3.2 Railway detectará automáticamente
-
-Railway detectará que tienes:
-- 🐘 PHP (Laravel)
-- 📦 Node.js (React)
-- 🗄️ SQLite
-
----
-
-## ⚙️ Paso 4: Configurar Variables de Entorno
-
-### 4.1 Variables Obligatorias
-
-En Railway, ve a tu proyecto → **Variables** y agrega las siguientes:
-
-```bash
-# Aplicación
-APP_NAME="OnTime"
-APP_ENV=production
-APP_DEBUG=false
-APP_KEY=                    # Railway lo generará automáticamente
-
-# Base de datos
-DB_CONNECTION=sqlite
-
-# Sesión y caché
-SESSION_DRIVER=database
-CACHE_STORE=database
-QUEUE_CONNECTION=database
-
-# Logs
-LOG_CHANNEL=stack
-LOG_LEVEL=error
+Abre en el navegador:
+```
+https://TU-BACKEND.onrender.com/api/...
 ```
 
-### 4.2 Generar APP_KEY
-
-Railway puede generar la `APP_KEY` automáticamente, o puedes generarla localmente:
-
-```bash
-cd backend
-php artisan key:generate --show
-```
-
-Copia el resultado (ejemplo: `base64:abcd1234...`) y agrégalo como variable `APP_KEY` en Railway.
-
-### 4.3 URL de la Aplicación
-
-Después del primer despliegue, Railway te asignará una URL. Actualiza la variable:
-
-```bash
-APP_URL=https://tu-proyecto.up.railway.app
-```
+Deberías ver las respuestas de tu API.
 
 ---
 
-## 💾 Paso 5: Configurar Almacenamiento Persistente (IMPORTANTE)
+## 🎨 PASO 2: Desplegar Frontend en Vercel
+
+### 2.1 Crear Cuenta en Vercel
+
+1. Ve a [vercel.com](https://vercel.com)
+2. Haz clic en **"Sign Up"**
+3. Inicia sesión con GitHub
+
+### 2.2 Importar Proyecto
+
+1. En el dashboard, haz clic en **"Add New..."** → **"Project"**
+2. Busca y selecciona **OnTime_entrega**
+3. Haz clic en **"Import"**
+
+### 2.3 Configurar el Proyecto
+
+**Build Settings:**
+- **Framework Preset:** Vite
+- **Root Directory:** `frontend` (¡MUY IMPORTANTE!)
+- **Build Command:** `npm run build`
+- **Output Directory:** `dist`
+
+### 2.4 Configurar Variables de Entorno
+
+En la sección **"Environment Variables"**, agrega:
+
+| Nombre | Valor |
+|--------|-------|
+| `VITE_API_URL` | `https://TU-BACKEND.onrender.com` |
 
 > [!WARNING]
-> **Sin un volumen persistente, perderás todos tus datos cada vez que se redepliegue la aplicación.**
+> **¡Reemplaza `TU-BACKEND` con la URL real de Render del Paso 1.4!**
 
-### 5.1 Crear un Volumen
+Ejemplo:
+```
+VITE_API_URL=https://ontime-backend.onrender.com
+```
 
-1. En tu proyecto de Railway, ve a la pestaña **"Settings"**
-2. Scroll hasta **"Volumes"**
-3. Haz clic en **"New Volume"**
-4. Configura:
-   - **Mount Path:** `/app/backend/database`
-   - **Size:** 1GB (suficiente para SQLite)
-5. Haz clic en **"Add"**
+### 2.5 Desplegar
 
-### 5.2 Verificar el volumen
+1. Haz clic en **"Deploy"**
+2. Espera 2-3 minutos
+3. ¡Listo! 🎉
 
-El volumen asegura que tu archivo `database.sqlite` persista entre despliegues.
+### 2.6 Obtener URL del Frontend
 
----
-
-## 🌐 Paso 6: Desplegar
-
-### 6.1 Primer Despliegue
-
-1. Railway comenzará a construir automáticamente
-2. El proceso tomará 3-5 minutos:
-   - 📥 Instalando dependencias de PHP (Composer)
-   - 📥 Instalando dependencias de Node (npm)
-   - 🏗️ Construyendo el frontend React
-   - 📋 Ejecutando migraciones
-   - ⚡ Optimizando Laravel para producción
-
-### 6.2 Monitorear el Despliegue
-
-1. Ve a la pestaña **"Deployments"**
-2. Haz clic en el despliegue activo para ver los logs
-3. Busca mensajes como:
-   ```
-   ✅ Despliegue completado exitosamente!
-   ```
-
-### 6.3 Obtener tu URL
-
-1. Ve a la pestaña **"Settings"**
-2. En **"Domains"**, encontrarás tu URL:
-   ```
-   https://tu-proyecto-production.up.railway.app
-   ```
-3. ¡Haz clic para abrir tu aplicación!
-
----
-
-## ✅ Paso 7: Verificar el Despliegue
-
-### 7.1 Checklist de Verificación
-
-- [ ] El sitio carga correctamente
-- [ ] El frontend React se muestra
-- [ ] Las rutas de API funcionan (`/api/...`)
-- [ ] La base de datos responde (login, registro, etc.)
-- [ ] No hay errores 500 en los logs
-
-### 7.2 Ver Logs en Tiempo Real
-
-```bash
-# En Railway, ve a tu proyecto → "Observability" → "Logs"
+Vercel te dará una URL como:
+```
+https://ontime-entrega.vercel.app
 ```
 
 ---
 
-## 🔄 Paso 8: Despliegues Futuros
+## 🔗 PASO 3: Conectar Frontend con Backend
 
-Railway redespliegará automáticamente cuando hagas push a la rama `deploy`:
+### 3.1 Actualizar Backend URL en Render
+
+1. Ve a tu Web Service en Render
+2. Ve a **"Environment"**
+3. Busca la variable `APP_URL`
+4. Actualízala con tu URL de Render:
+   ```
+   APP_URL=https://TU-BACKEND.onrender.com
+   ```
+5. Guarda cambios (se redespliegará automáticamente)
+
+### 3.2 Verificación de CORS
+
+El CORS ya está configurado en `backend/config/cors.php` para aceptar todas las solicitudes. Si tienes problemas:
+
+1. Ve a `backend/config/cors.php`
+2. Verifica que `'allowed_origins' => ['*']` esté presente
+3. O cambia a tu dominio específico de Vercel:
+   ```php
+   'allowed_origins' => ['https://ontime-entrega.vercel.app'],
+   ```
+
+---
+
+## ✅ PASO 4: Verificación
+
+### 4.1 Checklist
+
+- [ ] Backend responde en `https://TU-BACKEND.onrender.com/api/...`
+- [ ] Frontend carga en `https://ontime-entrega.vercel.app`
+- [ ] El frontend puede hacer llamadas al backend
+- [ ] Login/registro funciona correctamente
+- [ ] Los datos se guardan en PostgreSQL
+
+### 4.2 Pruebas
+
+1. **Abre el frontend** en Vercel
+2. **Prueba el registro** de un nuevo usuario
+3. **Prueba el login**
+4. **Verifica que las funciones principales funcionen**
+
+> [!TIP]
+> Si es la primera solicitud después de 15 minutos, el backend tardará ~30 segundos en despertar. ¡Es normal!
+
+---
+
+## 🔄 PASO 5: Despliegues Futuros
+
+### Automáticos con Git Push
+
+Ambas plataformas redespliegarán automáticamente cuando hagas push a la rama `deploy`:
 
 ```bash
-# Hacer cambios en tu código
 git add .
-git commit -m "Feature: nueva funcionalidad"
+git commit -m "Nueva funcionalidad"
 git push origin deploy
 
-# Railway detectará el push y redespliegará automáticamente ✨
+# ✨ Render y Vercel detectan el push y redesplegan automáticamente
 ```
+
+### Monitorear Despliegues
+
+**Render:**
+- Ve a tu Web Service → **"Logs"**
+- Verás el progreso en tiempo real
+
+**Vercel:**
+- Ve a tu proyecto → **"Deployments"**
+- Cada commit crea un nuevo deployment
 
 ---
 
 ## 🆓 Límites del Plan Gratuito
 
-Railway ofrece **$5 USD de crédito gratis por mes**, que incluye:
+### Render (Backend)
 
-- ⚡ 500 horas de ejecución (~20 días)
-- 💾 1GB de almacenamiento persistente
-- 🌐 100GB de ancho de banda
+| Recurso | Límite Gratuito |
+|---------|-----------------|
+| Web Services | 750 horas/mes |
+| PostgreSQL | 1GB de almacenamiento |
+| RAM | 512MB |
+| Sleeping | Después de 15 min de inactividad |
 
-> [!TIP]
-> Para proyectos pequeños y demos, esto es más que suficiente. Si tu app duerme cuando no se usa (plan Hobby), puedes extender el tiempo.
+### Vercel (Frontend)
+
+| Recurso | Límite Gratuito |
+|---------|-----------------|
+| Bandwidth | 100GB/mes |
+| Deployments | Ilimitados |
+| Sleeping | **Nunca duerme** ⚡ |
+| Dominios | https://tu-proyecto.vercel.app |
+
+> [!NOTE]
+> Para proyectos estudiantiles y demos, estos límites son **más que suficientes**.
 
 ---
 
 ## 🔧 Solución de Problemas
 
-### Error: "502 Bad Gateway"
+### Backend no responde (502/503 Error)
 
-**Causa:** La aplicación no inició correctamente.
+**Causa:** El backend está durmiendo.
 
-**Solución:**
-1. Verifica los logs en Railway
-2. Asegúrate de que `APP_KEY` esté configurado
-3. Verifica que el volumen esté montado correctamente
+**Solución:** Espera 30 segundos. La primera solicitud lo despertará.
 
-### Error: "Database not found"
+### Error: "CORS policy blocked"
 
-**Causa:** El volumen no está configurado o montado incorrectamente.
+**Causa:** CORS no está configurado correctamente.
 
 **Solución:**
-1. Ve a Settings → Volumes
-2. Verifica que el mount path sea `/app/backend/database`
-3. Redeployea el proyecto
+1. Verifica `backend/config/cors.php`
+2. Asegúrate de que `'allowed_origins' => ['*']`
+3. Redeployea el backend en Render
 
-### Error: "Route not found" en el frontend
+### Frontend muestra "Network Error"
 
-**Causa:** El frontend no se copió correctamente al directorio public de Laravel.
+**Causa:** La URL del backend no está configurada correctamente.
 
 **Solución:**
-1. Verifica que `nixpacks.toml` esté en la raíz del proyecto
-2. Revisa los logs de build para ver si `npm run build` se ejecutó
+1. Ve a Vercel → tu proyecto → **"Settings"** → **"Environment Variables"**
+2. Verifica que `VITE_API_URL` tenga la URL correcta de Render
+3. Redeployea el  frontend
+
+### Base de datos vacía después de redeployar
+
+**Causa:** Las migraciones no se ejecutaron.
+
+**Solución:**
+1. Ve a Render → tu Web Service → **"Shell"**
+2. Ejecuta manualmente:
+   ```bash
+   cd backend
+   php artisan migrate
+   ```
+
+### Build falla en Vercel
+
+**Causa:** Root directory incorrecta.
+
+**Solución:**
+1. Ve a Vercel → Settings → General
+2. Establece **Root Directory** en `frontend`
 3. Redeployea
 
-### La aplicación es muy lenta
+---
 
-**Causa:** Railway puede estar en modo "sleep" o los recursos son limitados.
+## 🎯 Recomendaciones de Uso
 
-**Solución:**
-1. Railway puede dormir apps inactivas. El primer request puede tardar ~10-30 segundos
-2. Considera optimizar las consultas de base de datos
-3. Habilita caché en Laravel (ya configurado en `deploy.sh`)
+### Para Demos y Presentaciones
+
+1. **Antes de la demo:** Haz una solicitud al backend 5 minutos antes para que esté despierto
+2. **Durante la demo:** El frontend siempre será rápido (Vercel)
+3. **Después:** Deja que el backend duerma para ahorrar horas gratuitas
+
+### Para Desarrollo Continuo
+
+- Usa tu entorno local para desarrollo
+- Deploy a `deploy` branch solo cuando tengas cambios listos
+- Usa el frontend de Vercel para probar en dispositivos móviles
+
+### Para Producción Real
+
+Si tu proyecto crece, considera:
+- **Render:** Upgrade a plan pagado (7$/mes) para que no duerma
+- **Vercel:** El plan gratuito es suficiente para la mayoría de proyectos
+- **Base de datos:** Considera un servicio dedicado si necesitas más de 1GB
 
 ---
 
 ## 📚 Recursos Adicionales
 
-- [Documentación de Railway](https://docs.railway.app/)
-- [Documentación de Laravel](https://laravel.com/docs)
-- [Guía de Despliegue de Laravel](https://laravel.com/docs/deployment)
+- [Documentación de Render](https://render.com/docs)
+- [Documentación de Vercel](https://vercel.com/docs)
+- [Laravel Deployment](https://laravel.com/docs/deployment)
+- [Vite Production Build](https://vitejs.dev/guide/build.html)
 
 ---
 
-## 🎉 ¡Listo!
+## 🎉 ¡Felicidades!
 
-Tu aplicación OnTime ahora está desplegada en Railway y accesible desde cualquier parte del mundo.
+Tu aplicación OnTime ahora está desplegada en:
 
-**URL de tu aplicación:** `https://[tu-proyecto].up.railway.app`
+- **Frontend:** `https://ontime-entrega.vercel.app`
+- **Backend:** `https://ontime-backend.onrender.com`
 
----
-
-## 🚀 Alternativas a Railway
-
-Si prefieres explorar otras opciones gratuitas:
-
-### Opción 2: Render
-
-- **Pros:** Más generoso con el plan gratuito (750 horas)
-- **Contras:** Apps duermen después de 15 min de inactividad
-- **Tutorial:** Similar a Railway
-- **URL:** [render.com](https://render.com)
-
-### Opción 3: Despliegue Separado
-
-- **Frontend:** Vercel/Netlify (gratis, ilimitado)
-- **Backend:** Railway/Render
-- **Pros:** Mejor rendimiento del frontend
-- **Contras:** Necesitas configurar CORS
+**100% Gratis y accesible desde cualquier parte del mundo!** 🌍
 
 ---
+
+## 📝 Resumen de Archivos Creados
+
+| Archivo | Propósito |
+|---------|-----------|
+| [`render.yaml`](file:///c:/Users/rmore/Desktop/PI/Proyecto/OnTime_entrega/render.yaml) | Configuración de servicios de Render |
+| [`backend/build.sh`](file:///c:/Users/rmore/Desktop/PI/Proyecto/OnTime_entrega/backend/build.sh) | Script de build para Render |
+| [`vercel.json`](file:///c:/Users/rmore/Desktop/PI/Proyecto/OnTime_entrega/vercel.json) | Configuración de Vercel |
+| [`frontend/.env.production`](file:///c:/Users/rmore/Desktop/PI/Proyecto/OnTime_entrega/frontend/.env.production) | Variables de producción |
+| [`frontend/.env.development`](file:///c:/Users/rmore/Desktop/PI/Proyecto/OnTime_entrega/frontend/.env.development) | Variables de desarrollo |
 
 ¿Preguntas? ¡No dudes en consultarlas!
