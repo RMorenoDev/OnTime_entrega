@@ -491,7 +491,6 @@ body {
   }
 
   .dashboard-header {
-    flex-direction: row !important;
     text-align: left !important;
     padding: 1.25rem !important;
   }
