@@ -404,6 +404,11 @@ body {
   padding: 1rem !important;
 }
 
+.btn-secondary {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.80rem !important;
+}
+
 .welcome-card {
   padding: 1.5rem !important;
 }
