@@ -1,0 +1,53 @@
+services:
+  # Laravel Backend
+  - type: web
+    name: ontime-backend
+    runtime: docker
+    plan: free
+    envVars:
+      - key: APP_NAME
+        value: OnTime
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: ontime
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: ontime
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: ontime
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: ontime
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: ontime
+          property: password
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+      - key: SESSION_SECURE_COOKIE
+        value: true
+
+databases:
+  - name: ontime
+    plan: free
