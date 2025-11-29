@@ -1914,6 +1914,8 @@ textarea:focus {
 /* Tabla de reportes */
 .report-table-container {
   margin: 2rem 0;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 
 .report-table-container h3 {
@@ -1922,6 +1924,8 @@ textarea:focus {
 }
 
 .report-table {
+  min-width: 600px !important;
+  /* Ensures table doesn't shrink too much */
   width: 100%;
   border-collapse: collapse;
   background: rgba(255, 255, 255, 0.05);
