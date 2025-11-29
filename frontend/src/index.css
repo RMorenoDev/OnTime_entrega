@@ -405,6 +405,12 @@ body {
   padding: 1rem !important;
 }
 
+/* Make button container wrap and center on mobile */
+.dashboard-header>div:last-child {
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+}
+
 .btn-secondary {
   padding: 0.5rem 1rem !important;
   font-size: 0.80rem !important;
