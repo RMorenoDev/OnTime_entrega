@@ -2025,6 +2025,8 @@ textarea:focus {
 /* Detalle de sesiones (colapsable) */
 .session-details {
   margin-top: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .session-details summary {
@@ -2054,6 +2056,7 @@ textarea:focus {
 
 .session-details .report-table {
   margin-top: 1rem;
+  min-width: 600px;
 }
 
 /* Diseño responsive */
