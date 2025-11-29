@@ -139,22 +139,6 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* Acciones rapidas */}
-                                    <div className="quick-actions">
-                                        <h3>⚡ Acciones rápidas</h3>
-                                        <div className="action-buttons">
-                                            <button className="action-btn" onClick={() => navigate('/admin/users')}>
-                                                👤 Gestionar usuarios
-                                            </button>
-                                            <button className="action-btn" onClick={() => navigate('/admin/teams')}>
-                                                🧑‍🤝‍🧑 Gestionar equipos
-                                            </button>
-                                            <button className="action-btn" onClick={() => navigate('/leave-requests')}>
-                                                📝 Revisar permisos
-                                            </button>
-                                        </div>
-                                    </div>
                                 </>
                             )}
                         </div>
