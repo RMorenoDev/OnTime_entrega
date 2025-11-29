@@ -344,20 +344,229 @@ body {
   border: 1px solid rgba(139, 92, 246, 0.5);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* =================================================================
+   RESPONSIVE DESIGN - Mobile First Approach
+   ================================================================= */
+
+/* =================================================================
+   BASE STYLES (Mobile - iPhone 12 Pro: 390px)
+   Default styles optimized for mobile devices
+   ================================================================= */
+
+/* Mobile-optimized typography */
+.auth-header h1 {
+  font-size: 2rem !important;
+}
+
+.auth-header h2 {
+  font-size: 1.25rem !important;
+}
+
+.dashboard-header h1 {
+  font-size: 1.5rem !important;
+}
+
+.welcome-card h2 {
+  font-size: 1.5rem !important;
+}
+
+.feature-card h3 {
+  font-size: 1.25rem !important;
+}
+
+.work-session-card h3 {
+  font-size: 1.5rem !important;
+}
+
+.timer {
+  font-size: 2rem !important;
+}
+
+/* Mobile-optimized auth card */
+.auth-card {
+  padding: 1.5rem !important;
+}
+
+/* Mobile-optimized dashboard */
+.dashboard-container {
+  padding: 1rem !important;
+}
+
+.dashboard-header {
+  flex-direction: column !important;
+  gap: 1rem !important;
+  text-align: center !important;
+  padding: 1rem !important;
+}
+
+.welcome-card {
+  padding: 1.5rem !important;
+}
+
+/* Mobile-optimized features grid */
+.features-grid {
+  grid-template-columns: 1fr !important;
+  gap: 1rem !important;
+}
+
+.feature-card {
+  padding: 1.5rem !important;
+}
+
+/* Mobile-optimized work session */
+.work-session-card {
+  padding: 1.5rem !important;
+}
+
+/* Mobile-optimized break buttons */
+.break-buttons {
+  flex-direction: column !important;
+}
+
+.btn-break {
+  width: 100% !important;
+}
+
+/* =================================================================
+   TABLET (iPad Air: 820px and up)
+   Medium-sized adjustments for tablets
+   ================================================================= */
+@media (min-width: 820px) {
+  /* Tablet typography */
+  .auth-header h1 {
+    font-size: 2.25rem !important;
+  }
+
+  .auth-header h2 {
+    font-size: 1.5rem !important;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.75rem !important;
+  }
+
+  .welcome-card h2 {
+    font-size: 1.75rem !important;
+  }
+
+  .feature-card h3 {
+    font-size: 1.35rem !important;
+  }
+
+  .work-session-card h3 {
+    font-size: 1.6rem !important;
+  }
+
+  .timer {
+    font-size: 2.5rem !important;
+  }
+
+  /* Tablet auth card */
   .auth-card {
-    padding: 2rem;
+    padding: 2.5rem !important;
+  }
+
+  /* Tablet dashboard */
+  .dashboard-container {
+    padding: 1.5rem !important;
   }
 
   .dashboard-header {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
+    flex-direction: row !important;
+    text-align: left !important;
+    padding: 1.25rem !important;
   }
 
+  .welcome-card {
+    padding: 2rem !important;
+  }
+
+  /* Tablet features grid - 2 columns */
   .features-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem !important;
+  }
+
+  .feature-card {
+    padding: 1.75rem !important;
+  }
+
+  /* Tablet work session */
+  .work-session-card {
+    padding: 2rem !important;
+  }
+
+  /* Tablet break buttons */
+  .break-buttons {
+    flex-direction: row !important;
+  }
+}
+
+/* =================================================================
+   LAPTOP (1024px and up)
+   Full desktop experience - restore original designs
+   ================================================================= */
+@media (min-width: 1024px) {
+  /* Laptop typography - original sizes */
+  .auth-header h1 {
+    font-size: 2.5rem !important;
+  }
+
+  .auth-header h2 {
+    font-size: 1.75rem !important;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2rem !important;
+  }
+
+  .welcome-card h2 {
+    font-size: 2rem !important;
+  }
+
+  .feature-card h3 {
+    font-size: 1.5rem !important;
+  }
+
+  .work-session-card h3 {
+    font-size: 1.75rem !important;
+  }
+
+  .timer {
+    font-size: 3rem !important;
+  }
+
+  /* Laptop auth card - original */
+  .auth-card {
+    padding: 3rem !important;
+  }
+
+  /* Laptop dashboard - original */
+  .dashboard-container {
+    padding: 2rem !important;
+  }
+
+  .dashboard-header {
+    padding: 1.5rem !important;
+  }
+
+  .welcome-card {
+    padding: 2.5rem !important;
+  }
+
+  /* Laptop features grid - original responsive grid */
+  .features-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    gap: 1.5rem !important;
+  }
+
+  .feature-card {
+    padding: 2rem !important;
+  }
+
+  /* Laptop work session - original */
+  .work-session-card {
+    padding: 2.5rem !important;
   }
 }
 
