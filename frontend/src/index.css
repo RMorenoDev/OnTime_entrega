@@ -371,7 +371,7 @@ body {
 }
 
 .feature-card h3 {
-  font-size: 1.25rem !important;
+  font-size: 1.1rem !important;
 }
 
 .work-session-card h3 {
@@ -382,6 +382,11 @@ body {
   font-size: 2rem !important;
 }
 
+/* Mobile-optimized auth container */
+.auth-container {
+  padding: 15px !important;
+}
+
 /* Mobile-optimized auth card */
 .auth-card {
   padding: 1.5rem !important;
@@ -389,7 +394,7 @@ body {
 
 /* Mobile-optimized dashboard */
 .dashboard-container {
-  padding: 1rem !important;
+  padding: 15px !important;
 }
 
 .dashboard-header {
@@ -405,17 +410,18 @@ body {
 
 /* Mobile-optimized features grid */
 .features-grid {
-  grid-template-columns: 1fr !important;
-  gap: 1rem !important;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+  gap: 0.75rem !important;
 }
 
 .feature-card {
-  padding: 1.5rem !important;
+  padding: 1rem !important;
+  font-size: 0.9rem !important;
 }
 
 /* Mobile-optimized work session */
 .work-session-card {
-  padding: 1.5rem !important;
+  padding: 1rem !important;
 }
 
 /* Mobile-optimized break buttons */
@@ -432,6 +438,7 @@ body {
    Medium-sized adjustments for tablets
    ================================================================= */
 @media (min-width: 820px) {
+
   /* Tablet typography */
   .auth-header h1 {
     font-size: 2.25rem !important;
@@ -507,6 +514,7 @@ body {
    Full desktop experience - restore original designs
    ================================================================= */
 @media (min-width: 1024px) {
+
   /* Laptop typography - original sizes */
   .auth-header h1 {
     font-size: 2.5rem !important;
