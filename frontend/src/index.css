@@ -159,6 +159,7 @@ body {
   cursor: pointer;
   transition: var(--transition);
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  height: 55px;
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -1787,7 +1788,6 @@ textarea:focus {
 .date-range-picker {
   display: flex;
   gap: 1.5rem;
-  align-items: flex-end;
   padding: 1.5rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 2rem;
@@ -2084,17 +2084,17 @@ textarea:focus {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-  align-items: flex-end;
   margin-bottom: 2rem;
 }
 
 .date-range-picker .date-input-group {
-  flex: 1;
-  min-width: 200px;
+  flex: 0 1 auto;
+  min-width: 120px;
 }
 
 .date-range-picker .btn-primary {
-  margin-top: 0 !important;
+  margin-top: auto !important;
+  flex-shrink: 0;
 }
 
 /* ==================== ESTILOS DE IMPRESION ==================== */
