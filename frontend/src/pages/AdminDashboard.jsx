@@ -77,6 +77,46 @@ export default function AdminDashboard() {
 
                             {stats && (
                                 <>
+                                    {/* Equipos y sesiones */}
+                                    <div className="stats-grid-2col">
+                                        <div className="stats-section">
+                                            <h3>⏱️ Sesiones de trabajo</h3>
+                                            <div className="stats-grid-mini">
+                                                <div className="stat-card-small">
+                                                    <div className="stat-value">{stats.work_sessions.active}</div>
+                                                    <div className="stat-label">Activas ahora</div>
+                                                </div>
+                                                <div className="stat-card-small">
+                                                    <div className="stat-value">{stats.work_sessions.today}</div>
+                                                    <div className="stat-label">Hoy</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="stats-section">
+                                            <h3>🧑‍🤝‍🧑 Equipos</h3>
+                                            <div className="stat-card-large">
+                                                <div className="stat-value">{stats.teams.total}</div>
+                                                <div className="stat-label">Equipos totales</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Solicitudes de permiso */}
+                                    <div className="stats-section">
+                                        <h3>📝 Permisos</h3>
+                                        <div className="stats-grid-mini">
+                                            <div className="stat-card-small pending">
+                                                <div className="stat-value">{stats.leave_requests.pending}</div>
+                                                <div className="stat-label">Pendientes</div>
+                                            </div>
+                                            <div className="stat-card-small approved">
+                                                <div className="stat-value">{stats.leave_requests.approved_this_month}</div>
+                                                <div className="stat-label">Aprobadas este mes</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     {/* Estadisticas de usuarios */}
                                     <div className="stats-section">
                                         <h3>👤 Usuarios</h3>
@@ -96,46 +136,6 @@ export default function AdminDashboard() {
                                             <div className="stat-card employee">
                                                 <div className="stat-value">{stats.users.employees}</div>
                                                 <div className="stat-label">Empleados</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Equipos y sesiones */}
-                                    <div className="stats-grid-2col">
-                                        <div className="stats-section">
-                                            <h3>🧑‍🤝‍🧑 Equipos</h3>
-                                            <div className="stat-card-large">
-                                                <div className="stat-value">{stats.teams.total}</div>
-                                                <div className="stat-label">Equipos totales</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="stats-section">
-                                            <h3>⏱️ Sesiones de trabajo</h3>
-                                            <div className="stats-grid-mini">
-                                                <div className="stat-card-small">
-                                                    <div className="stat-value">{stats.work_sessions.active}</div>
-                                                    <div className="stat-label">Activas ahora</div>
-                                                </div>
-                                                <div className="stat-card-small">
-                                                    <div className="stat-value">{stats.work_sessions.today}</div>
-                                                    <div className="stat-label">Hoy</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Solicitudes de permiso */}
-                                    <div className="stats-section">
-                                        <h3>📝 Permisos</h3>
-                                        <div className="stats-grid-mini">
-                                            <div className="stat-card-small pending">
-                                                <div className="stat-value">{stats.leave_requests.pending}</div>
-                                                <div className="stat-label">Pendientes</div>
-                                            </div>
-                                            <div className="stat-card-small approved">
-                                                <div className="stat-value">{stats.leave_requests.approved_this_month}</div>
-                                                <div className="stat-label">Aprobadas este mes</div>
                                             </div>
                                         </div>
                                     </div>
