@@ -183,7 +183,7 @@ export default function Dashboard() {
                                     <div className="session-info">
                                         <div className="status-badge working">Trabajando</div>
                                         <p className="session-start">
-                                            Entrada a las {new Date(activeSession.started_at).toLocaleTimeString()}
+                                            Entrada a las {new Date(activeSession.started_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                         </p>
                                     </div>
 
@@ -230,10 +230,10 @@ export default function Dashboard() {
                                     {activeBreak.break_type === 'split_shift' ? (
                                         <div className="split-shift-info">
                                             <p className="session-start">
-                                                Entrada: {new Date(activeSession.started_at).toLocaleTimeString()}
+                                                Entrada: {new Date(activeSession.started_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                             <p className="session-start">
-                                                Pausa iniciada: {new Date(activeBreak.started_at).toLocaleTimeString()}
+                                                Pausa iniciada: {new Date(activeBreak.started_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
                                     ) : (
@@ -242,7 +242,7 @@ export default function Dashboard() {
                                                 <div className="timer">{timer}</div>
                                             </div>
                                             <p>Tipo de pausa: <strong>{activeBreak.break_type}</strong></p>
-                                            <p className="session-start">Entrada: {new Date(activeBreak.started_at).toLocaleTimeString()}</p>
+                                            <p className="session-start">Entrada: {new Date(activeBreak.started_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
                                         </>
                                     )}
 
@@ -272,7 +272,7 @@ export default function Dashboard() {
                                                 <span>{b.break_type}</span>
                                                 <span className="break-duration">{minutes}m {seconds}s</span>
                                                 <span className="break-time">
-                                                    {start.toLocaleTimeString()} - {end.toLocaleTimeString()}
+                                                    {start.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} - {end.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>
                                         );
