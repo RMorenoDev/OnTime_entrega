@@ -35,7 +35,7 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
             await api.post('/leave-requests', payload);
             if (onSuccess) onSuccess();
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to submit leave request');
+            setError(err.response?.data?.message || 'Error al enviar solicitud de permiso');
         } finally {
             setLoading(false);
         }
@@ -67,7 +67,7 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
     return (
         <div className="leave-request-form-container">
             <div className="form-header">
-                <h2>📝 Request Leave</h2>
+                <h2>📝 Solicitar Permiso</h2>
                 {onCancel && (
                     <button onClick={onCancel} className="btn-close">✕</button>
                 )}
@@ -79,7 +79,7 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
 
             <form onSubmit={handleSubmit} className="leave-form">
                 <div className="form-group">
-                    <label htmlFor="leave_type">Leave Type *</label>
+                    <label htmlFor="leave_type">Tipo de Permiso *</label>
                     <select
                         id="leave_type"
                         name="leave_type"
@@ -87,8 +87,8 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
                         onChange={handleChange}
                         required
                     >
-                        <option value="vacation">🏖️ Vacation</option>
-                        <option value="medical">🏥 Medical</option>
+                        <option value="vacation">🏖️ Vacaciones</option>
+                        <option value="medical">🏥 Médico</option>
                         <option value="personal">🚶 Personal</option>
                     </select>
                 </div>
@@ -101,7 +101,7 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
                             checked={formData.is_paid}
                             onChange={handleChange}
                         />
-                        Paid Leave
+                        Permiso Pagado
                     </label>
                 </div>
 
@@ -113,14 +113,14 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
                             checked={formData.is_full_day}
                             onChange={handleChange}
                         />
-                        Full Day(s)
+                        Día(s) Completo(s)
                     </label>
                 </div>
 
                 {formData.is_full_day ? (
                     <>
                         <div className="form-group">
-                            <label htmlFor="start_at">Start Date *</label>
+                            <label htmlFor="start_at">Fecha de Inicio *</label>
                             <input
                                 type="date"
                                 id="start_at"
@@ -133,7 +133,7 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="end_at">End Date *</label>
+                            <label htmlFor="end_at">Fecha de Fin *</label>
                             <input
                                 type="date"
                                 id="end_at"
@@ -148,7 +148,7 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
                 ) : (
                     <>
                         <div className="form-group">
-                            <label htmlFor="start_at">Date & Time *</label>
+                            <label htmlFor="start_at">Fecha y Hora *</label>
                             <input
                                 type="datetime-local"
                                 id="start_at"
@@ -161,7 +161,7 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="duration_hours">Duration (hours) *</label>
+                            <label htmlFor="duration_hours">Duración (horas) *</label>
                             <select
                                 id="duration_hours"
                                 name="duration_hours"
@@ -171,7 +171,7 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
                             >
                                 {hourOptions.map(hours => (
                                     <option key={hours} value={hours}>
-                                        {hours} {hours === 1 ? 'hour' : 'hours'}
+                                        {hours} {hours === 1 ? 'hora' : 'horas'}
                                     </option>
                                 ))}
                             </select>
@@ -180,28 +180,28 @@ export default function LeaveRequestForm({ onSuccess, onCancel }) {
                 )}
 
                 <div className="form-group">
-                    <label htmlFor="note">Reason *</label>
+                    <label htmlFor="note">Motivo *</label>
                     <textarea
                         id="note"
                         name="note"
                         value={formData.note}
                         onChange={handleChange}
                         rows="4"
-                        placeholder="Please provide a reason for your leave request..."
+                        placeholder="Por favor, indica el motivo de tu solicitud de permiso..."
                         required
                         maxLength="1000"
                     />
-                    <small>{formData.note.length}/1000 characters</small>
+                    <small>{formData.note.length}/1000 caracteres</small>
                 </div>
 
                 <div className="form-actions">
                     {onCancel && (
                         <button type="button" onClick={onCancel} className="btn-secondary">
-                            Cancel
+                            Cancelar
                         </button>
                     )}
                     <button type="submit" className="btn-primary" disabled={loading}>
-                        {loading ? 'Submitting...' : 'Submit Request'}
+                        {loading ? 'Enviando...' : 'Enviar Solicitud'}
                     </button>
                 </div>
             </form>
