@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 // Rutas de autenticacion (publicas)
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 // Lista publica de equipos para registro
 Route::get('/teams', [\App\Http\Controllers\Api\TeamManagementController::class, 'index']);

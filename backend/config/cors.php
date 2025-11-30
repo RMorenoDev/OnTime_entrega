@@ -9,11 +9,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'https://on-time-entrega.vercel.app', // Producción
-        'http://localhost:5173',              // Desarrollo (Vite)
-        'http://localhost:3000',              // Desarrollo (Alternativo)
-    ],
+    'allowed_origins' => env('APP_ENV') === 'production' 
+        ? ['https://on-time-entrega.vercel.app']
+        : ['*'],
 
     'allowed_origins_patterns' => [],
 
