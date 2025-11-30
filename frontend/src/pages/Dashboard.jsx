@@ -109,6 +109,17 @@ export default function Dashboard() {
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
+    // Traducir tipo de pausa al español
+    const getBreakTypeLabel = (breakType) => {
+        const labels = {
+            coffee: '☕ Café',
+            snack: '🍪 Snack',
+            personal: '🙋 Personal',
+            split_shift: '🍽️ Turno partido'
+        };
+        return labels[breakType] || breakType;
+    };
+
     const [timer, setTimer] = useState(getBreakDuration()); // Contador visible de la pausa
 
     useEffect(() => {
@@ -183,7 +194,7 @@ export default function Dashboard() {
                                     <div className="session-info">
                                         <div className="status-badge working">Trabajando</div>
                                         <p className="session-start">
-                                            Entrada a las {new Date(activeSession.started_at).toLocaleTimeString()}
+                                            Entrada a las {new Date(activeSession.started_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                         </p>
                                     </div>
 
@@ -230,10 +241,10 @@ export default function Dashboard() {
                                     {activeBreak.break_type === 'split_shift' ? (
                                         <div className="split-shift-info">
                                             <p className="session-start">
-                                                Entrada: {new Date(activeSession.started_at).toLocaleTimeString()}
+                                                Entrada: {new Date(activeSession.started_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                             <p className="session-start">
-                                                Pausa iniciada: {new Date(activeBreak.started_at).toLocaleTimeString()}
+                                                Pausa iniciada: {new Date(activeBreak.started_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
                                     ) : (
@@ -241,8 +252,8 @@ export default function Dashboard() {
                                             <div className="timer-display">
                                                 <div className="timer">{timer}</div>
                                             </div>
-                                            <p>Tipo de pausa: <strong>{activeBreak.break_type}</strong></p>
-                                            <p className="session-start">Entrada: {new Date(activeBreak.started_at).toLocaleTimeString()}</p>
+                                            <p>Tipo de pausa: <strong>{getBreakTypeLabel(activeBreak.break_type)}</strong></p>
+                                            <p className="session-start">Entrada: {new Date(activeBreak.started_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
                                         </>
                                     )}
 
@@ -269,10 +280,10 @@ export default function Dashboard() {
 
                                         return (
                                             <div key={b.id || index} className="break-item">
-                                                <span>{b.break_type}</span>
+                                                <span>{getBreakTypeLabel(b.break_type)}</span>
                                                 <span className="break-duration">{minutes}m {seconds}s</span>
                                                 <span className="break-time">
-                                                    {start.toLocaleTimeString()} - {end.toLocaleTimeString()}
+                                                    {start.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} - {end.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>
                                         );

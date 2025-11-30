@@ -65,9 +65,9 @@ class AuthController extends Controller
                     // Los empleados no pueden crear equipos
                     $user->delete(); // Eliminar al usuario recien creado
                     return response()->json([
-                        'message' => 'Team validation failed',
+                        'message' => 'Validación de equipo fallida',
                         'errors' => [
-                            'team_name' => ['This team doesn\'t exist. Please contact your supervisor or try another team name.']
+                            'team_name' => ['Este equipo no existe. Por favor contacta a tu supervisor o intenta con otro nombre de equipo.']
                         ]
                     ], 422);
                 }
@@ -104,7 +104,7 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password_hash)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => ['Las credenciales proporcionadas son incorrectas.'],
             ]);
         }
 

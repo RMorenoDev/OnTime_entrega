@@ -71,10 +71,27 @@ export default function PrintableReport() {
         });
     };
 
-    // Lanza la impresion del reporte
-    const handlePrint = () => {
-        window.print();
+    // Traducir tipo de pausa
+    const getBreakTypeLabel = (breakType) => {
+        const labels = {
+            coffee: '☕ Café',
+            snack: '🍪 Snack',
+            personal: '🙋 Personal',
+            split_shift: '🍽️ Turno partido'
+        };
+        return labels[breakType] || breakType;
     };
+
+    // Auto-print when data is loaded
+    useEffect(() => {
+        if (!loading && !error && (reportData || teamData)) {
+            // Small delay to ensure rendering is complete
+            const timer = setTimeout(() => {
+                window.print();
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [loading, error, reportData, teamData]);
 
     if (loading) {
         return (
@@ -177,7 +194,7 @@ export default function PrintableReport() {
                                 <tbody>
                                     {Object.entries(reportData.break_summary).map(([type, hours]) => (
                                         <tr key={type}>
-                                            <td>{type}</td>
+                                            <td>{getBreakTypeLabel(type)}</td>
                                             <td>{formatHoursMinutes(hours)}</td>
                                         </tr>
                                     ))}
