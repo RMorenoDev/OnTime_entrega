@@ -109,6 +109,17 @@ export default function Dashboard() {
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
+    // Traducir tipo de pausa al español
+    const getBreakTypeLabel = (breakType) => {
+        const labels = {
+            coffee: '☕ Café',
+            snack: '🍪 Snack',
+            personal: '🙋 Personal',
+            split_shift: '🍽️ Turno partido'
+        };
+        return labels[breakType] || breakType;
+    };
+
     const [timer, setTimer] = useState(getBreakDuration()); // Contador visible de la pausa
 
     useEffect(() => {
@@ -269,7 +280,7 @@ export default function Dashboard() {
 
                                         return (
                                             <div key={b.id || index} className="break-item">
-                                                <span>{b.break_type}</span>
+                                                <span>{getBreakTypeLabel(b.break_type)}</span>
                                                 <span className="break-duration">{minutes}m {seconds}s</span>
                                                 <span className="break-time">
                                                     {start.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} - {end.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}

@@ -1631,7 +1631,7 @@ textarea:focus {
   border-radius: 6px;
   cursor: pointer;
   transition: var(--transition);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
 }
