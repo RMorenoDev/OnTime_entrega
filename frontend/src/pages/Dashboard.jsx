@@ -252,7 +252,7 @@ export default function Dashboard() {
                                             <div className="timer-display">
                                                 <div className="timer">{timer}</div>
                                             </div>
-                                            <p>Tipo de pausa: <strong>{activeBreak.break_type}</strong></p>
+                                            <p>Tipo de pausa: <strong>{getBreakTypeLabel(activeBreak.break_type)}</strong></p>
                                             <p className="session-start">Entrada: {new Date(activeBreak.started_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
                                         </>
                                     )}

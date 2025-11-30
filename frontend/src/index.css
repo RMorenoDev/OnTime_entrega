@@ -2340,3 +2340,54 @@ textarea:focus {
     size: letter;
   }
 }
+
+/* Break items - Mobile first (responsive layout) */
+.break-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.break-item span:nth-child(1) {
+  /* Break type - full width on mobile */
+  flex: 1 1 100%;
+  font-weight: 500;
+}
+
+.break-item span:nth-child(2) {
+  /* Duration - left side */
+  flex: 1;
+  font-weight: 600;
+}
+
+.break-item span:nth-child(3) {
+  /* Time - right side */
+  flex: 1;
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--gray-light);
+}
+
+/* Tablet and Laptop - horizontal layout */
+@media (min-width: 820px) {
+  .break-item {
+    flex-wrap: nowrap;
+  }
+
+  .break-item span:nth-child(1) {
+    flex: 2;
+  }
+
+  .break-item span:nth-child(2) {
+    flex: 1;
+    text-align: center;
+  }
+
+  .break-item span:nth-child(3) {
+    flex: 2;
+  }
+}
