@@ -1563,7 +1563,8 @@ textarea:focus {
 .admin-table-container {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin: 1.5rem 0;
 }
 
@@ -1571,6 +1572,7 @@ textarea:focus {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  min-width: 600px;
 }
 
 .admin-table thead {
