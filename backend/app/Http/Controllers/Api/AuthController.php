@@ -40,6 +40,29 @@ class AuthController extends Controller
             'team_name' => 'nullable|string|max:80',
         ]);
 
+        // Validación adicional: empleados DEBEN proporcionar un equipo existente
+        if ((!$request->role || $request->role === 'employee') && !$request->team_name) {
+            return response()->json([
+                'message' => 'Validación fallida',
+                'errors' => [
+                    'team_name' => ['Los empleados deben seleccionar un equipo.']
+                ]
+            ], 422);
+        }
+
+        // Validación adicional: empleados solo pueden unirse a equipos existentes
+        if ((!$request->role || $request->role === 'employee') && $request->team_name) {
+            $team = \App\Models\Team::where('name', $request->team_name)->first();
+            if (!$team) {
+                return response()->json([
+                    'message' => 'Validación de equipo fallida',
+                    'errors' => [
+                        'team_name' => ['Este equipo no existe. Por favor selecciona un equipo válido de la lista.']
+                    ]
+                ], 422);
+            }
+        }
+
         // Crear usuario
         $user = User::create([
             'name' => $request->name,
@@ -62,12 +85,12 @@ class AuthController extends Controller
                         'active' => true,
                     ]);
                 } else {
-                    // Los empleados no pueden crear equipos
-                    $user->delete(); // Eliminar al usuario recien creado
+                    // Los empleados no pueden crear equipos (ya validado arriba, pero por seguridad)
+                    $user->delete();
                     return response()->json([
                         'message' => 'Validación de equipo fallida',
                         'errors' => [
-                            'team_name' => ['Este equipo no existe. Por favor contacta a tu supervisor o intenta con otro nombre de equipo.']
+                            'team_name' => ['Este equipo no existe. Por favor selecciona un equipo válido de la lista.']
                         ]
                     ], 422);
                 }
