@@ -21,11 +21,12 @@ class UserManagementController extends Controller
     {
         $query = User::with('team');
 
-        // Buscar por nombre o email
+        // Buscar por nombre o email (case-insensitive para PostgreSQL y MySQL)
         if ($request->search) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', "%{$request->search}%")
-                  ->orWhere('email', 'like', "%{$request->search}%");
+            $search = strtolower($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(email) LIKE ?', ["%{$search}%"]);
             });
         }
 
