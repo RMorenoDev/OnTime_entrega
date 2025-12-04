@@ -30,9 +30,7 @@ export default function Dashboard() {
     };
 
     useEffect(() => {
-        fetchActiveSession(); // Primer fetch al montar
-        const interval = setInterval(fetchActiveSession, 30000); // Refrescar cada 30 segundos
-        return () => clearInterval(interval);
+        fetchActiveSession(); // Cargar sesión al iniciar
     }, []);
 
     // Inicia la jornada
