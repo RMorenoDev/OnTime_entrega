@@ -50,6 +50,16 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // Validación adicional: supervisores DEBEN proporcionar un nombre de equipo
+        if ($request->role === 'supervisor' && !$request->team_name) {
+            return response()->json([
+                'message' => 'Validación fallida',
+                'errors' => [
+                    'team_name' => ['Los supervisores deben proporcionar un nombre de equipo (existente o nuevo).']
+                ]
+            ], 422);
+        }
+
         // Validación adicional: empleados solo pueden unirse a equipos existentes
         if ((!$request->role || $request->role === 'employee') && $request->team_name) {
             $team = \App\Models\Team::where('name', $request->team_name)->first();
