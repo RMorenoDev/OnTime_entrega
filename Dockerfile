@@ -25,7 +25,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 EXPOSE 8080
 
 # Comando de inicio
-CMD php artisan migrate:fresh --seed --force && \
+CMD php artisan migrate --force && \
+    php artisan db:seed --force && \
     php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
